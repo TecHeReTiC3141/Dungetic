@@ -1,6 +1,6 @@
-import pygame
+from scripts.constants_and_sources import *
 
-class Heretic(object):
+class Heretic:
     strength = 3
     left_stop, right_stop, up_stop, down_stop = [False for i in '....']
 
@@ -70,32 +70,7 @@ class Heretic(object):
         #                                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
         pygame.draw.rect(self.visible_zone, (0, 0, 0), (self.x, self.y, int(75), int(100)))
         eye_colour = (0, 0, 0)
-        if self.direction == 'down':
-            pygame.draw.rect(self.visible_zone, (255, 255, 255), (10, 10, 20, 20))
-            pygame.draw.rect(self.visible_zone, (255, 255, 255), (40, 10, 20, 20))
-            pygame.draw.rect(self.visible_zone, eye_colour, (18, 17, 4, 4))
-            pygame.draw.rect(self.visible_zone, eye_colour, (48, 17, 4, 4))
-            if self.backpack:
-                self.backpack.draw_on_self(40, 45 * 2)
-            if self.weapon != 'none':
-                self.weapon.draw_object(65, 30 - ((self.half_attack_time - self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
-
-        elif self.direction == 'left':
-            pygame.draw.rect(self.visible_zone, (255, 255, 255), (8, 10, 20, 20))
-            pygame.draw.rect(self.visible_zone, (255, 255, 255), (38, 10, 20, 20))
-            pygame.draw.rect(self.visible_zone, eye_colour, (13, 17, 4, 4))
-            pygame.draw.rect(self.visible_zone, eye_colour, (43, 17, 4, 4))
-            if self.backpack:
-                self.backpack.draw_on_self(20, 45)
-            if self.weapon != 'none':
-                self.weapon.draw_object(45 + (self.half_attack_time - self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0, 30)
-
-        elif self.direction == 'right':
-            pygame.draw.rect(self.visible_zone, (255, 255, 255), (20, 10, 20, 20))
-            pygame.draw.rect(self.visible_zone, (255, 255, 255), (50, 10, 20, 20))
-            pygame.draw.rect(self.visible_zone, eye_colour, (31, 17, 4, 4))
-            pygame.draw.rect(self.visible_zone, eye_colour, (61, 17, 4, 4))
-
+        self.visible_zone.blit(heretic_images[self.direction], (0, 0))
         display.blit(self.visible_zone, (self.x, self.y))
     #  pygame.draw.rect(self.visible_zone, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25))
     #    pygame.draw.rect(self.visible_zone, RED, (self.x - 10, self.y - 28,
