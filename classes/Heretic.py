@@ -5,7 +5,7 @@ class Heretic:
     left_stop, right_stop, up_stop, down_stop = [False for i in '....']
 
     def __init__(self, x, y, width, height, health, direction, inventory,
-                 target=None, weapon='none', location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
+                 speed=5, target=None, weapon='none', location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
         self.x = x
         self.y = y
         self.width = width
@@ -25,6 +25,7 @@ class Heretic:
         self.weapon = weapon
         self.target = target
         self.size = size
+        self.speed = speed
 
     def hit(self, entity):
         entity.health -= self.strength
@@ -34,19 +35,22 @@ class Heretic:
     def move(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] and self.x > -3 and not self.left_stop:
-            self.x -= 5
+            self.x -= self.speed
+            self.active_zone.move(-self.speed, 0)
             self.direction = 'left'
 
         elif keys[pygame.K_d] and not self.right_stop:
             self.direction = 'right'
-            self.x += 5
+            self.active_zone.move(self.speed, 0)
+            self.x += self.speed
 
         if keys[pygame.K_w] and not self.up_stop:
-
-            self.y -= 4
+            self.active_zone.move(0, -self.speed)
+            self.y -= self.speed
             self.direction = 'up'
 
         elif keys[pygame.K_s] and not self.down_stop:
+            self.active_zone.move(0, self.speed)
             self.direction = 'down'
             self.y += 4
 
@@ -57,15 +61,15 @@ class Heretic:
 
     def draw_object(self, display):
         self.visible_zone.fill((0, 0, 0))
-        # if self.backpack and self.direction == 'right':
+        # if self.backpack and self.directions == 'right':
         #     self.backpack.draw_on_self(self.x + 25, self.y + 45)
-        # elif self.backpack and self.direction == 'up':
+        # elif self.backpack and self.directions == 'up':
         #     self.backpack.draw_on_self(self.x - 5, self.y + 45)
-        # if self.weapon != 'none' and self.direction == 'right':
+        # if self.weapon != 'none' and self.directions == 'right':
         #     self.weapon.draw_object(self.x + 65 - ((self.half_attack_time -
         #                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0),
         #                                self.y + 30)
-        # elif self.weapon != 'none' and self.direction == 'up':
+        # elif self.weapon != 'none' and self.directions == 'up':
         #     self.weapon.draw_object(self.x - 15, self.y + 30 + ((self.half_attack_time -
         #                                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
         pygame.draw.rect(self.visible_zone, (0, 0, 0), (self.x, self.y, int(75), int(100)))

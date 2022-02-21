@@ -1,8 +1,12 @@
 import pygame
 display_width, display_height = (1440, 800)
 
-direction = 'left right up down'.split()
+directions = 'left right up down'.split()
 
-heretic_images = {i: pygame.image.load(f'../images/heretic_sprite_{i}.png') for i in direction}
+heretic_images = {i: pygame.image.load(f'../images/heretic_sprite_{i}.png') for i in directions}
 
-print(heretic_images)
+BLACK = (0, 0, 0)
+WHITE = '#FFFFFF'
+RED = '#FF0000'
+GREEN = '#00FF00'
+BLUE = '#0000FF'

@@ -1,12 +1,14 @@
-import pygame
 import random
 
 # from My_classes.dungetic_classes import Drop, Log, Stone, Coal, Weapon, DroppedBerry, Meat, Stick, Juice, inventory_font, active_font, title_font
 from classes.Heretic import Heretic
+from classes.entities import NPC, produce_NPC
+from scripts.constants_and_sources import *
+
 
 pygame.init()
 dung_length, dung_width = map(int, input('Введите длину и ширину подземелья: ').split())
-display_width, display_height = 1440, 750
+
 print(*[''.join([str(i).rjust(3) for i in list(range(1 + dung_length * i, dung_length * (i + 1) + 1))]) for i in
         range(dung_width)], sep='\n')
 pygame.mouse.set_visible(False)
@@ -17,9 +19,7 @@ TODO:
 '''
 display = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Dungetic')
-GREEN = (0, 200, 0)
-RED = (200, 0, 0)
-BLUE = (0, 0, 200)
+
 clock = pygame.time.Clock()
 bullets_list = []
 tick = 0
@@ -41,150 +41,6 @@ directions = ['up', 'down', 'left', 'right']
 opposites = {'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left'}
 
 
-
-
-class NPC(Heretic):
-    left_stop = False
-    right_stop = False
-    up_stop = False
-    down_stop = False
-    stop = False
-    delay = random.randint(250, 450)
-
-    def __init__(self, h_x, h_y, health, direction, inventory, light_zone, speed, behavior_type, collised_walls,
-                 target=None, weapon=None, location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
-        self.x = h_x
-        self.y = h_y
-        self.health = health
-        self.direction = direction
-        self.inventory = inventory
-        self.light_zone = light_zone
-        self.active_zone = [list(range(self.x - 100, self.x + 126)), list(range(self.y - 50, self.y + 121))]
-        self.visible_zone = [list(range(self.x, self.x + 76)), list(range(self.y, self.y + 101))]
-        self.speed = speed
-        self.behavior_type = behavior_type
-        self.location = location
-        self.collised_walls = collised_walls
-        self.attack_time = attack_time
-        self.half_attack_time = half_attack_time
-        self.backpack = backpack
-        self.weapon = weapon
-        self.target = target
-        self.size = size
-
-        self.npc_points = [(self.x, self.y), (self.x + 37, self.y), (self.x + 75, self.y),
-                           (self.x + 75, self.y + 50),
-                           (self.x + 75, self.y + 100), (self.x + 37, self.y + 100),
-                           (self.x, self.y + 100), (self.x, self.y + 50)]
-
-    def draw_object(self, size=1):
-        if self.backpack and self.direction == 'right':
-            self.backpack.draw_on_heretic(self.x + 25, self.y + 45)
-        elif self.backpack and self.direction == 'up':
-            self.backpack.draw_on_heretic(heretic.x - 5, heretic.y + 45)
-        if self.weapon is not None and self.direction == 'right':
-            self.weapon.draw_object(self.x + 65 - ((self.half_attack_time -
-                                                    self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0),
-                                    self.y + 30)
-        elif self.weapon is not None and self.direction == 'up':
-            self.weapon.draw_object(self.x - 15, self.y + 30 + ((self.half_attack_time -
-                                                                 self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
-        pygame.draw.rect(display, (0, 0, 0), (self.x, self.y, 75, 100))
-        eye_colour = (0, 0, 0)
-        if self.direction == 'down':
-            pygame.draw.rect(display, (255, 255, 255), (self.x + 10, self.y + 10, 20, 20))
-            pygame.draw.rect(display, (255, 255, 255), (self.x + 40, self.y + 10, 20, 20))
-            pygame.draw.rect(display, eye_colour, (self.x + 18, self.y + 17, 4, 4))
-            pygame.draw.rect(display, eye_colour, (self.x + 48, self.y + 17, 4, 4))
-            if self.backpack:
-                self.backpack.draw_on_heretic(self.x + 40, self.y + 45)
-            if self.weapon is not None:
-                self.weapon.draw_object(self.x + 65, self.y + 30 - ((self.half_attack_time -
-                                                                     self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
-
-        elif self.direction == 'left':
-            pygame.draw.rect(display, (255, 255, 255), (self.x + 8, self.y + 10, 20, 20))
-            pygame.draw.rect(display, (255, 255, 255), (self.x + 38, self.y + 10, 20, 20))
-            pygame.draw.rect(display, eye_colour, (self.x + 13, self.y + 17, 4, 4))
-            pygame.draw.rect(display, eye_colour, (self.x + 43, self.y + 17, 4, 4))
-            if self.backpack:
-                self.backpack.draw_on_heretic(self.x + 20, self.y + 45)
-            if self.weapon is not None:
-                self.weapon.draw_object(self.x + 45 + ((self.half_attack_time -
-                                                        self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0),
-                                        self.y + 30)
-
-        elif self.direction == 'right':
-            pygame.draw.rect(display, (255, 255, 255), (self.x + 20, self.y + 10, 20, 20))
-            pygame.draw.rect(display, (255, 255, 255), (self.x + 50, self.y + 10, 20, 20))
-            pygame.draw.rect(display, eye_colour, (self.x + 31, self.y + 17, 4, 4))
-            pygame.draw.rect(display, eye_colour, (self.x + 61, self.y + 17, 4, 4))
-        pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25))
-        pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
-                                        int(100.0 * float(self.health) / 100.0), 21))
-
-    def walk_left(self):
-        self.direction = 'left'
-        self.x -= self.speed
-        self.visible_zone = [[j for j in range(self.x, self.x + 90)], [k for k in range(self.y, self.y + 60)]]
-        self.active_zone = [[j for j in range(self.x - 100, self.x + 150)],
-                            [k for k in range(self.y - 100, self.y + 100)]]
-        if self.x <= 0:
-            self.x = 0
-
-    def walk_right(self):
-        self.direction = 'right'
-        self.x += self.speed
-        self.visible_zone = [[j for j in range(self.x, self.x + 90)], [k for k in range(self.y, self.y + 60)]]
-        self.active_zone = [[j for j in range(self.x - 100, self.x + 150)],
-                            [k for k in range(self.y - 100, self.y + 100)]]
-        if self.x >= 920:
-            self.x = 920
-
-    def walk_up(self):
-        self.direction = 'up'
-        self.y -= self.speed
-        self.visible_zone = [[j for j in range(self.x, self.x + 60)], [k for k in range(self.y, self.y + 90)]]
-        self.active_zone = [[j for j in range(self.x - 100, self.x + 150)],
-                            [k for k in range(self.y - 100, self.y + 100)]]
-        if self.y <= 0:
-            self.y = 0
-
-    def walk_down(self):
-        self.direction = 'down'
-        self.y += self.speed
-        self.visible_zone = [[j for j in range(self.x, self.x + 60)], [k for k in range(self.y, self.y + 90)]]
-        self.active_zone = [[j for j in range(self.x - 100, self.x + 150)],
-                            [k for k in range(self.y - 100, self.y + 100)]]
-        if self.y >= 700:
-            self.y = 700
-
-    def passive_exist(self):
-        if self.direction == 'up' and not self.up_stop:
-            self.walk_up()
-        elif self.direction == 'down' and not self.down_stop:
-            self.walk_down()
-        elif self.direction == 'left' and not self.left_stop:
-            self.walk_left()
-        elif self.direction == 'right' and not self.right_stop:
-            self.walk_right()
-
-        if not self.delay:
-            next_direction = random.choice(directions + ['none', 'none'])
-            self.direction = next_direction
-            self.stop = False
-            if next_direction == 'none':
-                self.stop = True
-            self.delay = random.randint(250, 450)
-        if (self.x <= 10 and self.direction == 'left') or (self.x >= 920 and self.direction == 'right') \
-                or (self.y <= 0 and self.direction == 'up') or (self.y >= 685 and self.direction == 'down'):
-            self.direction = opposites[self.direction]
-        self.delay -= 1
-
-
-def produce_NPC(n):
-    return [NPC(random.randint(300, 800), random.randint(200, 600), random.randint(50, 70),
-                random.choice(directions), [], [], random.randint(3, 4), 'passive', {}) for i in range(n)]
 
 
 class Turret:
@@ -404,8 +260,10 @@ for i in range(1, dung_width * dung_length + 1):
         walls.append(Wall(0, 0, width := display_width, height := random.randint(50, 100)))
 
     if i % dung_length != 1 and 'right' in rooms[i - 1].entrances:
-        walls.append(Wall(0, 0, width=random.randint(50, 100), height=random.randint(display_height // 2 - 250, display_height // 2 - 100)))
-        walls.append(Wall(0, y := random.randint(display_height // 2 + 150, display_height // 2 + 220), width := random.randint(50, 100), height := display_height - y))
+        walls.append(Wall(0, 0, width=random.randint(50, 100),
+                          height=random.randint(display_height // 2 - 250, display_height // 2 - 100)))
+        walls.append(Wall(0, y := random.randint(display_height // 2 + 150, display_height // 2 + 220),
+                          width := random.randint(50, 100), height := display_height - y))
         enters.append('left')
     else:
         walls.append(Wall(0, 0, width=random.randint(50, 100), height=1000))
@@ -415,20 +273,25 @@ for i in range(1, dung_width * dung_length + 1):
                           width := random.randint(display_width // 2 - 250, display_width // 2 - 100),
                           height := display_height - y))
         walls.append(
-            Wall(x := random.randint(display_width // 2 + 150, display_width // 2 + 220), y := random.randint(display_height - 100, display_height - 50),
+            Wall(x := random.randint(display_width // 2 + 150, display_width // 2 + 220),
+                 y := random.randint(display_height - 100, display_height - 50),
                  width=display_width - x, height=display_height - y))
         enters.append('down')
     else:
-        walls.append(Wall(0, y := random.randint(display_height - 100, display_height - 50), width := display_width, height := display_height - y))
+        walls.append(Wall(0, y := random.randint(display_height - 100, display_height - 50), width := display_width,
+                          height := display_height - y))
 
     if 'right' in ways and i % dung_length:
         walls.append(Wall(x := random.randint(display_width - 100, display_width - 50), 0, width=display_width - x,
                           height=random.randint(display_height // 2 - 250, display_height // 2 - 100)))
         walls.append(Wall(x := random.randint(display_width - 100, display_width - 50),
-                          y := random.randint(display_height // 2 + 150, display_height // 2 + 220), width=display_width - x, height=display_height - y))
+                          y := random.randint(display_height // 2 + 150, display_height // 2 + 220),
+                          width=display_width - x, height=display_height - y))
         enters.append('right')
     else:
-        walls.append(Wall(x := random.randint(display_width - 100, display_width - 50), y := 0, width := display_width - x, height := display_height))
+        walls.append(
+            Wall(x := random.randint(display_width - 100, display_width - 50), y := 0, width := display_width - x,
+                 height := display_height))
 
     walls += [Wall(random.randrange(100, 905, 5), random.randrange(100, 705, 5),
                    width=random.randrange(50, 120, 5),
@@ -461,7 +324,8 @@ while True:
             if event.button == 1:
                 for wall in rooms[curr_room].walls_list:
                     if event.pos[0] in wall.visible_zone[0] and event.pos[1] in wall.visible_zone[1] \
-                            and heretic.x in wall.active_zone[0] and heretic.y in wall.active_zone[1] and heretic.attack_time <= 0:
+                            and heretic.x in wall.active_zone[0] and heretic.y in wall.active_zone[
+                        1] and heretic.attack_time <= 0:
                         heretic.hit(wall)
                         break
 
@@ -621,7 +485,6 @@ while True:
             '''            if isinstance(heretic.inventory[i], Drop):
                 heretic.inventory[i].draw_object(90 + 150 * (i % 4), 140 + 150 * (i // 4))
             '''
-
 
             # if 100 < pos[0] < 650 and pos[1] > 100:
             #     pos_index = (pos[0] - 50) // 150 + (pos[1] - 100) // 150 * 4
