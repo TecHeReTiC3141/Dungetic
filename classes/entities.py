@@ -17,10 +17,6 @@ class NPC(Heretic):
 
     def draw_object(self, display):
         self.visible_zone.fill((0, 0, 0))
-        if self.backpack and self.direction == 'right':
-            self.backpack.draw_on_heretic(self.x + 25, self.y + 45)
-        elif self.backpack and self.direction == 'up':
-            self.backpack.draw_on_heretic(heretic.x - 5, heretic.y + 45)
         if self.weapon is not None and self.direction == 'right':
             self.weapon.draw_object(self.x + 65 - ((self.half_attack_time -
                                                     self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0),

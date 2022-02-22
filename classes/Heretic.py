@@ -18,6 +18,12 @@ class Heretic:
         self.visible_zone = pygame.Surface((self.width, self.height))
         self.active_zone = pygame.Rect(x - 50, y - 50, self.width * 2, int(self.height * 1.5))
 
+        self.points = [(x, y), (x + width // 2, y), (x + width, y),
+                          (x + width, y + height // 2),
+                          (x + width, y + height), (x + width // 2, y + height),
+                          (x, y + height),
+                          (x, y + height // 50)]
+
         self.location = location
         self.attack_time = attack_time
         self.half_attack_time = half_attack_time

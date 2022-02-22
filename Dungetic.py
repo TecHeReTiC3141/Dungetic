@@ -3,6 +3,7 @@ import random
 # from My_classes.dungetic_classes import Drop, Log, Stone, Coal, Weapon, DroppedBerry, Meat, Stick, Juice, inventory_font, active_font, title_font
 from classes.Heretic import Heretic
 from classes.entities import NPC, produce_NPC
+from classes.surrounding import Wall, Vase, Room
 from scripts.constants_and_sources import *
 
 
@@ -57,37 +58,6 @@ class Turret:
     def shoot(self):
         bullets_list.append(
             Bullet(self.x, self.y, (heretic.x + 37 - self.x) // 35, (heretic.y + 50 - self.y) // 35, self))
-
-
-class Wall:
-
-    def __init__(self, w_x, w_y, width, height, collised=False, movable=False, health=120):
-        self.x = w_x
-        self.y = w_y
-        self.width = width
-        self.height = height
-        self.health = height
-        self.active_zone = [list(range(self.x - 100, self.x + self.width + 51)),
-                            list(range(self.y, self.y + self.height + 1))]
-        self.visible_zone = [list(range(self.x, self.x + self.width + 1)),
-                             list(range(self.y, self.y + self.height + 1))]
-        self.collised = collised
-        self.health = health
-        self.movable = movable
-
-    def draw_object(self, obj_x, obj_y):
-        pygame.draw.rect(display, (50, 50, 50), (obj_x, obj_y, self.width, self.height))
-
-
-class Vase(Wall):
-
-    def draw_object(self, obj_x, obj_y):
-        pygame.draw.polygon(display, (184, 133, 71),
-                            ((obj_x, obj_y), (obj_x + 40, obj_y), (obj_x + 30, obj_y + 20), (obj_x + 10, obj_y + 20)))
-        pygame.draw.polygon(display, (184, 133, 71), (
-            (obj_x + 5, obj_y + 20), (obj_x + 35, obj_y + 20), (obj_x + 30, obj_y + 45), (obj_x + 10, obj_y + 45)))
-        pygame.draw.polygon(display, (0, 0, 0), (
-            (obj_x + 7, obj_y + 27), (obj_x + 33, obj_y + 27), (obj_x + 31, obj_y + 42), (obj_x + 9, obj_y + 42)))
 
 
 class Bullet:
@@ -166,70 +136,7 @@ class Bow:
                                    (-heretic.y - 50 + target.y) // 38, heretic))
 
 
-class Room:
-    visited = False
 
-    def __init__(self, walls_list, entities_list, entrances, floor):
-        self.walls_list = walls_list
-        self.entities_list = entities_list
-        self.entrances = entrances
-        self.floor = floor
-
-
-def draw_heretic(obj_x, obj_y, direction, size=1.):
-    if heretic.backpack and direction == 'right':
-        heretic.backpack.draw_on_heretic(obj_x + 25, obj_y + 45)
-    elif heretic.backpack and direction == 'up':
-        heretic.backpack.draw_on_heretic(obj_x - 5, obj_y + 45)
-    if heretic.weapon != 'none' and direction == 'right':
-        heretic.weapon.draw_object(obj_x + 65 - ((heretic.half_attack_time -
-                                                  heretic.attack_time) // 2 if heretic.attack_time > heretic.half_attack_time else 0),
-                                   obj_y + 30)
-    elif heretic.weapon != 'none' and direction == 'up':
-        heretic.weapon.draw_object(obj_x - 15, obj_y + 30 + ((heretic.half_attack_time -
-                                                              heretic.attack_time) // 2 if heretic.attack_time > heretic.half_attack_time else 0))
-    pygame.draw.rect(display, (0, 0, 0), (obj_x, obj_y, int(75 * size), int(100 * size)))
-    eye_colour = (0, 0, 0)
-    if direction == 'down':
-        pygame.draw.rect(display, (255, 255, 255),
-                         tuple(map(int, ((obj_x + 10 * size), obj_y + 10 * size, 20 * size, 20 * size))))
-        pygame.draw.rect(display, (255, 255, 255),
-                         tuple(map(int, (obj_x + 40 * size, obj_y + 10 * size, 20 * size, 20 * size))))
-        pygame.draw.rect(display, eye_colour,
-                         tuple(map(int, (obj_x + 18 * size, obj_y + 17 * size, 4 * size, 4 * size))))
-        pygame.draw.rect(display, eye_colour,
-                         tuple(map(int, (obj_x + 48 * size, obj_y + 17 * size, 4 * size, 4 * size))))
-        if heretic.backpack:
-            heretic.backpack.draw_on_heretic(int(obj_x + 40 * size), int(obj_y + 45 * size * 2))
-        if heretic.weapon != 'none':
-            heretic.weapon.draw_object(int(obj_x + 65 * size), int(obj_y + 30 * size - ((heretic.half_attack_time -
-                                                                                         heretic.attack_time) // 2 if heretic.attack_time > heretic.half_attack_time else 0)))
-
-    elif direction == 'left':
-        pygame.draw.rect(display, (255, 255, 255),
-                         tuple(map(int, (obj_x + 8 * size, obj_y + 10 * size, 20 * size, 20 * size))))
-        pygame.draw.rect(display, (255, 255, 255),
-                         tuple(map(int, (obj_x + 38 * size, obj_y + 10 * size, 20 * size, 20 * size))))
-        pygame.draw.rect(display, eye_colour,
-                         tuple(map(int, (obj_x + 13 * size, obj_y + 17 * size, 4 * size, 4 * size))))
-        pygame.draw.rect(display, eye_colour,
-                         tuple(map(int, (obj_x + 43 * size, obj_y + 17 * size, 4 * size, 4 * size))))
-        if heretic.backpack:
-            heretic.backpack.draw_on_heretic(int(obj_x + 20 * size), int(obj_y + 45 * size))
-        if heretic.weapon != 'none':
-            heretic.weapon.draw_object(int(obj_x + 45 * size + ((heretic.half_attack_time -
-                                                                 heretic.attack_time) // 2 if heretic.attack_time > heretic.half_attack_time else 0)),
-                                       int(obj_y + 30 * size))
-
-    elif direction == 'right':
-        pygame.draw.rect(display, (255, 255, 255),
-                         tuple(map(int, (obj_x + 20 * size, obj_y + 10 * size, 20 * size, 20 * size))))
-        pygame.draw.rect(display, (255, 255, 255),
-                         tuple(map(int, (obj_x + 50 * size, obj_y + 10 * size, 20 * size, 20 * size))))
-        pygame.draw.rect(display, eye_colour,
-                         tuple(map(int, (obj_x + 31 * size, obj_y + 17 * size, 4 * size, 4 * size))))
-        pygame.draw.rect(display, eye_colour,
-                         tuple(map(int, (obj_x + 61 * size, obj_y + 17 * size, 4 * size, 4 * size))))
 
 
 heretic = Heretic(100, 100, 75, 100, 100, 'left', [], location=random.randint(1, dung_width * dung_length))
@@ -240,7 +147,7 @@ heretic_points = [(heretic.x, heretic.y), (heretic.x + 37, heretic.y), (heretic.
                   (heretic.x, heretic.y + 50)]
 
 stop = []
-left_stop, right_stop, up_stop, down_stop = False, False, False, False
+
 
 rooms = {}
 '''
@@ -452,39 +359,7 @@ while True:
                 pygame.draw.rect(display, (190, 190, 190), (i + 15, j + 15, 100, 100))
 
         for i in range(len(heretic.inventory)):
-            # if isinstance(heretic.inventory[i], Berry) or isinstance(heretic.inventory[i], DroppedBerry):
-            #     heretic.inventory[i].draw_object(100 + 150 * (i % 4), 160 + 150 * (i // 4))
-            #
-            # elif isinstance(heretic.inventory[i], Log):
-            #     heretic.inventory[i].draw_object(75 + 150 * (i % 4), 150 + 150 * (i // 4))
-            #
-            # elif isinstance(heretic.inventory[i], Pine):
-            #     heretic.inventory[i].draw_object(80 + 150 * (i % 4), 150 + 150 * (i // 4))
-            #
-            # elif isinstance(heretic.inventory[i], Juice):
-            #     heretic.inventory[i].draw_object(90 + 150 * (i % 4), 160 + 150 * (i // 4))
-            #
-            # elif isinstance(heretic.inventory[i], RawMeat):
-            #     heretic.inventory[i].draw_object(80 + 150 * (i % 4), 170 + 150 * (i // 4))
-            #
-            # elif isinstance(heretic.inventory[i], Meat):
-            #     heretic.inventory[i].draw_object(80 + 150 * (i % 4), 170 + 150 * (i // 4))
-            #
-            # elif isinstance(heretic.inventory[i], Stick):
-            #     heretic.inventory[i].draw_object(110 + 150 * (i % 4), 150 + 150 * (i // 4))
-            #
-            # elif any([isinstance(heretic.inventory[i], Stone), isinstance(heretic.inventory[i], IronOre),
-            #           isinstance(heretic.inventory[i], Coal)]):
-            #     heretic.inventory[i].draw_object(90 + 150 * (i % 4), 150 + 150 * (i // 4))
-            #
-            # elif isinstance(heretic.inventory[i], SharpenedStone):
-            #     heretic.inventory[i].draw_object(90 + 150 * (i % 4), 150 + 150 * (i // 4))
-            #
-            # elif isinstance(heretic.inventory[i], PickAxe) or isinstance(heretic.inventory[i], Shovel):
-            #     heretic.inventory[i].draw_object(90 + 150 * (i % 4), 140 + 150 * (i // 4))
-            '''            if isinstance(heretic.inventory[i], Drop):
-                heretic.inventory[i].draw_object(90 + 150 * (i % 4), 140 + 150 * (i // 4))
-            '''
+
 
             # if 100 < pos[0] < 650 and pos[1] > 100:
             #     pos_index = (pos[0] - 50) // 150 + (pos[1] - 100) // 150 * 4
@@ -545,19 +420,11 @@ while True:
     display.blit(text_font.render(str(curr_room), True, (255, 255, 255)), (950, 20))
     display.blit(cursor_for_battle, cursor_for_battle.get_rect(center=(mouse_pos[0], mouse_pos[1])))
 
-    # for j in range(dung_length):
-
-    # pygame.draw.rect(display, (215, 185, 147), (100, 50, 600, 600))
     pygame.display.update()
     clock.tick(60)
 
-    heretic.visible_zone = [list(range(heretic.x, heretic.x + int(76 * heretic.size))),
-                            list(range(heretic.y, int(heretic.y + 101 * heretic.size)))]
-    heretic.active_zone = [list(range(heretic.x - int(50 * heretic.size), heretic.x + int(151 * heretic.size))),
-                           list(range(heretic.y - int(50 * heretic.size), heretic.y + int(151 * heretic.size)))]
     tick += 1
-    # if not tick % (60 - (tick % 29500 // 500)):
-    # turret.shoot()
+
 
     for i in bullets_list:
         if any([i.x < 0, i.x > 1000, i.y < 0, i.y > 800]):
