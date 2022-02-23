@@ -16,7 +16,7 @@ class Wall:
         self.health = health
         self.movable = movable
 
-    def draw_object(self, obj_x, obj_y):
+    def draw_object(self, display):
         pygame.draw.rect(display, (50, 50, 50), (obj_x, obj_y, self.width, self.height))
 
 

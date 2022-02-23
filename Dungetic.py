@@ -4,11 +4,9 @@ import random
 from classes.Heretic import Heretic
 from classes.entities import NPC, produce_NPC
 from classes.surrounding import Wall, Vase, Room
+from classes.interfaces import MapInter, Inventory
 from scripts.constants_and_sources import *
 
-
-pygame.init()
-dung_length, dung_width = map(int, input('Введите длину и ширину подземелья: ').split())
 
 print(*[''.join([str(i).rjust(3) for i in list(range(1 + dung_length * i, dung_length * (i + 1) + 1))]) for i in
         range(dung_width)], sep='\n')
@@ -21,130 +19,15 @@ TODO:
 display = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Dungetic')
 
-clock = pygame.time.Clock()
+
 bullets_list = []
-tick = 0
-bloor = pygame.Surface((display_width, display_height))
-bloor.set_alpha(15)
-map_image = pygame.image.load('./images/old_map2.jpg').convert_alpha()
-cursor_for_battle = pygame.image.load('./images/sword.png')
-stone_floor = pygame.image.load('./images/stone_floor.jpg')
-cursor_for_battle = pygame.transform.scale(cursor_for_battle,
-                                           (cursor_for_battle.get_width() // 5, cursor_for_battle.get_height() // 5))
-map_image = pygame.transform.scale(map_image, (
-    int(map_image.get_width() / 1.5), int(map_image.get_height() * 0.6))).convert_alpha()
-stone_floor = pygame.transform.scale(stone_floor, (display_width, display_height))
-text_font = pygame.font.Font(None, 40)
-active_font = pygame.font.Font(None, 50)
-inventory_font = pygame.font.SysFont('Cambria', 75)
-
-directions = ['up', 'down', 'left', 'right']
-opposites = {'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left'}
-
-
-
-
-class Turret:
-
-    def __init__(self, t_x, t_y, visble_zone, health=100):
-        self.x = t_x
-        self.y = t_y
-        self.visible_zone = visble_zone
-        self.health = health
-
-    def draw_object(self, obj_x, obj_y):
-        pygame.draw.rect(display, (10, 110, 10), (obj_x - 15, obj_y - 10, 40, 20))
-
-    def shoot(self):
-        bullets_list.append(
-            Bullet(self.x, self.y, (heretic.x + 37 - self.x) // 35, (heretic.y + 50 - self.y) // 35, self))
-
-
-class Bullet:
-
-    def __init__(self, b_x, b_y, g_speed, v_speed, owner, mark_list=None):
-        self.x = b_x
-        self.y = b_y
-        self.g_speed = g_speed
-        self.v_speed = v_speed
-        self.mark_list = mark_list
-        self.owner = owner
-
-    def draw_object(self, obj_x, obj_y):
-        pygame.draw.circle(display, (200, 10, 10), (obj_x, obj_y), 5)
-        pygame.draw.circle(display, (10, 10, 10), (obj_x, obj_y), 6, 1)
-
-    def move(self):
-        self.x += self.g_speed
-        self.y += self.v_speed
-
-        '''
-        if self.v_speed < 3:
-            self.v_speed = 3 if self.v_speed > 0 else - 3
-        if self.g_speed < 3:
-            self.g_speed = 3 if self.g_speed > 0 else - 3
-        '''
-
-
-class Mark:
-
-    def __init__(self, m_x, m_y, life_time):
-        self.x = m_x
-        self.y = m_y
-        self.life_time = life_time
-
-    def draw_object(self, obj_x, obj_y):
-        pygame.draw.rect(display, (200, 0, 0), (obj_x - 5, obj_y - 5, 10, 10))
-        self.life_time -= 1
-
-
-class Item:
-
-    def __init__(self, d_x, d_y, active_zone, visible_zone, type, description, location, strength=0, energy_value=0):
-        self.x = d_x
-        self.y = d_y
-        self.active_zone = active_zone
-        self.visible_zone = visible_zone
-        self.type = type
-        self.description = description
-        self.location = location
-        self.energy_value = energy_value
-        self.strength = strength
-
-    def up_down(self):
-        if tick % 60 == 1:
-            self.y += 17
-        elif tick % 60 == 29:
-            self.y -= 17
-
-
-class Bow:
-
-    def __init__(self, reload):
-        self.reload = reload
-
-    def draw_object(self, x, y):
-        pygame.draw.lines(display, (168, 167, 159), False, (
-            (x, y + self.reload // 20), (x - 15 - self.reload // 10, y + 20), (x, y + 40 - self.reload // 20)), 3)
-        pygame.draw.lines(display, (150, 89, 35), False,
-                          ((x, y + self.reload // 20), (x + 15, y + 10), (x + 20, y + 20),
-                           (x + 15, y + 30), (x, y + 40 - self.reload // 20)), 5)
-
-    @staticmethod
-    def shoot(self, target):
-        bullets_list.append(Bullet(heretic.x + 37, heretic.y + 50, (-heretic.x - 37 + target.x) // 38,
-                                   (-heretic.y - 50 + target.y) // 38, heretic))
 
 
 
 
 
-heretic = Heretic(100, 100, 75, 100, 100, 'left', [], location=random.randint(1, dung_width * dung_length))
-
-heretic_points = [(heretic.x, heretic.y), (heretic.x + 37, heretic.y), (heretic.x + 75, heretic.y),
-                  (heretic.x + 75, heretic.y + 50),
-                  (heretic.x + 75, heretic.y + 100), (heretic.x + 37, heretic.y + 100), (heretic.x, heretic.y + 100),
-                  (heretic.x, heretic.y + 50)]
+heretic = Heretic(100, 100, 75, 100, 100, 'left',
+                  [], location=random.randint(1, dung_width * dung_length))
 
 stop = []
 
@@ -213,9 +96,9 @@ for i in range(1, dung_width * dung_length + 1):
 
 # Кажется, после генерации следует проверить все стены на смежные переходы вложенным циклом !
 
-curr_room = random.randint(1, dung_width * dung_length)
+
 collised_walls = {wall: [] for wall in rooms[curr_room].walls_list}
-current_interface = None
+
 
 while True:
     console_req = False
@@ -299,76 +182,11 @@ while True:
             down_stop = True
 
     if not current_interface:
-        if keys[pygame.K_a] and heretic.x > -3 and not left_stop:
-            heretic.x -= 5
-            heretic.direction = 'left'
+        heretic.move()
 
-        elif keys[pygame.K_d] and heretic.x < display_width - 75 and not right_stop:
-            heretic.direction = 'right'
-            heretic.x += 5
-
-        if keys[pygame.K_w] and heretic.y > 0 and not up_stop:
-
-            heretic.y -= 4
-            heretic.direction = 'up'
-
-        elif keys[pygame.K_s] and heretic.y < display_height - 100 and not down_stop:
-            heretic.direction = 'down'
-            heretic.y += 4
     if current_interface == 'Inventory':
-        display.fill((184, 173, 118))
-        display.blit(inventory_font.render('Инвентарь', True, (0, 0, 0)), (120, 10))
-        display.blit(inventory_font.render('Часы: день/ночь', True, (0, 0, 0)), (800, 10))
-        pygame.draw.rect(display, (0, 0, 0), (800, 150, 600, 60))
-        pygame.draw.rect(display, (184, 173, 118), (1260, 155, 130, 50))
-        pygame.draw.rect(display, (200, 0, 0), (810, 155, int(445 * heretic.health // 100), 50))
-        pygame.draw.rect(display, (0, 0, 200), (810, 230, 130, 130))
-        pygame.draw.rect(display, (190, 190, 190), (825, 245, 100, 100))
-        pygame.draw.rect(display, (0, 0, 200), (970, 230, 130, 130))
-        pygame.draw.rect(display, (190, 190, 190), (985, 245, 100, 100))
-        if heretic.weapon != 'none':
-            heretic.weapon.draw_object(865, 260)
-            display.blit(active_font.render(heretic.weapon.type, True, (0, 0, 0)), (825, 365))
-        else:
-            pygame.draw.rect(display, (184, 173, 118), (860, 260, 20, 45))
-            pygame.draw.polygon(display, (184, 173, 118), ((860, 260), (870, 252), (880, 260)))
-            pygame.draw.rect(display, (184, 173, 118), (850, 300, 40, 6))
-            pygame.draw.rect(display, (184, 173, 118), (864, 306, 12, 20))
-
-        if heretic.backpack:
-            heretic.backpack.draw_object(1000, 260)
-            display.blit(active_font.render(heretic.backpack.type, True, (0, 0, 0)), (960, 365))
-        else:
-            pygame.draw.rect(display, (184, 173, 118), (1000, 260, 50, 70))
-            pygame.draw.lines(display, (184, 173, 118), True, ((1000, 260), (1040, 245), (1060, 270)), 8)
-            pygame.draw.polygon(display, (184, 173, 118),
-                                ((998, 260), (998, 285), (1025, 295), (1052, 285), (1052, 260)))
-
-            pygame.draw.circle(display, (184, 173, 118), (1035, 289), 3)
-
-        pygame.draw.line(display, (161, 96, 54), (700, 0), (700, 900), 100)
-
-        pygame.draw.rect(display, (240, 240, 240), (870, 450, 500, 450))
-
-        for i in range(510, 871, 60):
-            pygame.draw.line(display, (0, 0, 0), (880, i), (1350, i), 5)
-
-        for i in range(50, 601, 150):
-            for j in range(100, 801, 150):
-                pygame.draw.rect(display, (0, 0, 200), (i, j, 130, 130))
-                pygame.draw.rect(display, (190, 190, 190), (i + 15, j + 15, 100, 100))
-
-        for i in range(len(heretic.inventory)):
 
 
-            # if 100 < pos[0] < 650 and pos[1] > 100:
-            #     pos_index = (pos[0] - 50) // 150 + (pos[1] - 100) // 150 * 4
-            #     if pos_index < len(heretic.inventory):
-            #         display.blit(inventory_font.render(heretic.inventory[pos_index].type, True,
-            #                                            (0, 0, 0)), (pos[0] - 100, pos[1] - 75))
-            # if isinstance(chosen_item, Drop) or isinstance(chosen_item, Berry) or isinstance(chosen_item, Weapon):
-            #     for i in range(len(chosen_item.description)):
-            #         display.blit(active_font.render(chosen_item.description[i], True, (0, 0, 0)), (880, 465 + i * 60))
     else:
         display.fill((252, 240, 188))
         if rooms[curr_room].floor == 'stone':
@@ -396,25 +214,7 @@ while True:
         '''
 
         if current_interface == 'Map':
-            display.blit(bloor, (0, 0))
-            display.blit(map_image, (40, 50))
-            for j in range(90, 90 + dung_width * 80, 80):
-                for i in range(90, 90 + dung_length * 80, 80):
-                    r_ind = (i - 90) // 80 + (j - 90) // 80 * dung_length + 1
-                    if rooms[r_ind].visited:
-                        pygame.draw.rect(display, (240, 240, 240), (i, j, 45, 35))
-                        if 'up' in rooms[r_ind].entrances:
-                            pygame.draw.rect(display, (200, 200, 200), (i + 12, j - 25, 20, 25))
-                        if 'down' in rooms[r_ind].entrances:
-                            pygame.draw.rect(display, (200, 200, 200), (i + 12, j + 35, 20, 20))
-                        if 'right' in rooms[r_ind].entrances:
-                            pygame.draw.rect(display, (200, 200, 200), (i + 45, j + 7, 20, 20))
-                        if 'left' in rooms[r_ind].entrances:
-                            pygame.draw.rect(display, (200, 200, 200), (i - 15, j + 7, 15, 20))
-                        if r_ind == curr_room:
-                            draw_heretic(i + 10, j + 5, heretic.direction, 0.3)
-                    else:
-                        pygame.draw.rect(display, (10, 10, 10), (i, j, 45, 35))
+
                 # print(i, j, (i - 90) // 80, (j - 90) // 80 * dung_length)
 
     display.blit(text_font.render(str(curr_room), True, (255, 255, 255)), (950, 20))
