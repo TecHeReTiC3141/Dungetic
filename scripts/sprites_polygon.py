@@ -1,19 +1,18 @@
-import pygame
-from classes.Heretic import Heretic
+from classes.Heretic import *
 
-display_width, display_height = (640, 480)
-
-display = pygame.display.set_mode((display_width, display_height))
-heretic = Heretic(100, 100, 75, 100, 78, None, [])
+heretic = Heretic(100, 100, 75, 100, 78, random.choice(directions), [])
 
 direction = 'left right up down'.split()
 
 clock = pygame.time.Clock()
 
-for dir in direction:
-    heretic.direction = dir
+while game_cycle:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
 
     display.fill((218, 150, 61))
     heretic.draw_object(display)
+    heretic.move()
     pygame.display.update()
-    pygame.time.wait(5000)
+    clock.tick(60)

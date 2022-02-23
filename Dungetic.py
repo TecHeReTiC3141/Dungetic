@@ -16,13 +16,14 @@ TODO:
 Изменить систему столкновений со стенами. 550 - 600
 
 '''
-display = pygame.display.set_mode((display_width, display_height))
+
 pygame.display.set_caption('Dungetic')
 
 
 bullets_list = []
 
-
+Map = MapInter((display_width, display_height))
+Invent = Inventory((display_width, display_height))
 
 
 
@@ -151,7 +152,7 @@ while True:
                                     list(range(wall.y - 100, wall.y + wall.height + 25))]
                 wall.visible_zone = [list(range(wall.x, wall.x + wall.width)),
                                      list(range(wall.y, wall.y + wall.height))]
-            left_stop = True
+            heretic.left_stop = True
 
         if any([3 in collised_walls[wall], 4 in collised_walls[wall],
                 5 in collised_walls[wall]]) and wall.x > heretic.x + 60:
@@ -161,7 +162,7 @@ while True:
                                     list(range(wall.y - 100, wall.y + wall.height + 25))]
                 wall.visible_zone = [list(range(wall.x, wall.x + wall.width)),
                                      list(range(wall.y, wall.y + wall.height))]
-            right_stop = True
+            heretic.right_stop = True
         if any([1 in collised_walls[wall], 2 in collised_walls[wall], 3 in collised_walls[wall]]) and wall.y + len(
                 wall.visible_zone[1]) - 15 < heretic.y:
             if wall.movable:
@@ -170,7 +171,7 @@ while True:
                                     list(range(wall.y - 100, wall.y + wall.height + 25))]
                 wall.visible_zone = [list(range(wall.x, wall.x + wall.width)),
                                      list(range(wall.y, wall.y + wall.height))]
-            up_stop = True
+            heretic.up_stop = True
         if any([5 in collised_walls[wall], 6 in collised_walls[wall],
                 7 in collised_walls[wall]]) and wall.y > heretic.y + 85:
             if wall.movable:
@@ -179,13 +180,13 @@ while True:
                                     list(range(wall.y - 100, wall.y + wall.height + 25))]
                 wall.visible_zone = [list(range(wall.x, wall.x + wall.width)),
                                      list(range(wall.y, wall.y + wall.height))]
-            down_stop = True
+            heretic.down_stop = True
 
     if not current_interface:
         heretic.move()
 
     if current_interface == 'Inventory':
-
+        Invent.draw_object(display, heretic)
 
     else:
         display.fill((252, 240, 188))
@@ -214,7 +215,7 @@ while True:
         '''
 
         if current_interface == 'Map':
-
+            Map.draw_object(display, rooms)
                 # print(i, j, (i - 90) // 80, (j - 90) // 80 * dung_length)
 
     display.blit(text_font.render(str(curr_room), True, (255, 255, 255)), (950, 20))

@@ -2,27 +2,27 @@ import pygame
 
 class Wall:
 
-    def __init__(self, w_x, w_y, width, height, collised=False, movable=False, health=120):
-        self.x = w_x
-        self.y = w_y
+    def __init__(self, x, y, width, height, collised=False, movable=False, health=120):
+        self.x = x
+        self.y = y
         self.width = width
         self.height = height
         self.health = height
-        self.active_zone = [list(range(self.x - 100, self.x + self.width + 51)),
-                            list(range(self.y, self.y + self.height + 1))]
-        self.visible_zone = [list(range(self.x, self.x + self.width + 1)),
-                             list(range(self.y, self.y + self.height + 1))]
+        self.active_zone = pygame.Rect(x - 100, self.y, self.width + 51, height + 1)
+        self.phys_rect = pygame.Rect(x, y, width, height)
+        self.visible_zone = pygame.Surface((width, height))
         self.collised = collised
         self.health = health
         self.movable = movable
 
-    def draw_object(self, display):
-        pygame.draw.rect(display, (50, 50, 50), (obj_x, obj_y, self.width, self.height))
+    def draw_object(self, display: pygame.Surface):
+        pygame.draw.rect(self.visible_zone, (50, 50, 50), self.phys_rect)
+        display.blit(self.visible_zone, self.phys_rect)
 
 
 class Vase(Wall):
 
-    def draw_object(self, obj_x, obj_y):
+    def draw_object(self, display):
         pygame.draw.polygon(display, (184, 133, 71),
                             ((obj_x, obj_y), (obj_x + 40, obj_y), (obj_x + 30, obj_y + 20), (obj_x + 10, obj_y + 20)))
         pygame.draw.polygon(display, (184, 133, 71), (

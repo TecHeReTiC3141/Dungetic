@@ -1,3 +1,4 @@
+from scripts.constants_and_sources import *
 from Heretic import *
 
 class NPC(Heretic):
@@ -58,52 +59,35 @@ class NPC(Heretic):
         pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
                                         int(100.0 * float(self.health) / 100.0), 21))
 
-    def walk_left(self):
-        self.direction = 'left'
-        self.x -= self.speed
-        self.visible_zone = [[j for j in range(self.x, self.x + 90)], [k for k in range(self.y, self.y + 60)]]
-        self.active_zone = [[j for j in range(self.x - 100, self.x + 150)],
-                            [k for k in range(self.y - 100, self.y + 100)]]
-        if self.x <= 0:
-            self.x = 0
 
-    def walk_right(self):
-        self.direction = 'right'
-        self.x += self.speed
-        self.visible_zone = [[j for j in range(self.x, self.x + 90)], [k for k in range(self.y, self.y + 60)]]
-        self.active_zone = [[j for j in range(self.x - 100, self.x + 150)],
-                            [k for k in range(self.y - 100, self.y + 100)]]
-        if self.x >= 920:
-            self.x = 920
+    def walk(self):
+        if self.direction == 'up' and not self.up_stop:
+            self.direction = 'up'
+            self.y = max(self.y - self.speed, 0)
+            self.phys_rect.move(0, -self.speed)
+            self.active_zone.move(0, -self.speed)
 
-    def walk_up(self):
-        self.direction = 'up'
-        self.y -= self.speed
-        self.visible_zone = [[j for j in range(self.x, self.x + 60)], [k for k in range(self.y, self.y + 90)]]
-        self.active_zone = [[j for j in range(self.x - 100, self.x + 150)],
-                            [k for k in range(self.y - 100, self.y + 100)]]
-        if self.y <= 0:
-            self.y = 0
+        elif self.direction == 'down' and not self.down_stop:
+            self.direction = 'down'
+            self.y = min(self.y + self.speed, display_height - self.height)
+            self.phys_rect.move(0, self.speed)
+            self.active_zone.move(0, self.speed)
 
-    def walk_down(self):
-        self.direction = 'down'
-        self.y += self.speed
-        self.visible_zone = [[j for j in range(self.x, self.x + 60)], [k for k in range(self.y, self.y + 90)]]
-        self.active_zone = [[j for j in range(self.x - 100, self.x + 150)],
-                            [k for k in range(self.y - 100, self.y + 100)]]
-        if self.y >= 700:
-            self.y = 700
+        elif self.direction == 'left' and not self.left_stop:
+            self.direction = 'left'
+            self.x = max(self.x - self.speed, 0)
+            self.phys_rect.move(-self.speed, 0)
+            self.active_zone.move(-self.speed, 0)
+
+        elif self.direction == 'right' and not self.right_stop:
+            self.direction = 'right'
+            self.x = min(self.x + self.speed, display_width - self.width)
+            self.phys_rect.move(self.speed, 0)
+            self.active_zone.move(self.speed, 0)
 
     def passive_exist(self):
-        if self.direction == 'up' and not self.up_stop:
-            self.walk_up()
-        elif self.direction == 'down' and not self.down_stop:
-            self.walk_down()
-        elif self.direction == 'left' and not self.left_stop:
-            self.walk_left()
-        elif self.direction == 'right' and not self.right_stop:
-            self.walk_right()
 
+        self.walk()
         if not self.delay:
             next_direction = random.choice(directions + ['none', 'none'])
             self.direction = next_direction
