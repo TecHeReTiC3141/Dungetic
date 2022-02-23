@@ -1,12 +1,8 @@
-import random
-
-# from My_classes.dungetic_classes import Drop, Log, Stone, Coal, Weapon, DroppedBerry, Meat, Stick, Juice, inventory_font, active_font, title_font
 from classes.Heretic import Heretic
-from classes.entities import NPC, produce_NPC
-from classes.surrounding import Wall, Vase, Room
+from classes.entities import produce_NPC
 from classes.interfaces import MapInter, Inventory
+from classes.surrounding import Wall, Vase, Room
 from scripts.constants_and_sources import *
-
 
 print(*[''.join([str(i).rjust(3) for i in list(range(1 + dung_length * i, dung_length * (i + 1) + 1))]) for i in
         range(dung_width)], sep='\n')
@@ -19,19 +15,15 @@ TODO:
 
 pygame.display.set_caption('Dungetic')
 
-
 bullets_list = []
 
 Map = MapInter((display_width, display_height))
 Invent = Inventory((display_width, display_height))
 
-
-
 heretic = Heretic(100, 100, 75, 100, 100, 'left',
                   [], location=random.randint(1, dung_width * dung_length))
 
 stop = []
-
 
 rooms = {}
 '''
@@ -99,7 +91,6 @@ for i in range(1, dung_width * dung_length + 1):
 
 
 collised_walls = {wall: [] for wall in rooms[curr_room].walls_list}
-
 
 while True:
     console_req = False
@@ -216,7 +207,7 @@ while True:
 
         if current_interface == 'Map':
             Map.draw_object(display, rooms)
-                # print(i, j, (i - 90) // 80, (j - 90) // 80 * dung_length)
+            # print(i, j, (i - 90) // 80, (j - 90) // 80 * dung_length)
 
     display.blit(text_font.render(str(curr_room), True, (255, 255, 255)), (950, 20))
     display.blit(cursor_for_battle, cursor_for_battle.get_rect(center=(mouse_pos[0], mouse_pos[1])))
@@ -226,17 +217,17 @@ while True:
 
     tick += 1
 
-
-    for i in bullets_list:
-        if any([i.x < 0, i.x > 1000, i.y < 0, i.y > 800]):
-            bullets_list.remove(i)
-        i.mark_list = list(filter(lambda j: j.life_time > 0, i.mark_list))
-        i.mark_list.append(Mark(i.x, i.y, 10))
-        for entity in entities_list:
-            if i.owner != entity and i.x in entity.visible_zone[0] and i.y in entity.visible_zone[1]:
-                bullets_list.remove(i)
-                if entity.health >= 5:
-                    entity.health -= 5
+    #
+    # for i in bullets_list:
+    #     if any([i.x < 0, i.x > 1000, i.y < 0, i.y > 800]):
+    #         bullets_list.remove(i)
+    #     i.mark_list = list(filter(lambda j: j.life_time > 0, i.mark_list))
+    #     i.mark_list.append(Mark(i.x, i.y, 10))
+    #     for entity in entities_list:
+    #         if i.owner != entity and i.x in entity.visible_zone[0] and i.y in entity.visible_zone[1]:
+    #             bullets_list.remove(i)
+    #             if entity.health >= 5:
+    #                 entity.health -= 5
 
     stop = []
     left_stop, right_stop, up_stop, down_stop = False, False, False, False
