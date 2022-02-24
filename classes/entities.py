@@ -1,5 +1,5 @@
-from scripts.constants_and_sources import *
 from Heretic import *
+
 
 class NPC(Heretic):
     stop = False
@@ -59,7 +59,6 @@ class NPC(Heretic):
         pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
                                         int(100.0 * float(self.health) / 100.0), 21))
 
-
     def walk(self):
         if self.direction == 'up' and not self.up_stop:
             self.direction = 'up'
@@ -102,5 +101,5 @@ class NPC(Heretic):
 
 
 def produce_NPC(n):
-    return [NPC(random.randint(300, 800), random.randint(200, 600), random.randint(50, 70),
+    return [NPC(random.randint(300, 800), random.randint(200, 600), 75, 100,
                 random.choice(directions), [], [], random.randint(3, 4), 'passive', {}) for i in range(n)]

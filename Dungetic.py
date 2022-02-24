@@ -26,12 +26,11 @@ heretic = Heretic(100, 100, 75, 100, 100, 'left',
 
 stop = []
 
-rooms = {}
+
 '''
 Генерация стен
 '''
 for i in range(1, dung_width * dung_length + 1):
-
     entities_list = produce_NPC(random.randint(1, 3))
     rooms[i] = generate_room(i, dung_width, dung_length, display_width,
                              display_height, rooms, entities_list)
@@ -82,7 +81,7 @@ while True:
         continue
     keys = pygame.key.get_pressed()
     for wall in rooms[curr_room].walls_list:
-        if not collised_walls.get(wall, 0):
+        if not collised_walls.get(wall):
             continue
         if any([1 in collised_walls[wall], 7 in collised_walls[wall], 8 in collised_walls[wall]]) and wall.x + len(
                 wall.visible_zone[0]) - 15 < heretic.x:
@@ -148,7 +147,7 @@ while True:
 
         heretic.draw_object(heretic.visible_zone)
         for i in stop:
-            pygame.draw.rect(display, (200, 0, 0), (*heretic_points[i - 1], 5, 5))
+            pygame.draw.rect(display, (200, 0, 0), (*heretic.points[i - 1], 5, 5))
         # heretic2.draw_object()
         '''
     Отрисовка карты
@@ -179,15 +178,14 @@ while True:
     #                 entity.health -= 5
 
     stop = []
-    left_stop, right_stop, up_stop, down_stop = False, False, False, False
     collised_walls = {wall: [] for wall in rooms[curr_room].walls_list}
     '''
 Расчет столкновений еретика со стеной
     '''
-    for point in range(len(heretic_points)):
+    for point in range(len(heretic.points)):
 
         for wall in rooms[curr_room].walls_list:
-            if heretic_points[point][0] in wall.visible_zone[0] and heretic_points[point][1] in wall.visible_zone[1]:
+            if heretic.points[point][0] in wall.visible_zone[0] and heretic.points[point][1] in wall.visible_zone[1]:
                 stop.append(point + 1)
                 collised_walls[wall].append(point + 1)
 
@@ -201,10 +199,6 @@ while True:
                 if point in [5, 6, 7]:
                     heretic.y -= 5'''
 
-    heretic_points = [(heretic.x, heretic.y), (heretic.x + 37, heretic.y), (heretic.x + 75, heretic.y),
-                      (heretic.x + 75, heretic.y + 50),
-                      (heretic.x + 75, heretic.y + 100), (heretic.x + 37, heretic.y + 100),
-                      (heretic.x, heretic.y + 100), (heretic.x, heretic.y + 50)]
     '''
     Расчет столкновений существ со стеной
         '''

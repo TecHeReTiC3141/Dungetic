@@ -6,8 +6,8 @@ class Heretic:
     left_stop, right_stop, up_stop, down_stop = [False for i in '....']
 
     def __init__(self, x, y, width, height, health, direction, inventory,
-                 speed=5, target=None, weapon='none', location=None, attack_time=0, half_attack_time=0, backpack=None,
-                 size=1.):
+                 speed=5, target=None, weapon='none', location=None, attack_time=0,
+                 half_attack_time=0, backpack=None, size=1.):
         self.x = x
         self.y = y
         self.width = width
@@ -26,6 +26,8 @@ class Heretic:
                        (x + width, y + height), (x + width // 2, y + height),
                        (x, y + height),
                        (x, y + height // 50)]
+
+        self.collised_walls = {}
 
         self.location = location
         self.attack_time = attack_time
@@ -55,7 +57,6 @@ class Heretic:
             self.active_zone.update(self.x, self.y, self.width, self.height)
             self.phys_rect.update(self.x, self.y, self.width, self.height)
 
-
         if keys[pygame.K_w] and not self.up_stop:
             self.y = max(self.y - self.speed, 0)
             self.active_zone.update(self.x, self.y, self.width, self.height)
@@ -68,7 +69,13 @@ class Heretic:
             self.phys_rect.update(self.x, self.y, self.width, self.height)
             self.active_zone.update(self.x, self.y, self.width, self.height)
 
-
+        self.points = [(self.x, self.y), (self.x + self.width // 2, self.y),
+                       (self.x + self.width, self.y),
+                       (self.x + self.width, self.y + self.height // 2),
+                       (self.x + self.width, self.y + self.height),
+                       (self.x + self.width // 2, self.y + self.height),
+                       (self.x, self.y + self.height),
+                       (self.x, self.y + self.height // 50)]
 
     @staticmethod
     def tp(room):

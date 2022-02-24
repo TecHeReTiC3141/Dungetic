@@ -88,5 +88,5 @@ class Bow:
 
     @staticmethod
     def shoot(self, target):
-        bullets_list.append(Bullet(heretic.x + 37, heretic.y + 50, (-heretic.x - 37 + target.x) // 38,
-                                   (-heretic.y - 50 + target.y) // 38, heretic))
+        bullets_list.append(Bullet(target.x + 37, target.y + 50, (-target.x - 37 + target.x) // 38,
+                                   (-target.y - 50 + target.y) // 38, target))
