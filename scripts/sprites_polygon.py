@@ -2,7 +2,10 @@ from classes.Heretic import *
 from classes.surrounding import *
 
 heretic = Heretic(100, 100, 75, 100, 78, random.choice(directions), [])
-vase = Vase(random.randint(100, display_width), random.randint(100, display_height), 50, 50)
+npc = NPC(100, 100, 75, 100, 6, 'right', [], 5)
+vase = Vase(random.randint(100, 300), random.randint(100, 300), 50, 50)
+wall = Wall(random.randint(100, 300), random.randint(100, 300),
+            random.randint(50, 150), random.randint(50, 150))
 pygame.image.save(vase.draw_object(display), '../images/vase_sprite.png')
 direction = 'left right up down'.split()
 
@@ -14,8 +17,11 @@ while game_cycle:
             pygame.quit()
 
     display.fill((218, 150, 61))
-    vase.draw_object(display)
+    wall.draw_object(display)
     heretic.draw_object(display)
+    npc.draw_object(display)
     heretic.move()
+    npc.passive_exist()
     pygame.display.update()
+    wall.collide([heretic, npc])
     clock.tick(60)

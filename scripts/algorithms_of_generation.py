@@ -1,4 +1,4 @@
-from classes.surrounding import Wall, Vase, Room
+from classes.surrounding import *
 
 def generate_room(cur_ind, dung_width, dung_length,
                   display_width, display_height, rooms:list, entities: list) -> Room:

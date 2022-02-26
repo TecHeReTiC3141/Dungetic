@@ -13,7 +13,7 @@ display = pygame.display.set_mode((display_width, display_height))
 
 clock = pygame.time.Clock()
 directions = 'left right up down'.split()
-opposites = ['right', 'left', 'dowm', 'up']
+opposites = {'left': 'right', 'right': 'left', 'up': 'dowm', 'down': 'up'}
 
 tick = 0
 
