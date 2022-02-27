@@ -10,6 +10,8 @@ class Wall:
         self.health = height
         self.active_zone = pygame.Rect(x - 100, y, width + 51, height + 1)
         self.phys_rect = pygame.Rect(x, y, width, height)
+        self.inner_phys_rect = pygame.Rect(x + 10, y + 10,
+                                           max(width - 30, 10), max(height - 30, 10))
         self.visible_zone = pygame.Surface((width, height))
         self.visible_zone.set_colorkey('#FFFFFF')
         self.collised = collised
@@ -18,22 +20,41 @@ class Wall:
 
     def draw_object(self, display: pygame.Surface):
         pygame.draw.rect(self.visible_zone, (50, 50, 50), (0, 0, self.width, self.height))
+        pygame.draw.rect(self.visible_zone, (WHITE),
+                         (15, 15, self.inner_phys_rect.width, self.inner_phys_rect.height))
         display.blit(self.visible_zone, self.phys_rect)
 
     def collide(self, entities: list[Heretic]):
         for entity in entities:
             if self.phys_rect.colliderect(entity.phys_rect):
-                print(entity)
                 move = [0, 0]
-                if self.phys_rect.left + 15 >= entity.phys_rect.right:
+                if self.phys_rect.left + 10 >= entity.phys_rect.right:
                     move[0] = 1
-                elif self.phys_rect.right - 15 <= entity.phys_rect.left:
+                    entity.phys_rect.right = self.phys_rect.left + 1
+                elif self.phys_rect.right - 10 <= entity.phys_rect.left:
                     move[0] = -1
-                elif self.phys_rect.top + 15 >= entity.phys_rect.bottom:
+                    entity.phys_rect.left = self.phys_rect.right - 1
+                elif self.phys_rect.top + 10 >= entity.phys_rect.bottom:
                     move[1] = 1
-                elif self.phys_rect.bottom - 15 <= entity.phys_rect.top:
+                    entity.phys_rect.bottom = self.phys_rect.top + 1
+                elif self.phys_rect.bottom - 10 <= entity.phys_rect.top:
                     move[1] = -1
+                    entity.phys_rect.top = self.phys_rect.bottom - 1
+
                 self.phys_rect.move_ip(*move)
+                self.inner_phys_rect.move_ip(*move)
+
+                if entity.phys_rect.colliderect(self.inner_phys_rect):
+                    if entity.direction == 'up':
+                        entity.phys_rect.top = self.phys_rect.bottom
+                    elif entity.direction == 'down':
+                        entity.phys_rect.bottom = self.phys_rect.top
+                    elif entity.direction == 'left':
+                        entity.phys_rect.left = self.phys_rect.right
+                    else:
+                        entity.phys_rect.right = self.phys_rect.left
+
+
                 entity.speed = 1
             else:
                 entity.speed = 5
