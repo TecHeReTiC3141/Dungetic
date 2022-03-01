@@ -4,10 +4,11 @@ from scripts.constants_and_sources import *
 class Heretic:
     strength = 3
     left_stop, right_stop, up_stop, down_stop = [False for i in '....']
+    colliding = None
 
     def __init__(self, x, y, width, height, health, direction, inventory,
-                 speed=5, target=None, weapon='none', location=None, attack_time=0, half_attack_time=0, backpack=None,
-                 size=1.):
+                 speed=5, target=None, weapon='none', location=None, attack_time=0,
+                 half_attack_time=0, backpack=None, size=1.):
         self.x = x
         self.y = y
         self.width = width
@@ -27,6 +28,8 @@ class Heretic:
                        (x, y + height),
                        (x, y + height // 50)]
 
+        self.collised_walls = {}
+
         self.location = location
         self.attack_time = attack_time
         self.half_attack_time = half_attack_time
@@ -42,6 +45,7 @@ class Heretic:
         print('ouch')
 
     def move(self):
+        global curr_room
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] and self.x > -3 and not self.left_stop:
             self.x = max(self.x - self.speed, 0)
@@ -55,7 +59,6 @@ class Heretic:
             self.active_zone.update(self.x, self.y, self.width, self.height)
             self.phys_rect.update(self.x, self.y, self.width, self.height)
 
-
         if keys[pygame.K_w] and not self.up_stop:
             self.y = max(self.y - self.speed, 0)
             self.active_zone.update(self.x, self.y, self.width, self.height)
@@ -68,8 +71,14 @@ class Heretic:
             self.phys_rect.update(self.x, self.y, self.width, self.height)
             self.active_zone.update(self.x, self.y, self.width, self.height)
 
-
-
+        if self.phys_rect.colliderect(left_border):
+            curr_room -= 1
+        elif self.phys_rect.colliderect(right_border):
+            curr_room += 1
+        elif self.phys_rect.colliderect(upper_border):
+            curr_room -= dung_length
+        elif self.phys_rect.colliderect(lower_border):
+            curr_room += dung_length
     @staticmethod
     def tp(room):
         global curr_room
@@ -88,7 +97,7 @@ class Heretic:
         # elif self.weapon != 'none' and self.directions == 'up':
         #     self.weapon.draw_object(self.x - 15, self.y + 30 + ((self.half_attack_time -
         #                                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
-        pygame.draw.rect(self.visible_zone, (0, 0, 0), (self.x, self.y, 75, 100))
+        pygame.draw.rect(display, (0, 0, 0), self.phys_rect)
         eye_colour = (0, 0, 0)
         self.visible_zone.blit(heretic_images[self.direction], (0, 0))
         display.blit(self.visible_zone, self.phys_rect)

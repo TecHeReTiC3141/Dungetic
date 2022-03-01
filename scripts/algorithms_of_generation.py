@@ -1,10 +1,10 @@
-from classes.surrounding import Wall, Vase, Room
+from classes.surrounding import *
 
-def generate_room(cur_ind, dung_width, dung_length,
-                  display_width, display_height, rooms:list, entities: list) -> Room:
+def generate_room(cur_ind, dung_width, dung_length) -> Room:
     ways = random.sample(['down', 'right'], random.randint(1, 2))
     enters = []
     walls = []
+    entities = produce_NPC(random.randint(2, 5))
     if cur_ind > dung_length and 'down' in rooms[cur_ind - dung_length].entrances:
         walls.append(Wall(0, 0, width=random.randint(display_width // 2 - 250, display_width // 2 - 100),
                           height=random.randint(50, 100)))
@@ -55,9 +55,14 @@ def generate_room(cur_ind, dung_width, dung_length,
     walls += [Vase(random.randrange(100, 905, 5), random.randrange(100, 705, 5),
                    width=40, height=45, movable=True) for j in range(random.randint(3, 5))]
     if not enters:
-        enters = [cur_ind for cur_ind in directions if cur_ind not in ways]
+        enters = [dir for dir in directions if dir not in ways]
 
     return Room(walls, entities, enters, floor=random.choice(['stone', 'wooden']))
 
-def generate_dungeons():
-    pass
+def generate_dungeons() -> dict[int, Room]:
+    global rooms
+    for i in range(dung_width):
+        for j in range(1, dung_length + 1):
+            cur_ind = i * dung_length + j
+            rooms[cur_ind] = generate_room(cur_ind, dung_width, dung_length)
+    return rooms
