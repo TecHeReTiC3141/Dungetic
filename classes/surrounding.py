@@ -13,7 +13,7 @@ class Wall:
         self.phys_rect = pygame.Rect(x, y, width, height)
         self.inner_phys_rect = pygame.Rect(x + 10, y + 10,
                                            max(width - 20, 10), max(height - 20, 10))
-        self.outer_phys_rect = pygame.Rect(x - 8, y - 8, width + 16, height + 16)
+        self.outer_phys_rect = pygame.Rect(x - 5, y - 5, width + 10, height + 10)
         self.visible_zone = pygame.Surface((width, height))
         self.visible_zone.set_colorkey('#FFFFFF')
         self.collised = collised
