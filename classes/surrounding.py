@@ -8,10 +8,12 @@ class Wall:
         self.width = width
         self.height = height
         self.health = height
+        self.weight = width * height // 2500
         self.active_zone = pygame.Rect(x - 100, y, width + 51, height + 1)
         self.phys_rect = pygame.Rect(x, y, width, height)
         self.inner_phys_rect = pygame.Rect(x + 10, y + 10,
-                                           max(width - 30, 10), max(height - 30, 10))
+                                           max(width - 20, 10), max(height - 20, 10))
+        self.outer_phys_rect = pygame.Rect(x - 8, y - 8, width + 16, height + 16)
         self.visible_zone = pygame.Surface((width, height))
         self.visible_zone.set_colorkey('#FFFFFF')
         self.collised = collised
@@ -19,45 +21,60 @@ class Wall:
         self.movable = movable
 
     def draw_object(self, display: pygame.Surface):
-        pygame.draw.rect(self.visible_zone, (50, 50, 50), (0, 0, self.width, self.height))
-        pygame.draw.rect(self.visible_zone, (WHITE),
-                         (15, 15, self.inner_phys_rect.width, self.inner_phys_rect.height))
+
+        pygame.draw.rect(display, ('#CCCCCC'), self.outer_phys_rect)
+        pygame.draw.rect(display, (50, 50, 50), self.phys_rect)
+
         display.blit(self.visible_zone, self.phys_rect)
+        pygame.draw.rect(display, ('#AAAAAA'), self.inner_phys_rect)
 
     def collide(self, entities: list[Heretic]):
         for entity in entities:
+
+            if entity.phys_rect.collidelist([self.outer_phys_rect, self.phys_rect]) != -1:
+                entity.speed = max(1, entity.speed - self.weight)
+                entity.colliding = self
+            elif entity.colliding is None or entity.colliding == self:
+                entity.speed = 5
             if self.phys_rect.colliderect(entity.phys_rect):
+
                 move = [0, 0]
                 if self.phys_rect.left + 10 >= entity.phys_rect.right:
                     move[0] = 1
-                    entity.phys_rect.right = self.phys_rect.left + 1
-                elif self.phys_rect.right - 10 <= entity.phys_rect.left:
-                    move[0] = -1
-                    entity.phys_rect.left = self.phys_rect.right - 1
-                elif self.phys_rect.top + 10 >= entity.phys_rect.bottom:
-                    move[1] = 1
-                    entity.phys_rect.bottom = self.phys_rect.top + 1
-                elif self.phys_rect.bottom - 10 <= entity.phys_rect.top:
-                    move[1] = -1
-                    entity.phys_rect.top = self.phys_rect.bottom - 1
 
+                if self.phys_rect.right - 10 <= entity.phys_rect.left:
+                    move[0] = -1
+                if self.phys_rect.top + 10 >= entity.phys_rect.bottom:
+                    move[1] = 1
+
+                if self.phys_rect.bottom - 10 <= entity.phys_rect.top:
+                    move[1] = -1
+                print(self, move)
                 self.phys_rect.move_ip(*move)
                 self.inner_phys_rect.move_ip(*move)
+                self.outer_phys_rect.move_ip(*move)
 
-                if entity.phys_rect.colliderect(self.inner_phys_rect):
-                    if entity.direction == 'up':
-                        entity.phys_rect.top = self.phys_rect.bottom
-                    elif entity.direction == 'down':
-                        entity.phys_rect.bottom = self.phys_rect.top
-                    elif entity.direction == 'left':
-                        entity.phys_rect.left = self.phys_rect.right
-                    else:
-                        entity.phys_rect.right = self.phys_rect.left
+                # if entity.phys_rect.colliderect(self.inner_phys_rect):
+                #     if entity.phys_rect.collidepoint(self.inner_phys_rect.midtop):
+                #         entity.phys_rect.bottom = self.phys_rect.top
+                #     elif entity.phys_rect.collidepoint(self.inner_phys_rect.midright):
+                #         entity.phys_rect.left = self.phys_rect.right
+                #     elif entity.phys_rect.collidepoint(self.inner_phys_rect.midleft):
+                #         entity.phys_rect.right = self.phys_rect.left
+                #     elif entity.phys_rect.collidepoint(self.inner_phys_rect.midbottom):
+                #         entity.phys_rect.top = self.phys_rect.bottom
+                #
+                #     else:
+                #         if entity.direction == 'up':
+                #             entity.phys_rect.top = self.phys_rect.bottom
+                #         elif entity.direction == 'down':
+                #             entity.phys_rect.bottom = self.phys_rect.top
+                #         elif entity.direction == 'left':
+                #             entity.phys_rect.right = self.phys_rect.left
+                #         else:
+                #             entity.phys_rect.left = self.phys_rect.right
 
 
-                entity.speed = 1
-            else:
-                entity.speed = 5
 
 class Vase(Wall):
 
@@ -78,7 +95,7 @@ class Vase(Wall):
 class Room:
     visited = False
 
-    def __init__(self, walls_list, entities_list, entrances, floor):
+    def __init__(self, walls_list: list[Wall], entities_list: list[NPC], entrances, floor: str):
         self.walls_list = walls_list
         self.entities_list = entities_list
         self.entrances = entrances
@@ -86,3 +103,15 @@ class Room:
 
     def draw_object(self, display):
         display.blit(self.floor, (0, 0))
+        for wall in self.walls_list:
+            wall.draw_object(display)
+        for entity in self.entities_list:
+            entity.draw_object(display)
+
+    def physics(self, heretic: Heretic):
+        for wall in self.walls_list:
+            wall.collide(self.entities_list + [heretic])
+
+    def life(self):
+        for entity in self.entities_list:
+            entity.passive_exist()

@@ -4,6 +4,7 @@ from scripts.constants_and_sources import *
 class Heretic:
     strength = 3
     left_stop, right_stop, up_stop, down_stop = [False for i in '....']
+    colliding = None
 
     def __init__(self, x, y, width, height, health, direction, inventory,
                  speed=5, target=None, weapon='none', location=None, attack_time=0,
@@ -95,7 +96,7 @@ class Heretic:
         # elif self.weapon != 'none' and self.directions == 'up':
         #     self.weapon.draw_object(self.x - 15, self.y + 30 + ((self.half_attack_time -
         #                                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
-        pygame.draw.rect(self.visible_zone, (0, 0, 0), self.phys_rect)
+        pygame.draw.rect(display, (0, 0, 0), self.phys_rect)
         eye_colour = (0, 0, 0)
         self.visible_zone.blit(heretic_images[self.direction], (0, 0))
         display.blit(self.visible_zone, self.phys_rect)
