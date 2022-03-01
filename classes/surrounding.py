@@ -29,6 +29,7 @@ class Wall:
         pygame.draw.rect(display, ('#AAAAAA'), self.inner_phys_rect)
 
     def collide(self, entities: list[Heretic]):
+
         for entity in entities:
 
             if entity.phys_rect.collidelist([self.outer_phys_rect, self.phys_rect]) != -1:
@@ -49,10 +50,10 @@ class Wall:
 
                 if self.phys_rect.bottom - 10 <= entity.phys_rect.top:
                     move[1] = -1
-                print(self, move)
-                self.phys_rect.move_ip(*move)
-                self.inner_phys_rect.move_ip(*move)
-                self.outer_phys_rect.move_ip(*move)
+                if self.movable:
+                    self.phys_rect.move_ip(*move)
+                    self.inner_phys_rect.move_ip(*move)
+                    self.outer_phys_rect.move_ip(*move)
 
                 # if entity.phys_rect.colliderect(self.inner_phys_rect):
                 #     if entity.phys_rect.collidepoint(self.inner_phys_rect.midtop):

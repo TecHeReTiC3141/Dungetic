@@ -45,6 +45,7 @@ class Heretic:
         print('ouch')
 
     def move(self):
+        global curr_room
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] and self.x > -3 and not self.left_stop:
             self.x = max(self.x - self.speed, 0)
@@ -70,14 +71,14 @@ class Heretic:
             self.phys_rect.update(self.x, self.y, self.width, self.height)
             self.active_zone.update(self.x, self.y, self.width, self.height)
 
-        self.points = [(self.x, self.y), (self.x + self.width // 2, self.y),
-                       (self.x + self.width, self.y),
-                       (self.x + self.width, self.y + self.height // 2),
-                       (self.x + self.width, self.y + self.height),
-                       (self.x + self.width // 2, self.y + self.height),
-                       (self.x, self.y + self.height),
-                       (self.x, self.y + self.height // 50)]
-
+        if self.phys_rect.colliderect(left_border):
+            curr_room -= 1
+        elif self.phys_rect.colliderect(right_border):
+            curr_room += 1
+        elif self.phys_rect.colliderect(upper_border):
+            curr_room -= dung_length
+        elif self.phys_rect.colliderect(lower_border):
+            curr_room += dung_length
     @staticmethod
     def tp(room):
         global curr_room

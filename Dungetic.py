@@ -29,10 +29,7 @@ stop = []
 '''
 Генерация стен
 '''
-for i in range(1, dung_width * dung_length + 1):
-    entities_list = produce_NPC(random.randint(1, 3))
-    rooms[i] = generate_room(i, dung_width, dung_length, display_width,
-                             display_height, rooms, entities_list)
+rooms = generate_dungeons()
 
 # Кажется, после генерации следует проверить все стены на смежные переходы вложенным циклом !
 
@@ -128,21 +125,10 @@ while True:
 
     else:
         display.fill((252, 240, 188))
-        if rooms[curr_room].floor == 'stone':
-            display.blit(stone_floor, (0, 0))
-        for bullet in bullets_list:
-            bullet.draw_object(bullet.x, bullet.y)
-            if not tick % 3:
-                bullet.move()
-            for mark in bullet.mark_list:
-                mark.draw_object(mark.x, mark.y)
+        rooms[curr_room].draw_object(display)
+        rooms[curr_room].physics(heretic)
+        rooms[curr_room].life()
 
-        for wall in rooms[curr_room].walls_list:
-            wall.draw_object(wall.x, wall.y)
-
-        for npc in rooms[curr_room].entities_list:
-            npc.draw_object()
-            npc.passive_exist()
 
         heretic.draw_object(heretic.visible_zone)
         for i in stop:
