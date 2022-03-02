@@ -11,87 +11,85 @@ class NPC(Heretic):
                          speed, target, weapon, location, attack_time, half_attack_time, backpack, size)
         self.collised_walls = []
 
-        self.npc_points = [(self.x, self.y), (self.x + 37, self.y), (self.x + 75, self.y),
-                           (self.x + 75, self.y + 50),
-                           (self.x + 75, self.y + 100), (self.x + 37, self.y + 100),
-                           (self.x, self.y + 100), (self.x, self.y + 50)]
 
-    def draw_object(self, display):
-        self.visible_zone.fill((0, 0, 0))
-        if self.weapon is not None and self.direction == 'right':
-            self.weapon.draw_object(self.x + 65 - ((self.half_attack_time -
-                                                    self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0),
-                                    self.y + 30)
-        elif self.weapon is not None and self.direction == 'up':
-            self.weapon.draw_object(self.x - 15, self.y + 30 + ((self.half_attack_time -
-                                                                 self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
-        pygame.draw.rect(display, (0, 0, 0), (self.x, self.y, 75, 100))
-        eye_colour = (0, 0, 0)
-        if self.direction == 'down':
-            pygame.draw.rect(display, (255, 255, 255), (self.x + 10, self.y + 10, 20, 20))
-            pygame.draw.rect(display, (255, 255, 255), (self.x + 40, self.y + 10, 20, 20))
-            pygame.draw.rect(display, eye_colour, (self.x + 18, self.y + 17, 4, 4))
-            pygame.draw.rect(display, eye_colour, (self.x + 48, self.y + 17, 4, 4))
-            if self.backpack:
-                self.backpack.draw_on_heretic(self.x + 40, self.y + 45)
-            if self.weapon is not None:
-                self.weapon.draw_object(self.x + 65, self.y + 30 - ((self.half_attack_time -
-                                                                     self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
-
-        elif self.direction == 'left':
-            pygame.draw.rect(display, (255, 255, 255), (self.x + 8, self.y + 10, 20, 20))
-            pygame.draw.rect(display, (255, 255, 255), (self.x + 38, self.y + 10, 20, 20))
-            pygame.draw.rect(display, eye_colour, (self.x + 13, self.y + 17, 4, 4))
-            pygame.draw.rect(display, eye_colour, (self.x + 43, self.y + 17, 4, 4))
-            if self.backpack:
-                self.backpack.draw_on_heretic(self.x + 20, self.y + 45)
-            if self.weapon is not None:
-                self.weapon.draw_object(self.x + 45 + ((self.half_attack_time -
-                                                        self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0),
-                                        self.y + 30)
-
-        elif self.direction == 'right':
-            pygame.draw.rect(display, (255, 255, 255), (self.x + 20, self.y + 10, 20, 20))
-            pygame.draw.rect(display, (255, 255, 255), (self.x + 50, self.y + 10, 20, 20))
-            pygame.draw.rect(display, eye_colour, (self.x + 31, self.y + 17, 4, 4))
-            pygame.draw.rect(display, eye_colour, (self.x + 61, self.y + 17, 4, 4))
-        pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25))
-        pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
-                                        int(100.0 * float(self.health) / 100.0), 21))
+    # def draw_object(self, display):
+    #     self.visible_zone.fill((0, 0, 0))
+    #     if self.weapon is not None and self.direction == 'right':
+    #         self.weapon.draw_object(self.x + 65 - ((self.half_attack_time -
+    #                                                 self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0),
+    #                                 self.y + 30)
+    #     elif self.weapon is not None and self.direction == 'up':
+    #         self.weapon.draw_object(self.x - 15, self.y + 30 + ((self.half_attack_time -
+    #                                                              self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
+    #     pygame.draw.rect(display, (0, 0, 0), (self.x, self.y, 75, 100))
+    #     eye_colour = (0, 0, 0)
+    #     if self.direction == 'down':
+    #         pygame.draw.rect(display, (255, 255, 255), (self.x + 10, self.y + 10, 20, 20))
+    #         pygame.draw.rect(display, (255, 255, 255), (self.x + 40, self.y + 10, 20, 20))
+    #         pygame.draw.rect(display, eye_colour, (self.x + 18, self.y + 17, 4, 4))
+    #         pygame.draw.rect(display, eye_colour, (self.x + 48, self.y + 17, 4, 4))
+    #         if self.backpack:
+    #             self.backpack.draw_on_heretic(self.x + 40, self.y + 45)
+    #         if self.weapon is not None:
+    #             self.weapon.draw_object(self.x + 65, self.y + 30 - ((self.half_attack_time -
+    #                                                                  self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
+    #
+    #     elif self.direction == 'left':
+    #         pygame.draw.rect(display, (255, 255, 255), (self.x + 8, self.y + 10, 20, 20))
+    #         pygame.draw.rect(display, (255, 255, 255), (self.x + 38, self.y + 10, 20, 20))
+    #         pygame.draw.rect(display, eye_colour, (self.x + 13, self.y + 17, 4, 4))
+    #         pygame.draw.rect(display, eye_colour, (self.x + 43, self.y + 17, 4, 4))
+    #         if self.backpack:
+    #             self.backpack.draw_on_heretic(self.x + 20, self.y + 45)
+    #         if self.weapon is not None:
+    #             self.weapon.draw_object(self.x + 45 + ((self.half_attack_time -
+    #                                                     self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0),
+    #                                     self.y + 30)
+    #
+    #     elif self.direction == 'right':
+    #         pygame.draw.rect(display, (255, 255, 255), (self.x + 20, self.y + 10, 20, 20))
+    #         pygame.draw.rect(display, (255, 255, 255), (self.x + 50, self.y + 10, 20, 20))
+    #         pygame.draw.rect(display, eye_colour, (self.x + 31, self.y + 17, 4, 4))
+    #         pygame.draw.rect(display, eye_colour, (self.x + 61, self.y + 17, 4, 4))
+    #     pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25))
+    #     pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
+    #                                     int(100.0 * float(self.health) / 100.0), 21))
 
     def walk(self):
-        if self.direction == 'up' and not self.up_stop:
-            self.direction = 'up'
-            self.y = max(self.y - self.speed, 0)
-            self.phys_rect.move_ip(0, -self.speed)
-            self.active_zone.move_ip(0, -self.speed)
+        if not self.stop:
+            if self.direction == 'up' and not self.up_stop:
+                self.direction = 'up'
+                self.y = max(self.y - self.speed, 0)
+                self.phys_rect.move_ip(0, -self.speed)
+                self.active_zone.move_ip(0, -self.speed)
 
-        elif self.direction == 'down' and not self.down_stop:
-            self.direction = 'down'
-            self.y = min(self.y + self.speed, display_height - self.height)
-            self.phys_rect.move_ip(0, self.speed)
-            self.active_zone.move_ip(0, self.speed)
+            elif self.direction == 'down' and not self.down_stop:
+                self.direction = 'down'
+                self.y = min(self.y + self.speed, display_height - self.height)
+                self.phys_rect.move_ip(0, self.speed)
+                self.active_zone.move_ip(0, self.speed)
 
-        elif self.direction == 'left' and not self.left_stop:
-            self.direction = 'left'
-            self.x = max(self.x - self.speed, 0)
-            self.phys_rect.move_ip(-self.speed, 0)
-            self.active_zone.move_ip(-self.speed, 0)
+            elif self.direction == 'left' and not self.left_stop:
+                self.direction = 'left'
+                self.x = max(self.x - self.speed, 0)
+                self.phys_rect.move_ip(-self.speed, 0)
+                self.active_zone.move_ip(-self.speed, 0)
 
-        elif self.direction == 'right' and not self.right_stop:
-            self.direction = 'right'
-            self.x = min(self.x + self.speed, display_width - self.width)
-            self.phys_rect.move_ip(self.speed, 0)
-            self.active_zone.move_ip(self.speed, 0)
+            elif self.direction == 'right' and not self.right_stop:
+                self.direction = 'right'
+                self.x = min(self.x + self.speed, display_width - self.width)
+                self.phys_rect.move_ip(self.speed, 0)
+                self.active_zone.move_ip(self.speed, 0)
 
     def passive_exist(self):
 
         self.walk()
         if not self.delay:
-            next_direction = random.choice(directions + ['none', 'none'])
-            self.direction = next_direction
-            self.stop = False
-            if next_direction == 'none':
+            next_direction = random.choice(directions + [None, None])
+            if next_direction is not None:
+                self.direction = next_direction
+                self.stop = False
+            else:
                 self.stop = True
             self.delay = random.randint(250, 450)
         if (self.x <= 10 and self.direction == 'left') or (self.x >= 920 and self.direction == 'right') \

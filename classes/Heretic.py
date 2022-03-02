@@ -79,6 +79,7 @@ class Heretic:
             curr_room -= dung_length
         elif self.phys_rect.colliderect(lower_border):
             curr_room += dung_length
+
     @staticmethod
     def tp(room):
         global curr_room

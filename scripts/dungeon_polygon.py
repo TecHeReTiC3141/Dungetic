@@ -1,4 +1,3 @@
-from classes.Heretic import *
 from classes.surrounding import *
 from scripts.algorithms_of_generation import generate_dungeons
 
@@ -20,8 +19,12 @@ while game_cycle:
 
     polygon[curr_room].draw_object(display)
     heretic.draw_object(display)
-    heretic.move()
+
+    pygame.draw.rect(display, '#FF0000', left_border)
     pygame.display.update()
+
+    heretic.move()
     polygon[curr_room].life()
     polygon[curr_room].physics(heretic)
+
     clock.tick(60)

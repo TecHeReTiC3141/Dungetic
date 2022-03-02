@@ -11,8 +11,8 @@ class Wall:
         self.weight = width * height // 2500
         self.active_zone = pygame.Rect(x - 100, y, width + 51, height + 1)
         self.phys_rect = pygame.Rect(x, y, width, height)
-        self.inner_phys_rect = pygame.Rect(x + 10, y + 10,
-                                           max(width - 20, 10), max(height - 20, 10))
+        self.inner_phys_rect = pygame.Rect(x + 5, y + 5,
+                                           max(width - 10, 10), max(height - 10, 10))
         self.outer_phys_rect = pygame.Rect(x - 5, y - 5, width + 10, height + 10)
         self.visible_zone = pygame.Surface((width, height))
         self.visible_zone.set_colorkey('#FFFFFF')
@@ -42,14 +42,19 @@ class Wall:
                 move = [0, 0]
                 if self.phys_rect.left + 10 >= entity.phys_rect.right:
                     move[0] = 1
+                    entity.phys_rect.right = self.phys_rect.left
 
                 if self.phys_rect.right - 10 <= entity.phys_rect.left:
                     move[0] = -1
+                    entity.phys_rect.left = self.phys_rect.right
                 if self.phys_rect.top + 10 >= entity.phys_rect.bottom:
                     move[1] = 1
+                    entity.phys_rect.bottom = self.phys_rect.top
 
                 if self.phys_rect.bottom - 10 <= entity.phys_rect.top:
                     move[1] = -1
+                    entity.phys_rect.top = self.phys_rect.bottom
+
                 if self.movable:
                     self.phys_rect.move_ip(*move)
                     self.inner_phys_rect.move_ip(*move)
