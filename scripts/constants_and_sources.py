@@ -13,7 +13,7 @@ display = pygame.display.set_mode((display_width, display_height))
 
 clock = pygame.time.Clock()
 directions = 'left right up down'.split()
-opposites = {'left': 'right', 'right': 'left', 'up': 'dowm', 'down': 'up'}
+opposites = {'left': 'right', 'right': 'left', 'up': 'down', 'down': 'up'}
 
 tick = 0
 
@@ -45,7 +45,7 @@ inventory_font = pygame.font.SysFont('Cambria', 75)
 
 # borders
 
-left_border = pygame.Rect(5, 0, 1, display_height)
+left_border = pygame.Rect(5, 0, 10, display_height)
 right_border = pygame.Rect(display_width - 5, 0, 5, display_height)
 upper_border = pygame.Rect(0, 5, display_width, 1)
 lower_border = pygame.Rect(0, display_height - 5, display_width, 1)
