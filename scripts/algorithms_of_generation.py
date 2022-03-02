@@ -50,7 +50,7 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
 
     walls += [Wall(random.randrange(100, 905, 5), random.randrange(100, 705, 5),
                    width=random.randrange(50, 120, 5),
-                   height=random.randrange(50, 120, 5), movable=True) for
+                   height=random.randrange(50, 120, 5), movable=False) for
               j in range(random.randint(5, 10))]
     walls += [Vase(random.randrange(100, 905, 5), random.randrange(100, 705, 5),
                    width=40, height=45, movable=True) for j in range(random.randint(3, 5))]
