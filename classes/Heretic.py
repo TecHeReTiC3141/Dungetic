@@ -40,7 +40,7 @@ class Heretic:
         self.speed = speed
 
     def hit(self, entities: list):
-        if not self.attack_time <= 0:
+        if self.attack_time <= 0:
             if self.direction == 'left':
                 self.attack_rect = pygame.Rect(self.x - 50, self.y + self.height // 5,
                                           50, self.height // 5 * 3)
@@ -51,11 +51,16 @@ class Heretic:
                 self.attack_rect = pygame.Rect(self.x + self.width // 5, self.y - 30,
                                           self.width // 5 * 3, self.height // 5 * 3)
             elif self.direction == 'down':
-                self.attack_rect = pygame.Rect(self.x - 50, self.y + self.height // 5,
-                                          50, self.height // 5 * 3)
+                self.attack_rect = pygame.Rect(self.x + self.width // 5, self.y + self.height,
+                                          self.width // 5 * 3, self.height // 5 * 3)
             for entity in entities:
                 if entity.phys_rect.colliderect(self.attack_rect):
                     entity.health -= self.strength
+                    dist_x, dist_y = get_rect_dist(entity.phys_rect, self.phys_rect)
+                    entity.x += dist_x
+                    entity.y += dist_y
+                    entity.phys_rect.move_ip(dist_x, dist_y)
+                    entity.active_zone.move_ip(dist_x, dist_y)
 
         self.attack_time = self.strength * 10
         self.half_attack_time = self.strength * 5
@@ -65,28 +70,38 @@ class Heretic:
         global curr_room
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] and self.x > -3 and not self.left_stop:
-            self.x = max(self.x - self.speed, 0)
-            self.active_zone.update(self.x, self.y, self.width, self.height)
-            self.phys_rect.update(self.x, self.y, self.width, self.height)
             self.direction = 'left'
+            self.x -= self.speed
+            self.active_zone.move_ip(-self.speed, 0)
+            self.phys_rect.move_ip(-self.speed, 0)
+            if isinstance(self.attack_rect, pygame.Rect):
+                self.attack_rect.move_ip(-self.speed, 0)
 
-        if keys[pygame.K_d] and not self.right_stop:
+        if keys[pygame.K_d] and self.x < display_width - self.width - 5\
+                and not self.right_stop:
             self.direction = 'right'
-            self.x = min(self.x + self.speed, display_width - self.width)
-            self.active_zone.update(self.x, self.y, self.width, self.height)
-            self.phys_rect.update(self.x, self.y, self.width, self.height)
+            self.x += self.speed
+            self.active_zone.move_ip(self.speed, 0)
+            self.phys_rect.move_ip(self.speed, 0)
+            if isinstance(self.attack_rect, pygame.Rect):
+                self.attack_rect.move_ip(self.speed, 0)
 
-        if keys[pygame.K_w] and not self.up_stop:
-            self.y = max(self.y - self.speed, 0)
-            self.active_zone.update(self.x, self.y, self.width, self.height)
-            self.phys_rect.update(self.x, self.y, self.width, self.height)
+        if keys[pygame.K_w] and self.y > -3 and not self.up_stop:
             self.direction = 'up'
+            self.y -= self.speed
+            self.active_zone.move_ip(0, -self.speed)
+            self.phys_rect.move_ip(0, -self.speed)
+            if isinstance(self.attack_rect, pygame.Rect):
+                self.attack_rect.move_ip(0, -self.speed)
 
-        if keys[pygame.K_s] and not self.down_stop:
+        if keys[pygame.K_s] and self.y < display_height - self.height - 5 \
+                and not self.down_stop:
             self.direction = 'down'
-            self.y = min(self.y + self.speed, display_height - self.height)
-            self.phys_rect.update(self.x, self.y, self.width, self.height)
-            self.active_zone.update(self.x, self.y, self.width, self.height)
+            self.y += self.speed
+            self.active_zone.move_ip(0, self.speed)
+            self.phys_rect.move_ip(0, self.speed)
+            if isinstance(self.attack_rect, pygame.Rect):
+                self.attack_rect.move_ip(0, self.speed)
 
         if self.phys_rect.colliderect(left_border):
             curr_room -= 1
@@ -98,11 +113,10 @@ class Heretic:
             curr_room += dung_length
 
     def update(self):
-        if self.attack_rect:
+        if self.attack_time:
             if self.attack_time == self.half_attack_time:
                 self.attack_rect = None
             self.attack_time -= 1
-
 
     @staticmethod
     def tp(room):

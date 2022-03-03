@@ -1,5 +1,6 @@
-import pygame
 import random
+
+from scripts.Maths import *
 
 game_cycle = True
 pygame.init()
