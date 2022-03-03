@@ -51,9 +51,26 @@ class NPC(Heretic):
     #         pygame.draw.rect(display, (255, 255, 255), (self.x + 50, self.y + 10, 20, 20))
     #         pygame.draw.rect(display, eye_colour, (self.x + 31, self.y + 17, 4, 4))
     #         pygame.draw.rect(display, eye_colour, (self.x + 61, self.y + 17, 4, 4))
-    #     pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25))
-    #     pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
-    #                                     int(100.0 * float(self.health) / 100.0), 21))
+    def draw_object(self, display: pygame.Surface):
+        self.visible_zone.fill((0, 0, 0))
+        # if self.backpack and self.directions == 'right':
+        #     self.backpack.draw_on_self(self.x + 25, self.y + 45)
+        # elif self.backpack and self.directions == 'up':
+        #     self.backpack.draw_on_self(self.x - 5, self.y + 45)
+        # if self.weapon != 'none' and self.directions == 'right':
+        #     self.weapon.draw_object(self.x + 65 - ((self.half_attack_time -
+        #                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0),
+        #                                self.y + 30)
+        # elif self.weapon != 'none' and self.directions == 'up':
+        #     self.weapon.draw_object(self.x - 15, self.y + 30 + ((self.half_attack_time -
+        #                                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
+        eye_colour = (0, 0, 0)
+        self.visible_zone.blit(heretic_images[self.direction], (0, 0))
+        pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25))
+        pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
+                                        int(100.0 * float(self.health) / 100.0), 21))
+        display.blit(self.visible_zone, self.phys_rect)
+
 
     def walk(self):
         if not self.stop:
@@ -99,5 +116,5 @@ class NPC(Heretic):
 
 
 def produce_NPC(n):
-    return [NPC(random.randint(300, 800), random.randint(200, 600), 75, 100, 5,
+    return [NPC(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
                 random.choice(directions), [], speed=random.randint(3, 4)) for i in range(n)]

@@ -13,7 +13,7 @@ clock = pygame.time.Clock()
 while game_cycle:
     for event in pygame.event.get():
         if event.type == sp_ev:
-            print(curr_room)
+            pass
         if event.type == pygame.QUIT:
             pygame.quit()
 

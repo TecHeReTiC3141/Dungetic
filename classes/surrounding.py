@@ -43,23 +43,24 @@ class Wall:
                 entity.down_stop = [False for i in '....']
 
             if self.phys_rect.colliderect(entity.phys_rect):
-
+                entity.left_stop, entity.right_stop, entity.up_stop, \
+                entity.down_stop = [False for i in '....']
                 move = [0, 0]
-                if self.phys_rect.left + 10 >= entity.phys_rect.right:
+                if self.phys_rect.left + 5 >= entity.phys_rect.right:
                     move[0] = max(5 - self.weight, 1) + 1
                     if not self.movable:
                         entity.right_stop = True
 
-                elif self.phys_rect.right - 10 <= entity.phys_rect.left:
+                elif self.phys_rect.right - 5 <= entity.phys_rect.left:
                     move[0] = -max(5 - self.weight, 1) - 1
                     if not self.movable:
                         entity.left_stop = True
-                elif self.phys_rect.top + 10 >= entity.phys_rect.bottom:
+                elif self.phys_rect.top + 5 >= entity.phys_rect.bottom:
                     move[1] = max(5 - self.weight, 1) + 1
                     if not self.movable:
                         entity.down_stop = True
 
-                elif self.phys_rect.bottom - 10 <= entity.phys_rect.top:
+                elif self.phys_rect.bottom - 5 <= entity.phys_rect.top:
                     move[1] = -max(5 - self.weight, 1) - 1
                     if not self.movable:
                         entity.up_stop = True

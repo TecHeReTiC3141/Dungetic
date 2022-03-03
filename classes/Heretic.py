@@ -1,13 +1,14 @@
+import pygame
+
 from scripts.constants_and_sources import *
 
 
 class Heretic:
-    strength = 3
     left_stop, right_stop, up_stop, down_stop = [False for i in '....']
     colliding = None
 
     def __init__(self, x, y, width, height, health, direction, inventory,
-                 speed=5, target=None, weapon='none', location=None, attack_time=0,
+                 speed=5, strength=5, target=None, weapon='none', location=None, attack_time=0,
                  half_attack_time=0, backpack=None, size=1.):
         self.x = x
         self.y = y
@@ -16,17 +17,16 @@ class Heretic:
         self.health = health
         self.direction = direction
         self.inventory = inventory
+        self.strength = strength
 
         self.light_zone = []
         self.visible_zone = pygame.Surface((self.width, self.height))
         self.phys_rect = pygame.Rect(x, y, self.width, int(self.height))
         self.active_zone = pygame.Rect(x - 50, y - 50, self.width * 2, int(self.height * 1.5))
 
-        self.points = [(x, y), (x + width // 2, y), (x + width, y),
-                       (x + width, y + height // 2),
-                       (x + width, y + height), (x + width // 2, y + height),
-                       (x, y + height),
-                       (x, y + height // 50)]
+        self.attack_rect = None
+        self.attack_surf = pygame.Surface((50, 50))
+        self.attack_surf.set_colorkey(BLACK)
 
         self.collised_walls = {}
 
@@ -39,9 +39,26 @@ class Heretic:
         self.size = size
         self.speed = speed
 
-    def hit(self, entity):
-        entity.health -= self.strength
+    def hit(self, entities: list):
+        if not self.attack_time <= 0:
+            if self.direction == 'left':
+                self.attack_rect = pygame.Rect(self.x - 50, self.y + self.height // 5,
+                                          50, self.height // 5 * 3)
+            elif self.direction == 'right':
+                self.attack_rect = pygame.Rect(self.phys_rect.right, self.y + self.height // 5,
+                                          50, self.height // 5 * 3)
+            elif self.direction == 'up':
+                self.attack_rect = pygame.Rect(self.x + self.width // 5, self.y - 30,
+                                          self.width // 5 * 3, self.height // 5 * 3)
+            elif self.direction == 'down':
+                self.attack_rect = pygame.Rect(self.x - 50, self.y + self.height // 5,
+                                          50, self.height // 5 * 3)
+            for entity in entities:
+                if entity.phys_rect.colliderect(self.attack_rect):
+                    entity.health -= self.strength
+
         self.attack_time = self.strength * 10
+        self.half_attack_time = self.strength * 5
         print('ouch')
 
     def move(self):
@@ -80,6 +97,13 @@ class Heretic:
         elif self.phys_rect.colliderect(lower_border):
             curr_room += dung_length
 
+    def update(self):
+        if self.attack_rect:
+            if self.attack_time == self.half_attack_time:
+                self.attack_rect = None
+            self.attack_time -= 1
+
+
     @staticmethod
     def tp(room):
         global curr_room
@@ -98,8 +122,9 @@ class Heretic:
         # elif self.weapon != 'none' and self.directions == 'up':
         #     self.weapon.draw_object(self.x - 15, self.y + 30 + ((self.half_attack_time -
         #                                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
-        pygame.draw.rect(display, (0, 0, 0), self.phys_rect)
         eye_colour = (0, 0, 0)
+        if self.attack_rect:
+            pygame.draw.rect(display, RED, self.attack_rect)
         self.visible_zone.blit(heretic_images[self.direction], (0, 0))
         display.blit(self.visible_zone, self.phys_rect)
     #  pygame.draw.rect(self.visible_zone, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25))
