@@ -94,7 +94,7 @@ class NPC(Heretic):
 
             elif self.direction == 'right' and not self.right_stop:
                 self.direction = 'right'
-                self.x = min(self.x + self.speed, display_width - self.width)
+                self.x = min(self.x + self.speed, c_a_s.display_width - self.width)
                 self.phys_rect.move_ip(self.speed, 0)
                 self.active_zone.move_ip(self.speed, 0)
 

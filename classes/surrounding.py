@@ -114,7 +114,7 @@ class Room:
         self.walls_list = walls_list
         self.entities_list = entities_list
         self.entrances = entrances
-        self.floor = stone_floor if floor == 'stone' else wooden_floor
+        self.floor = c_a_s.stone_floor if floor == 'stone' else c_a_s.wooden_floor
 
     def draw_object(self, display):
         display.blit(self.floor, (0, 0))
