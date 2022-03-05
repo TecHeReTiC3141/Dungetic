@@ -1,11 +1,15 @@
 import pygame
 
 from scripts.constants_and_sources import *
+import scripts.constants_and_sources as c_a_s
 from classes.Heretic import Heretic
 
 class Interface(pygame.Surface):
 
-    def draw_object(self, display,):
+    def __init__(self):
+        super().__init__((display_width, display_height))
+
+    def draw_object(self, display, ):
         display.blit(self, (0, 0))
 
 
@@ -68,7 +72,12 @@ class Inventory(Interface):
 
 class MapInter(Interface):
 
-    def draw_object(self, display, rooms: list):
+    def __init__(self, rooms: dict):
+        super().__init__()
+        self.rooms = rooms
+
+
+    def draw_object(self, display):
         display.blit(bloor, (0, 0))
         display.blit(map_image, (40, 50))
         for j in range(90, 90 + dung_width * 80, 80):
@@ -84,7 +93,7 @@ class MapInter(Interface):
                         pygame.draw.rect(display, (200, 200, 200), (i + 45, j + 7, 20, 20))
                     if 'left' in rooms[r_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (i - 15, j + 7, 15, 20))
-                    if r_ind == curr_room:
-                        draw_heretic(i + 10, j + 5, heretic.direction, 0.3)
+                    if r_ind == c_a_s.curr_room:
+                        pygame.draw.rect(display, BLACK, (i + 5, j + 7, 15, 20))
                 else:
                     pygame.draw.rect(display, (10, 10, 10), (i, j, 45, 35))

@@ -67,9 +67,9 @@ class Heretic:
                     entity.phys_rect.move_ip(dist_x, dist_y)
                     entity.active_zone.move_ip(dist_x, dist_y)
 
-        self.attack_time = self.weapon.capability
-        self.half_attack_time = self.weapon.capability // 2
-        print('ouch')
+            self.attack_time = self.weapon.capability
+            self.half_attack_time = self.weapon.capability // 2
+        print(self.attack_time, 'ouch')
 
     def move(self):
         global c_a_s
@@ -109,28 +109,35 @@ class Heretic:
             c_a_s.curr_room -= 1
             self.x = display_width - 100
             self.phys_rect.update(self.x, self.y, self.width, self.height)
+            self.attack_rect.update(self.x - self.weapon.hit_range,
+                                               self.y + self.height // 5,
+                                          self.weapon.hit_range, self.height // 5 * 3)
             print(c_a_s.curr_room)
         elif self.phys_rect.colliderect(right_border):
             c_a_s.curr_room += 1
             self.x = 50
             self.phys_rect.update(self.x, self.y, self.width, self.height)
+            self.attack_rect.update(self.phys_rect.right, self.y + self.height // 5,
+                                          self.weapon.hit_range, self.height // 5 * 3)
             print(c_a_s.curr_room)
         elif self.phys_rect.colliderect(upper_border):
             c_a_s.curr_room -= dung_length
             self.y = display_height - 125
             self.phys_rect.update(self.x, self.y, self.width, self.height)
+            self.attack_rect.update(self.x + self.width // 5, self.y - self.weapon.hit_range,
+                                          self.width // 5 * 3, self.weapon.hit_range)
             print(c_a_s.curr_room)
         elif self.phys_rect.colliderect(lower_border):
             c_a_s.curr_room += dung_length
             self.y = 25
             self.phys_rect.update(self.x, self.y, self.width, self.height)
+            self.attack_rect.update(self.x + self.width // 5, self.y + self.height,
+                                          self.width // 5 * 3, self.weapon.hit_range)
             print(c_a_s.curr_room)
 
 
     def update(self):
         if self.attack_time:
-            if self.attack_time == self.half_attack_time:
-                self.attack_rect = None
             self.attack_time -= 1
 
     @staticmethod

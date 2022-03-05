@@ -46,7 +46,7 @@ inventory_font = pygame.font.SysFont('Cambria', 75)
 
 # borders
 
-left_border = pygame.Rect(5, 0, 10, display_height)
+left_border = pygame.Rect(5, 0, 5, display_height)
 right_border = pygame.Rect(display_width - 15, 0, 5, display_height)
 upper_border = pygame.Rect(0, 5, display_width + 5, 5)
 lower_border = pygame.Rect(0, display_height - 15, display_width, 5)
