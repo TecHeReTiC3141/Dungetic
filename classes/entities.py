@@ -114,7 +114,10 @@ class NPC(Heretic):
             self.direction = opposites[self.direction]
         self.delay -= 1
 
+    def hostile_exist(self):
+        pass
 
-def produce_NPC(n):
-    return [NPC(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
-                random.choice(directions), [], speed=random.randint(3, 4)) for i in range(n)]
+    @staticmethod
+    def produce_NPC(n):
+        return [NPC(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
+                    random.choice(directions), [], speed=random.randint(3, 4)) for i in range(n)]

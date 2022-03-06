@@ -4,7 +4,7 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
     ways = random.sample(['down', 'right'], random.randint(1, 2))
     enters = []
     walls = []
-    entities = produce_NPC(random.randint(2, 5))
+    entities = NPC.produce_NPC(random.randint(2, 5))
     if cur_ind > dung_length and 'down' in rooms[cur_ind - dung_length].entrances:
         walls.append(Wall(0, 0, width=random.randint(display_width // 2 - 250, display_width // 2 - 100),
                           height=random.randint(50, 100)))
