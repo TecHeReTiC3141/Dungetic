@@ -5,6 +5,9 @@ import scripts.constants_and_sources as c_a_s
 from classes.Heretic import Heretic
 
 class Interface(pygame.Surface):
+    '''
+    Interface for all custom surfaces used in Dungetic
+    '''
 
     def __init__(self):
         super().__init__((display_width, display_height))
@@ -97,3 +100,5 @@ class MapInter(Interface):
                         pygame.draw.rect(display, BLACK, (i + 5, j + 7, 15, 20))
                 else:
                     pygame.draw.rect(display, (10, 10, 10), (i, j, 45, 35))
+
+print(help(MapInter))
