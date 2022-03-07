@@ -4,6 +4,7 @@ from classes.interfaces import Interface, MapInter
 
 heretic = Heretic(100, 100, 75, 100, 78, random.choice(directions), [])
 
+
 polygon = generate_dungeons()
 
 cur_inter = None
@@ -20,7 +21,7 @@ clock = pygame.time.Clock()
 while game_cycle:
     for event in pygame.event.get():
         if event.type == sp_ev:
-            pass
+            print(heretic.collised_walls, heretic.speed_directions)
         elif event.type == pygame.QUIT:
             pygame.quit()
         elif event.type == pygame.KEYDOWN:

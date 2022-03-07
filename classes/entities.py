@@ -9,7 +9,6 @@ class NPC(Heretic):
                  target=None, weapon=None, location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
         super().__init__(x, y, width, height, health, direction, inventory,
                          speed, target, weapon, location, attack_time, half_attack_time, backpack, size)
-        self.collised_walls = []
 
 
     # def draw_object(self, display):
@@ -73,30 +72,40 @@ class NPC(Heretic):
 
 
     def walk(self):
-        if not self.stop:
-            if self.direction == 'up' and not self.up_stop:
-                self.direction = 'up'
-                self.y = max(self.y - self.speed, 0)
-                self.phys_rect.move_ip(0, -self.speed)
-                self.active_zone.move_ip(0, -self.speed)
+        if self.direction == 'left' and self.collised_walls['left'] is None:
+            self.direction = 'left'
+            l_speed = self.speed_directions['left']
+            self.x -= l_speed
+            self.active_zone.move_ip(-l_speed, 0)
+            self.phys_rect.move_ip(-l_speed, 0)
+            self.attack_rect.move_ip(-l_speed, 0)
 
-            elif self.direction == 'down' and not self.down_stop:
-                self.direction = 'down'
-                self.y = min(self.y + self.speed, display_height - self.height)
-                self.phys_rect.move_ip(0, self.speed)
-                self.active_zone.move_ip(0, self.speed)
+        if self.direction == 'right' and self.x < display_width - self.width - 5 and \
+                self.collised_walls['right'] is None:
+            self.direction = 'right'
+            r_speed = self.speed_directions['right']
+            self.x += r_speed
+            self.active_zone.move_ip(r_speed, 0)
+            self.phys_rect.move_ip(r_speed, 0)
+            self.attack_rect.move_ip(r_speed, 0)
 
-            elif self.direction == 'left' and not self.left_stop:
-                self.direction = 'left'
-                self.x = max(self.x - self.speed, 0)
-                self.phys_rect.move_ip(-self.speed, 0)
-                self.active_zone.move_ip(-self.speed, 0)
+        if self.direction == 'up' and self.y > -3 \
+                and self.collised_walls['up'] is None:
+            self.direction = 'up'
+            u_speed = self.speed_directions['up']
+            self.y -= u_speed
+            self.active_zone.move_ip(0, -u_speed)
+            self.phys_rect.move_ip(0, -u_speed)
+            self.attack_rect.move_ip(0, -u_speed)
 
-            elif self.direction == 'right' and not self.right_stop:
-                self.direction = 'right'
-                self.x = min(self.x + self.speed, c_a_s.display_width - self.width)
-                self.phys_rect.move_ip(self.speed, 0)
-                self.active_zone.move_ip(self.speed, 0)
+        if self.direction == 'down' and self.y < display_height - self.height - 5 and \
+                self.collised_walls['down'] is None:
+            self.direction = 'down'
+            d_speed = self.speed_directions['down']
+            self.y += d_speed
+            self.active_zone.move_ip(0, d_speed)
+            self.phys_rect.move_ip(0, d_speed)
+            self.attack_rect.move_ip(0, d_speed)
 
     def passive_exist(self):
 

@@ -101,4 +101,4 @@ class MapInter(Interface):
                 else:
                     pygame.draw.rect(display, (10, 10, 10), (i, j, 45, 35))
 
-print(help(MapInter))
+print(MapInter.mro())

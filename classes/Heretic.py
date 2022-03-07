@@ -6,7 +6,8 @@ import random
 
 
 class Heretic:
-    left_stop, right_stop, up_stop, down_stop = [False for i in '....']
+
+
     colliding = None
 
     def __init__(self, x, y, width, height, health, direction, inventory,
@@ -31,8 +32,9 @@ class Heretic:
                                           self.weapon.hit_range, self.height // 5 * 3)
         self.attack_surf = pygame.Surface((50, 50))
         self.attack_surf.set_colorkey(BLACK)
+        self.collised_walls = dict.fromkeys(directions)
+        self.speed_directions = dict.fromkeys(directions, 5)
 
-        self.collised_walls = {}
 
         self.location = location
         self.attack_time = attack_time
@@ -74,36 +76,37 @@ class Heretic:
     def move(self):
         global c_a_s
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_a] and self.x > -3 and not self.left_stop:
+        if keys[pygame.K_a] and self.x > -3:
             self.direction = 'left'
-            self.x -= self.speed
-            self.active_zone.move_ip(-self.speed, 0)
-            self.phys_rect.move_ip(-self.speed, 0)
-            self.attack_rect.move_ip(-self.speed, 0)
+            l_speed = self.speed_directions['left']
+            self.x -= l_speed
+            self.active_zone.move_ip(-l_speed, 0)
+            self.phys_rect.move_ip(-l_speed, 0)
+            self.attack_rect.move_ip(-l_speed, 0)
 
-        if keys[pygame.K_d] and self.x < display_width - self.width - 5\
-                and not self.right_stop:
+        if keys[pygame.K_d] and self.x < display_width - self.width - 5:
             self.direction = 'right'
-            self.x += self.speed
-            self.active_zone.move_ip(self.speed, 0)
-            self.phys_rect.move_ip(self.speed, 0)
-            self.attack_rect.move_ip(self.speed, 0)
+            r_speed = self.speed_directions['right']
+            self.x += r_speed
+            self.active_zone.move_ip(r_speed, 0)
+            self.phys_rect.move_ip(r_speed, 0)
+            self.attack_rect.move_ip(r_speed, 0)
 
-        if keys[pygame.K_w] and self.y > -3 and not self.up_stop:
+        if keys[pygame.K_w] and self.y > -3:
             self.direction = 'up'
-            self.y -= self.speed
-            self.active_zone.move_ip(0, -self.speed)
-            self.phys_rect.move_ip(0, -self.speed)
-            self.attack_rect.move_ip(0, -self.speed)
+            u_speed = self.speed_directions['up']
+            self.y -= u_speed
+            self.active_zone.move_ip(0, -u_speed)
+            self.phys_rect.move_ip(0, -u_speed)
+            self.attack_rect.move_ip(0, -u_speed)
 
-        if keys[pygame.K_s] and self.y < display_height - self.height - 5 \
-                and not self.down_stop:
+        if keys[pygame.K_s] and self.y < display_height - self.height - 5:
             self.direction = 'down'
-            self.y += self.speed
-
-            self.active_zone.move_ip(0, self.speed)
-            self.phys_rect.move_ip(0, self.speed)
-            self.attack_rect.move_ip(0, self.speed)
+            d_speed = self.speed_directions['down']
+            self.y += d_speed
+            self.active_zone.move_ip(0, d_speed)
+            self.phys_rect.move_ip(0, d_speed)
+            self.attack_rect.move_ip(0, d_speed)
 
         if self.phys_rect.colliderect(left_border):
             c_a_s.curr_room -= 1
