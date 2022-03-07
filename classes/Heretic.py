@@ -35,7 +35,6 @@ class Heretic:
         self.collised_walls = dict.fromkeys(directions)
         self.speed_directions = dict.fromkeys(directions, 5)
 
-
         self.location = location
         self.attack_time = attack_time
         self.half_attack_time = half_attack_time
