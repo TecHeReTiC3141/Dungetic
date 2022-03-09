@@ -15,6 +15,8 @@ class Heretic:
         self.width = width
         self.height = height
         self.health = health
+        self.actual_health = health
+        self.dead = False
         self.direction = direction
         self.inventory = inventory
 
@@ -45,12 +47,14 @@ class Heretic:
         if self.attack_time <= 0:
             for entity in entities:
                 if entity.phys_rect.colliderect(self.attack_rect):
-                    entity.health -= self.weapon.damage
+                    entity.actual_health -= self.weapon.damage
                     dist_x, dist_y = get_rect_dist(entity.phys_rect, self.phys_rect)
                     entity.x += dist_x
                     entity.y += dist_y
                     entity.phys_rect.move_ip(dist_x, dist_y)
                     entity.active_zone.move_ip(dist_x, dist_y)
+                    if entity.actual_health <= 0:
+                        entity.die()
 
             for obst in conts:
                 if obst.phys_rect.colliderect(self.attack_rect):
@@ -66,7 +70,6 @@ class Heretic:
 
             self.attack_time = self.weapon.capability
             self.half_attack_time = self.weapon.capability // 2
-        print(self.attack_time, 'ouch')
 
     def move(self):  # heretic's moving
         global c_a_s
@@ -140,6 +143,9 @@ class Heretic:
     def tp(room):
         global c_a_s
         c_a_s.curr_room = room
+
+    def die(self):
+        pass
 
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill((0, 0, 0))

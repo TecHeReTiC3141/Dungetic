@@ -1,3 +1,5 @@
+import pygame
+
 from classes.Heretic import *
 
 
@@ -66,8 +68,10 @@ class NPC(Heretic):
         eye_colour = (0, 0, 0)
         self.visible_zone.blit(heretic_images[self.direction], (0, 0))
         pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25))
-        pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
+        pygame.draw.rect(display, pygame.Color('Yellow'), (self.x - 10, self.y - 28,
                                         int(100.0 * float(self.health) / 100.0), 21))
+        pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
+                                        int(100.0 * float(self.actual_health) / 100.0), 21))
         display.blit(self.visible_zone, self.phys_rect)
 
 
@@ -122,9 +126,15 @@ class NPC(Heretic):
                 or (self.y <= 0 and self.direction == 'up') or (self.y >= 685 and self.direction == 'down'):
             self.direction = opposites[self.direction]
         self.delay -= 1
+        if self.health > self.actual_health:
+            self.health -= .1
 
     def hostile_exist(self):
         pass
+
+    def die(self):
+        # drop loot or smth like that
+        self.dead = True
 
     @staticmethod
     def produce_NPC(n):

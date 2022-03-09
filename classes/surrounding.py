@@ -161,4 +161,5 @@ class Room:
     def clear(self):
         self.containers = list(filter(lambda i: hasattr(i, 'is_broken') and i.is_broken == False,
                                       self.containers))
-
+        self.entities_list = list(filter(lambda i: not i.dead,
+                                      self.entities_list))

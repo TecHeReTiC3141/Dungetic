@@ -12,7 +12,7 @@ class Weapon:
 class Fist(Weapon):
     sprite = {'left': pygame.image.load('../images/weapons/fist/fist_left.png'),
               'right':  pygame.image.load('../images/weapons/fist/fist_right.png')}
-    damage = 4
+    damage = 6
     capability = 45
     hit_range = 40
 
