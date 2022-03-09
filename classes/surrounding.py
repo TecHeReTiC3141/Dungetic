@@ -1,8 +1,26 @@
 from classes.entities import *
 
+
+class Container:
+
+    def __init__(self, content: list):
+        self.content = content
+
+
+
+class Breakable:
+    def __init__(self, health):
+        self.health = health
+        self.is_broken = False
+
+    def get_broken(self):
+        print(f'{self} broken')
+        self.is_broken = True
+
+
 class Wall:
 
-    def __init__(self, x, y, width, height, collised=False, movable=False, health=120):
+    def __init__(self, x, y, width, height, collised=False, movable=False, *args):
         self.x = x
         self.y = y
         self.width = width
@@ -17,8 +35,8 @@ class Wall:
         self.visible_zone = pygame.Surface((width, height))
         self.visible_zone.set_colorkey('#FFFFFF')
         self.collised = collised
-        self.health = health
         self.movable = movable
+        super().__init__(*args)
 
     def draw_object(self, display: pygame.Surface):
 
@@ -33,10 +51,10 @@ class Wall:
         for entity in entities:
 
             if entity.phys_rect.collidelist([self.outer_phys_rect, self.phys_rect]) == -1:
-                for dir in entity.collised_walls:
-                    if entity.collised_walls[dir] == self:
-                        entity.speed_directions[dir] = 5
-                        entity.collised_walls[dir] = None
+                for direct in entity.collised_walls:
+                    if entity.collised_walls[direct] == self:
+                        entity.speed_directions[direct] = 5
+                        entity.collised_walls[direct] = None
 
             if self.phys_rect.colliderect(entity.phys_rect):
                 move = [0, 0]
@@ -101,42 +119,46 @@ class Wall:
                 #             entity.phys_rect.left = self.phys_rect.right
 
 
-class Vase(Wall):
+class Vase(Wall, Breakable):
+
+    def __init__(self,  x, y, width, height, collised=False, movable=False, health=120):
+        super().__init__(x, y, width, height, collised, movable, health)
+        self.sprite = pygame.image.load('../images/Vase1.png').convert_alpha()
+        self.sprite.set_colorkey('#FFFFFF')
 
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill('#FFFFFF')
-        pygame.draw.polygon(display, (184, 133, 71),
-                            ((0, 0), (0 + 40, 0), (0 + 30, 0 + 20), (0 + 10, 0 + 20)))
-        pygame.draw.polygon(self.visible_zone, (184, 133, 71), (
-            (0 + 5, 0 + 20), (0 + 35, 0 + 20),
-            (0 + 30, 0 + 45), (0 + 10, 0 + 45)))
-        pygame.draw.polygon(self.visible_zone, (1, 1, 1), (
-            (0 + 7, 0 + 27), (0 + 33, 0 + 27),
-            (0 + 31, 0 + 42), (0 + 9, 0 + 42)))
-
         display.blit(self.visible_zone, self.phys_rect)
+        display.blit(self.sprite, self.phys_rect)
         return self.visible_zone
 
-class Room:
-    visited = False
 
-    def __init__(self, walls_list: list[Wall], entities_list: list[NPC], entrances, floor: str):
-        self.walls_list = walls_list
+class Room:
+
+    def __init__(self, obst_list: list[Wall], containers: list[Wall], entities_list: list[NPC], entrances, floor: str):
+        self.obst_list = obst_list
+        self.containers = containers
         self.entities_list = entities_list
         self.entrances = entrances
         self.floor = c_a_s.stone_floor if floor == 'stone' else c_a_s.wooden_floor
+        self.visited = False
 
     def draw_object(self, display):
         display.blit(self.floor, (0, 0))
-        for wall in self.walls_list:
+        for wall in self.obst_list + self.containers:
             wall.draw_object(display)
         for entity in self.entities_list:
             entity.draw_object(display)
 
     def physics(self, heretic: Heretic):
-        for wall in self.walls_list:
+        for wall in self.obst_list + self.containers:
             wall.collide(self.entities_list + [heretic])
 
     def life(self):
         for entity in self.entities_list:
             entity.passive_exist()
+
+    def clear(self):
+        self.containers = list(filter(lambda i: hasattr(i, 'is_broken') and i.is_broken == False,
+                                      self.containers))
+
