@@ -2,16 +2,21 @@ from classes.entities import *
 
 
 class Container:
+    # interface for all game containers
 
     def __init__(self, content: list):
         self.content = content
 
+    def generate_random_loot(self):
+        pass
+
 
 
 class Breakable:
-    def __init__(self, health):
+    def __init__(self, health, *args):
         self.health = health
         self.is_broken = False
+        super().__init__(*args)
 
     def get_broken(self):
         print(f'{self} broken')
@@ -62,7 +67,6 @@ class Wall:
                     move[0] = max(5 - self.weight, 1)
                     entity.collised_walls['right'] = self
                     if not self.movable:
-
                         entity.speed_directions['right'] = 0
                     else:
                         entity.speed_directions['right'] = max(5 - self.weight, 1)
@@ -71,7 +75,6 @@ class Wall:
                     move[0] = -max(5 - self.weight, 1)
                     entity.collised_walls['left'] = self
                     if not self.movable:
-
                         entity.speed_directions['left'] = 0
                     else:
                         entity.speed_directions['left'] = max(5 - self.weight, 1)
@@ -79,7 +82,6 @@ class Wall:
                     move[1] = max(5 - self.weight, 1)
                     entity.collised_walls['down'] = self
                     if not self.movable:
-
                         entity.speed_directions['down'] = 0
                     else:
                         entity.speed_directions['down'] = max(5 - self.weight, 1)
@@ -88,7 +90,6 @@ class Wall:
                     move[1] = -max(5 - self.weight, 1)
                     entity.collised_walls['up'] = self
                     if not self.movable:
-
                         entity.speed_directions['up'] = 0
                     else:
                         entity.speed_directions['up'] = max(5 - self.weight, 1)
@@ -98,33 +99,14 @@ class Wall:
                     self.inner_phys_rect.move_ip(*move)
                     self.outer_phys_rect.move_ip(*move)
 
-                # if entity.phys_rect.colliderect(self.inner_phys_rect):
-                #     if entity.phys_rect.collidepoint(self.inner_phys_rect.midtop):
-                #         entity.phys_rect.bottom = self.phys_rect.top
-                #     elif entity.phys_rect.collidepoint(self.inner_phys_rect.midright):
-                #         entity.phys_rect.left = self.phys_rect.right
-                #     elif entity.phys_rect.collidepoint(self.inner_phys_rect.midleft):
-                #         entity.phys_rect.right = self.phys_rect.left
-                #     elif entity.phys_rect.collidepoint(self.inner_phys_rect.midbottom):
-                #         entity.phys_rect.top = self.phys_rect.bottom
-                #
-                #     else:
-                #         if entity.direction == 'up':
-                #             entity.phys_rect.top = self.phys_rect.bottom
-                #         elif entity.direction == 'down':
-                #             entity.phys_rect.bottom = self.phys_rect.top
-                #         elif entity.direction == 'left':
-                #             entity.phys_rect.right = self.phys_rect.left
-                #         else:
-                #             entity.phys_rect.left = self.phys_rect.right
 
+class Vase(Wall, Breakable, Container):
 
-class Vase(Wall, Breakable):
-
-    def __init__(self,  x, y, width, height, collised=False, movable=False, health=120):
-        super().__init__(x, y, width, height, collised, movable, health)
+    def __init__(self, x, y, width, height, collised=False, movable=False, health=120, container=None):
+        super().__init__(x, y, width, height, collised, movable, health, container)
         self.sprite = pygame.image.load('../images/Vase1.png').convert_alpha()
         self.sprite.set_colorkey('#FFFFFF')
+        print(hasattr(self, 'content'))
 
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill('#FFFFFF')
