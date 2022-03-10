@@ -67,11 +67,11 @@ class NPC(Heretic):
         #                                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
         eye_colour = (0, 0, 0)
         self.visible_zone.blit(heretic_images[self.direction], (0, 0))
-        pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25))
+        pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25), border_radius=8)
         pygame.draw.rect(display, pygame.Color('Yellow'), (self.x - 10, self.y - 28,
-                                        int(100.0 * float(self.health) / 100.0), 21))
+                                        int(100.0 * float(self.health) / 100.0), 21), border_radius=8)
         pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
-                                        int(100.0 * float(self.actual_health) / 100.0), 21))
+                                        int(100.0 * float(self.actual_health) / 100.0), 21), border_radius=8)
         display.blit(self.visible_zone, self.phys_rect)
 
 

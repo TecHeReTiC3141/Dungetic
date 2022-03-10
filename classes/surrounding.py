@@ -1,15 +1,14 @@
 from classes.entities import *
 
 
+
+
+
 class Container:
     # interface for all game containers
 
     def __init__(self, content: list):
         self.content = content
-
-    def generate_random_loot(self):
-        pass
-
 
 
 class Breakable:
@@ -21,6 +20,8 @@ class Breakable:
     def get_broken(self):
         print(f'{self} broken')
         self.is_broken = True
+        if isinstance(self, Container):
+            return self.content
 
 
 class Wall:
@@ -106,7 +107,7 @@ class Vase(Wall, Breakable, Container):
         super().__init__(x, y, width, height, collised, movable, health, container)
         self.sprite = pygame.image.load('../images/Vase1.png').convert_alpha()
         self.sprite.set_colorkey('#FFFFFF')
-        print(hasattr(self, 'content'))
+        print(hasattr(self, 'content'), self.content)
 
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill('#FFFFFF')
@@ -115,11 +116,29 @@ class Vase(Wall, Breakable, Container):
         return self.visible_zone
 
 
+class LyingItem:
+
+    def __init__(self, x, y, lootcls: type):
+        self.loot = lootcls()
+        self.x = x
+        self.y = y
+        self.sprite = pygame.transform.rotate(self.loot.sprite['left'], random.randint(0, 360))
+        self.sprite.set_colorkey('#FFFFFF')
+        self.rect = self.sprite.get_rect(topleft=(x, y))
+
+    def draw_object(self, display):
+        display.blit(self.sprite, self.rect)
+
+    def collide(self):
+        pass
+
+
 class Room:
 
     def __init__(self, obst_list: list[Wall], containers: list[Wall], entities_list: list[NPC], entrances, floor: str):
         self.obst_list = obst_list
         self.containers = containers
+        self.drops = []
         self.entities_list = entities_list
         self.entrances = entrances
         self.floor = c_a_s.stone_floor if floor == 'stone' else c_a_s.wooden_floor
@@ -127,7 +146,7 @@ class Room:
 
     def draw_object(self, display):
         display.blit(self.floor, (0, 0))
-        for wall in self.obst_list + self.containers:
+        for wall in self.obst_list + self.containers + self.drops:
             wall.draw_object(display)
         for entity in self.entities_list:
             entity.draw_object(display)
@@ -141,7 +160,17 @@ class Room:
             entity.passive_exist()
 
     def clear(self):
-        self.containers = list(filter(lambda i: hasattr(i, 'is_broken') and i.is_broken == False,
-                                      self.containers))
+        sorted_conts = []
+        for cont in self.containers:
+            if isinstance(cont, Breakable):
+                if cont.is_broken:
+                    loot = cont.get_broken()
+                    if isinstance(cont, Container):
+                        self.drops.append(loot)
+                else:
+                    sorted_conts.append(cont)
+
+
+        self.containers = sorted_conts.copy()
         self.entities_list = list(filter(lambda i: not i.dead,
-                                      self.entities_list))
+                                         self.entities_list))
