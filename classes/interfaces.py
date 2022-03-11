@@ -12,8 +12,25 @@ class Interface(pygame.Surface):
     def __init__(self):
         super().__init__((display_width, display_height))
 
-    def draw_object(self, display, ):
+    def draw_object(self, display: pygame.Surface, ):
         display.blit(self, (0, 0))
+
+    def process(self):
+        pass
+
+class UI(Interface):
+
+    def action(self):
+        pass
+
+
+class Button(UI):
+
+    def __init__(self, x, y, width, height, text, color):
+        super().__init__()
+
+    def draw_object(self, display: pygame.Surface, ):
+        pass
 
 
 class Inventory(Interface):
@@ -101,4 +118,15 @@ class MapInter(Interface):
                 else:
                     pygame.draw.rect(display, (10, 10, 10), (i, j, 45, 35))
 
-print(MapInter.mro())
+class MainMenu(Interface):
+
+    def __init__(self):
+        self.button_list = pygame.sprite.Group()
+
+    def draw_object(self, display: pygame.Surface, ):
+        self.fill('#18d2d7')
+        mainmenu_font = pygame.font.SysFont('Cambria', 75)
+        main_menu = mainmenu_font.render('Welcome to Dungetic', True, '#2f3930')
+        self.blit(main_menu, (display_width // 5, display_height // 6))
+        display.blit(self, (0, 0))
+
