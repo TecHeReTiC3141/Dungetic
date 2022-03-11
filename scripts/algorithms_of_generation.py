@@ -1,9 +1,15 @@
 from classes.surrounding import *
 
+def generate_random_loot(classes: list[type], x, y):
+    cl = random.choice(classes)
+    return LyingItem(x, y, cl)
+
+
 def generate_room(cur_ind, dung_width, dung_length) -> Room:
     ways = random.sample(['down', 'right'], random.randint(1, 2))
     enters = []
     walls = []
+    cont = []
     entities = NPC.produce_NPC(random.randint(2, 5))
     if cur_ind > dung_length and 'down' in rooms[cur_ind - dung_length].entrances:
         walls.append(Wall(0, 0, width=random.randint(display_width // 2 - 250, display_width // 2 - 100),
@@ -52,12 +58,14 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
                    width=random.randrange(50, 120, 5),
                    height=random.randrange(50, 120, 5), movable=False) for
               j in range(random.randint(5, 10))]
-    walls += [Vase(random.randrange(100, 905, 5), random.randrange(100, 705, 5),
-                   width=40, height=45, movable=True) for j in range(random.randint(3, 5))]
+    cont += [Vase(x := random.randrange(100, 905, 5), y := random.randrange(100, 705, 5),
+                  width=40, height=45, movable=True, health=15,
+                  container=generate_random_loot([Knife], x, y)) for j in range(random.randint(3, 5))]
     if not enters:
         enters = [dir for dir in directions if dir not in ways]
 
-    return Room(walls, entities, enters, floor=random.choice(['stone', 'wooden']))
+    return Room(walls, cont, entities, enters, floor=random.choice(['stone', 'wooden']))
+
 
 def generate_dungeons() -> dict[int, Room]:
     global rooms

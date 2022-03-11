@@ -10,18 +10,18 @@ polygon = generate_dungeons()
 cur_inter = None
 Map = MapInter(polygon)
 
-
 print(*[''.join([str(i).rjust(3) for i in list(range(1 + dung_length * i, dung_length * (i + 1) + 1))]) for i in
         range(dung_width)], sep='\n')
 
 sp_ev = pygame.USEREVENT + 1
-show_speed = pygame.time.set_timer(sp_ev, 60)
+pygame.time.set_timer(sp_ev, 180)
 clock = pygame.time.Clock()
 
 while game_cycle:
     for event in pygame.event.get():
         if event.type == sp_ev:
-            print(heretic.collised_walls, heretic.speed_directions)
+            polygon[c_a_s.curr_room].clear()
+            # print(heretic.collised_walls, heretic.speed_directions)
         elif event.type == pygame.QUIT:
             pygame.quit()
         elif event.type == pygame.KEYDOWN:
@@ -32,7 +32,8 @@ while game_cycle:
                     cur_inter = Map
 
             elif event.key == pygame.K_e:
-                heretic.hit(polygon[c_a_s.curr_room].entities_list)
+                heretic.hit(polygon[c_a_s.curr_room].entities_list,
+                            polygon[c_a_s.curr_room].containers)
 
     polygon[c_a_s.curr_room].draw_object(display)
     heretic.draw_object(display)
