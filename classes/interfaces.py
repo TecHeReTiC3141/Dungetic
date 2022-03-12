@@ -15,22 +15,36 @@ class Interface(pygame.Surface):
     def draw_object(self, display: pygame.Surface, ):
         display.blit(self, (0, 0))
 
-    def process(self):
+    def process(self, *args):
         pass
 
-class UI(Interface):
+class UI(pygame.sprite.Sprite):
 
-    def action(self):
+    def action(self, mouse: tuple):
         pass
 
-
+button_font = pygame.font.SysFont('Ubuntu', 45)
 class Button(UI):
 
-    def __init__(self, x, y, width, height, text, color):
+    def __init__(self, x, y, width, height, text, color, state):
         super().__init__()
+        self.image = pygame.Surface((width, height))
+        self.state = state
+        self.x, self.y = x, y
+        self.rect = pygame.Rect(x, y, width, height)
+        self.color = color
+        self.label = button_font.render(text, True, BLACK)
 
-    def draw_object(self, display: pygame.Surface, ):
-        pass
+    def draw(self, display: pygame.Surface, ):
+        pygame.draw.rect(self.image, self.color, (0, 0, self.rect.width, self.rect.height), border_radius=8)
+        self.image.blit(self.label, (self.rect.width // 4, self.rect.height // 3))
+        display.blit(self.image, self.rect)
+
+
+    def update(self, mouse: tuple):
+        if self.rect.collidepoint(mouse):
+            return self.state
+
 
 
 class Inventory(Interface):
@@ -118,9 +132,11 @@ class MapInter(Interface):
                 else:
                     pygame.draw.rect(display, (10, 10, 10), (i, j, 45, 35))
 
+
 class MainMenu(Interface):
 
     def __init__(self):
+        super().__init__()
         self.button_list = pygame.sprite.Group()
 
     def draw_object(self, display: pygame.Surface, ):
@@ -130,3 +146,6 @@ class MainMenu(Interface):
         self.blit(main_menu, (display_width // 5, display_height // 6))
         display.blit(self, (0, 0))
 
+    def process(self, mouse: tuple):
+        for button in self.button_list:
+            button.update(mouse=mouse)
