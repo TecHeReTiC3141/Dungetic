@@ -27,6 +27,7 @@ while game_cycle:
             # print(heretic.collised_walls, heretic.speed_directions)
         elif event.type == pygame.QUIT:
             pygame.quit()
+
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_m:
                 if isinstance(cur_inter, MapInter):
@@ -40,8 +41,18 @@ while game_cycle:
             elif event.key == pygame.K_e:
                 heretic.hit(polygon[c_a_s.curr_room].entities_list,
                             polygon[c_a_s.curr_room].containers)
+
+            elif event.key == pygame.K_ESCAPE:
+                game_manager.state = 'main_menu'
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                if game_manager.state == 'main_menu':
+                    Menu.process(pygame.mouse.get_pos(), game_manager)
+
     if game_manager.state == 'main_menu':
         Menu.draw_object(display)
+
     elif game_manager.state == 'main_game':
         polygon[c_a_s.curr_room].draw_object(display)
         heretic.draw_object(display)
