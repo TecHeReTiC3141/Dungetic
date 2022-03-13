@@ -1,9 +1,5 @@
 from classes.entities import *
 
-
-
-
-
 class Container:
     # interface for all game containers
 

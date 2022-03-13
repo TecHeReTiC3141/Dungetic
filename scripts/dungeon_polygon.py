@@ -12,7 +12,6 @@ cur_inter = None
 Map = MapInter(polygon)
 Menu = MainMenu()
 
-
 print(*[''.join([str(i).rjust(3) for i in list(range(1 + dung_length * i,
         dung_length * (i + 1) + 1))]) for i in range(dung_width)], sep='\n')
 
@@ -52,6 +51,7 @@ while game_cycle:
 
     if game_manager.state == 'main_menu':
         Menu.draw_object(display)
+
 
     elif game_manager.state == 'main_game':
         polygon[c_a_s.curr_room].draw_object(display)

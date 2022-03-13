@@ -20,7 +20,7 @@ class Interface(pygame.Surface):
         pass
 
 
-class UI(pygame.sprite.Sprite):
+class UI:
 
     def action(self, mouse: tuple):
         pass
@@ -31,24 +31,28 @@ button_font = pygame.font.SysFont('Ubuntu', 45)
 
 class Button(UI):
 
-    def __init__(self, x, y, width, height, text, color, state, groups):
-        super().__init__(groups)
+    def __init__(self, x, y, width, height, text, color, action: str):
         self.image = pygame.Surface((width, height))
-        self.state = state
+        self.image.set_colorkey(BLACK)
+
         self.x, self.y = x, y
         self.rect = pygame.Rect(x, y, width, height)
         self.color = color
-        self.label = button_font.render(text, True, BLACK)
+        self.label = button_font.render(text, True, '#010101')
+        self.action = action
 
-    def draw(self, display):
-        pygame.draw.rect(self.image, self.color, (0, 0, self.rect.width, self.rect.height), border_radius=8)
-        self.image.blit(self.label, (self.rect.width // 4, self.rect.height // 3))
-        display.blit(self.image, (self.x, self.y))
+    def draw_object(self, display: pygame.Surface):
+        pygame.draw.rect(self.image, pygame.Color('Grey'), (0, 0, self.rect.width, self.rect.height), border_radius=15)
+        pygame.draw.rect(self.image, self.color,
+                         (0, 0, self.rect.width, self.rect.height - 5), border_radius=15)
+
+        self.image.blit(self.label, (self.rect.width // 3, self.rect.height // 5))
+        display.blit(self.image, self.rect)
+
 
     def update(self, mouse: tuple, manager):
         if self.rect.collidepoint(mouse):
-            print(self.state)
-            manager.state = self.state
+            exec(self.action)
 
 
 class Inventory(Interface):
@@ -140,19 +144,24 @@ class MainMenu(Interface):
 
     def __init__(self):
         super().__init__()
-        self.button_list = pygame.sprite.Group()
-        play = Button(display_width // 3, display_height // 2, 250, 120, 'Start',
-                      GREEN, 'main_game', self.button_list)
-        print(self.button_list.sprites())
+
+        play = Button(display_width // 3, display_height // 2, 250, 80, 'Start',
+                      GREEN, 'manager.state = "main_game"')
+        ex = Button(display_width // 3, display_height // 2 + 100, 250, 80, 'Exit',
+                      RED, 'exit()')
+        self.button_list = [play, ex]
+
 
 
     def draw_object(self, display: pygame.Surface, ):
-        self.fill('#18d2d7')
+        self.blit(stone_floor, (0, 0))
         mainmenu_font = pygame.font.SysFont('Cambria', 75)
-        main_menu = mainmenu_font.render('Welcome to Dungetic', True, '#2f3930')
+        main_menu = mainmenu_font.render('Welcome to Dungetic', True, BLACK)
         self.blit(main_menu, (display_width // 5, display_height // 6))
-        self.button_list.draw(self)
+        for button in self.button_list:
+            button.draw_object(self)
         display.blit(self, (0, 0))
 
     def process(self, mouse: tuple, manager):
-        self.button_list.update(mouse, manager)
+        for button in self.button_list:
+            button.update(mouse, manager)
