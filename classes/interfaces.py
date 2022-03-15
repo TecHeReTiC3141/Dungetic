@@ -4,6 +4,7 @@ from scripts.constants_and_sources import *
 import scripts.constants_and_sources as c_a_s
 from classes.Heretic import Heretic
 
+
 class Interface(pygame.Surface):
     '''
     Interface for all custom surfaces used in Dungetic
@@ -12,8 +13,46 @@ class Interface(pygame.Surface):
     def __init__(self):
         super().__init__((display_width, display_height))
 
-    def draw_object(self, display, ):
+    def draw_object(self, display: pygame.Surface, ):
         display.blit(self, (0, 0))
+
+    def process(self, *args):
+        pass
+
+
+class UI:
+
+    def action(self, mouse: tuple):
+        pass
+
+
+button_font = pygame.font.SysFont('Ubuntu', 45)
+
+
+class Button(UI):
+
+    def __init__(self, x, y, width, height, text, color, action: str):
+        self.image = pygame.Surface((width, height))
+        self.image.set_colorkey(BLACK)
+
+        self.x, self.y = x, y
+        self.rect = pygame.Rect(x, y, width, height)
+        self.color = color
+        self.label = button_font.render(text, True, '#010101')
+        self.action = action
+
+    def draw_object(self, display: pygame.Surface):
+        pygame.draw.rect(self.image, pygame.Color('Grey'), (0, 0, self.rect.width, self.rect.height), border_radius=15)
+        pygame.draw.rect(self.image, self.color,
+                         (0, 0, self.rect.width, self.rect.height - 5), border_radius=15)
+
+        self.image.blit(self.label, (self.rect.width // 3, self.rect.height // 5))
+        display.blit(self.image, self.rect)
+
+
+    def update(self, mouse: tuple, manager):
+        if self.rect.collidepoint(mouse):
+            exec(self.action)
 
 
 class Inventory(Interface):
@@ -79,7 +118,6 @@ class MapInter(Interface):
         super().__init__()
         self.rooms = rooms
 
-
     def draw_object(self, display):
         display.blit(bloor, (0, 0))
         display.blit(map_image, (40, 50))
@@ -101,4 +139,29 @@ class MapInter(Interface):
                 else:
                     pygame.draw.rect(display, (10, 10, 10), (i, j, 45, 35))
 
-print(MapInter.mro())
+
+class MainMenu(Interface):
+
+    def __init__(self):
+        super().__init__()
+
+        play = Button(display_width // 3, display_height // 2, 250, 80, 'Start',
+                      GREEN, 'manager.state = "main_game"')
+        ex = Button(display_width // 3, display_height // 2 + 100, 250, 80, 'Exit',
+                      RED, 'exit()')
+        self.button_list = [play, ex]
+
+
+
+    def draw_object(self, display: pygame.Surface, ):
+        self.blit(stone_floor, (0, 0))
+        mainmenu_font = pygame.font.SysFont('Cambria', 75)
+        main_menu = mainmenu_font.render('Welcome to Dungetic', True, BLACK)
+        self.blit(main_menu, (display_width // 5, display_height // 6))
+        for button in self.button_list:
+            button.draw_object(self)
+        display.blit(self, (0, 0))
+
+    def process(self, mouse: tuple, manager):
+        for button in self.button_list:
+            button.update(mouse, manager)

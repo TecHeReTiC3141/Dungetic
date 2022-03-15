@@ -1,9 +1,5 @@
 from classes.entities import *
 
-
-
-
-
 class Container:
     # interface for all game containers
 
@@ -107,7 +103,6 @@ class Vase(Wall, Breakable, Container):
         super().__init__(x, y, width, height, collised, movable, health, container)
         self.sprite = pygame.image.load('../images/Vase1.png').convert_alpha()
         self.sprite.set_colorkey('#FFFFFF')
-        print(hasattr(self, 'content'), self.content)
 
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill('#FFFFFF')
