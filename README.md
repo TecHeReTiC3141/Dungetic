@@ -1,3 +1,3 @@
 # Dungetic
 
-A simple rogue-like game
+A simple OOP-style rogue-like game

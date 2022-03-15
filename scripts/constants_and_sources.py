@@ -1,5 +1,6 @@
-import pygame
 import random
+
+from scripts.Maths import *
 
 game_cycle = True
 pygame.init()
@@ -33,7 +34,7 @@ map_image = pygame.transform.scale(map_image, (
 stone_floor = pygame.transform.scale(pygame.image.load('../images/stone_floor.jpg'), (display_width, display_height))
 wooden_floor = pygame.transform.scale(pygame.image.load('../images/wooden_floor.jpg'), (display_width, display_height))
 
-heretic_images = {i: pygame.image.load(f'../images/heretic_sprite_{i}.png') for i in directions}
+heretic_images = {i: pygame.image.load(f'../images/heretic/heretic_sprite_{i}.png') for i in directions}
 bloor = pygame.Surface((display_width, display_height))
 bloor.set_alpha(15)
 current_interface = None
@@ -45,7 +46,7 @@ inventory_font = pygame.font.SysFont('Cambria', 75)
 
 # borders
 
-left_border = pygame.Rect(5, 0, 10, display_height)
-right_border = pygame.Rect(display_width - 5, 0, 5, display_height)
-upper_border = pygame.Rect(0, 5, display_width, 1)
-lower_border = pygame.Rect(0, display_height - 5, display_width, 1)
+left_border = pygame.Rect(5, 0, 5, display_height)
+right_border = pygame.Rect(display_width - 15, 0, 5, display_height)
+upper_border = pygame.Rect(0, 5, display_width + 5, 5)
+lower_border = pygame.Rect(0, display_height - 15, display_width, 5)

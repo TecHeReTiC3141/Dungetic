@@ -1,12 +1,58 @@
 import pygame
 
 from scripts.constants_and_sources import *
+import scripts.constants_and_sources as c_a_s
 from classes.Heretic import Heretic
 
-class Interface(pygame.Surface):
 
-    def draw_object(self, display,):
+class Interface(pygame.Surface):
+    '''
+    Interface for all custom surfaces used in Dungetic
+    '''
+
+    def __init__(self):
+        super().__init__((display_width, display_height))
+
+    def draw_object(self, display: pygame.Surface, ):
         display.blit(self, (0, 0))
+
+    def process(self, *args):
+        pass
+
+
+class UI:
+
+    def action(self, mouse: tuple):
+        pass
+
+
+button_font = pygame.font.SysFont('Ubuntu', 45)
+
+
+class Button(UI):
+
+    def __init__(self, x, y, width, height, text, color, action: str):
+        self.image = pygame.Surface((width, height))
+        self.image.set_colorkey(BLACK)
+
+        self.x, self.y = x, y
+        self.rect = pygame.Rect(x, y, width, height)
+        self.color = color
+        self.label = button_font.render(text, True, '#010101')
+        self.action = action
+
+    def draw_object(self, display: pygame.Surface):
+        pygame.draw.rect(self.image, pygame.Color('Grey'), (0, 0, self.rect.width, self.rect.height), border_radius=15)
+        pygame.draw.rect(self.image, self.color,
+                         (0, 0, self.rect.width, self.rect.height - 5), border_radius=15)
+
+        self.image.blit(self.label, (self.rect.width // 3, self.rect.height // 5))
+        display.blit(self.image, self.rect)
+
+
+    def update(self, mouse: tuple, manager):
+        if self.rect.collidepoint(mouse):
+            exec(self.action)
 
 
 class Inventory(Interface):
@@ -68,7 +114,11 @@ class Inventory(Interface):
 
 class MapInter(Interface):
 
-    def draw_object(self, display, rooms: list):
+    def __init__(self, rooms: dict):
+        super().__init__()
+        self.rooms = rooms
+
+    def draw_object(self, display):
         display.blit(bloor, (0, 0))
         display.blit(map_image, (40, 50))
         for j in range(90, 90 + dung_width * 80, 80):
@@ -84,7 +134,34 @@ class MapInter(Interface):
                         pygame.draw.rect(display, (200, 200, 200), (i + 45, j + 7, 20, 20))
                     if 'left' in rooms[r_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (i - 15, j + 7, 15, 20))
-                    if r_ind == curr_room:
-                        draw_heretic(i + 10, j + 5, heretic.direction, 0.3)
+                    if r_ind == c_a_s.curr_room:
+                        pygame.draw.rect(display, BLACK, (i + 5, j + 7, 15, 20))
                 else:
                     pygame.draw.rect(display, (10, 10, 10), (i, j, 45, 35))
+
+
+class MainMenu(Interface):
+
+    def __init__(self):
+        super().__init__()
+
+        play = Button(display_width // 3, display_height // 2, 250, 80, 'Start',
+                      GREEN, 'manager.state = "main_game"')
+        ex = Button(display_width // 3, display_height // 2 + 100, 250, 80, 'Exit',
+                      RED, 'exit()')
+        self.button_list = [play, ex]
+
+
+
+    def draw_object(self, display: pygame.Surface, ):
+        self.blit(stone_floor, (0, 0))
+        mainmenu_font = pygame.font.SysFont('Cambria', 75)
+        main_menu = mainmenu_font.render('Welcome to Dungetic', True, BLACK)
+        self.blit(main_menu, (display_width // 5, display_height // 6))
+        for button in self.button_list:
+            button.draw_object(self)
+        display.blit(self, (0, 0))
+
+    def process(self, mouse: tuple, manager):
+        for button in self.button_list:
+            button.update(mouse, manager)
