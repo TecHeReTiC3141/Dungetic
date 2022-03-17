@@ -122,15 +122,18 @@ class LyingItem:
         self.rect = self.sprite.get_rect(topleft=(x, y))
         self.background = pygame.Surface((self.rect.width, self.rect.width))
         self.background.set_colorkey(BLACK)
-
+        self.background.set_alpha(128)
         self.active = False
 
     def draw_object(self, display):
         self.background.fill(BLACK)
-        pygame.draw.circle(self.background, '#0d91b6', self.rect.center, self.rect.width)
+        if self.active:
+            # self.background.fill(WHITE)
+            pygame.draw.circle(self.background, '#0d91b6',
+                           self.background.get_rect().center, self.rect.width // 2)
 
         display.blit(self.sprite, self.rect)
-        display.blit(self.background, self.rect)
+        display.blit(self.background, self.rect.topleft)
 
     def collide(self, entity: Heretic):
         self.active = False
