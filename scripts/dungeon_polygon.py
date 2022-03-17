@@ -1,6 +1,6 @@
 from classes.surrounding import *
 from scripts.algorithms_of_generation import generate_dungeons
-from classes.interfaces import Interface, MapInter, Button, MainMenu
+from classes.interfaces import Interface, MapInter, MainMenu
 from scripts.game_manager import GameManager
 
 heretic = Heretic(100, 100, 75, 100, 78, random.choice(directions), [])
@@ -10,10 +10,11 @@ polygon = generate_dungeons()
 
 cur_inter = None
 Map = MapInter(polygon)
-Menu = MainMenu()
+Menu = MainMenu(game_manager)
 
 print(*[''.join([str(i).rjust(3) for i in list(range(1 + dung_length * i,
-        dung_length * (i + 1) + 1))]) for i in range(dung_width)], sep='\n')
+                                                     dung_length * (i + 1) + 1))]) for i in range(dung_width)],
+      sep='\n')
 
 sp_ev = pygame.USEREVENT + 1
 pygame.time.set_timer(sp_ev, 180)
@@ -47,11 +48,10 @@ while game_cycle:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if game_manager.state == 'main_menu':
-                    Menu.process(pygame.mouse.get_pos(), game_manager)
+                    Menu.process(pygame.mouse.get_pos())
 
     if game_manager.state == 'main_menu':
         Menu.draw_object(display)
-
 
     elif game_manager.state == 'main_game':
         polygon[c_a_s.curr_room].draw_object(display)

@@ -5,4 +5,6 @@ class GameManager:
                        'inventory']
 
     def __init__(self, state='main_menu'):
+        if state not in self.possible_states:
+            raise RuntimeError('State is not supported')
         self.state = state

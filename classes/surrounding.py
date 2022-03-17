@@ -120,12 +120,24 @@ class LyingItem:
         self.sprite = pygame.transform.rotate(self.loot.sprite['left'], random.randint(0, 360))
         self.sprite.set_colorkey('#FFFFFF')
         self.rect = self.sprite.get_rect(topleft=(x, y))
+        self.background = pygame.Surface((self.rect.width, self.rect.width))
+        self.background.set_colorkey(BLACK)
+
+        self.active = False
 
     def draw_object(self, display):
-        display.blit(self.sprite, self.rect)
+        self.background.fill(BLACK)
+        pygame.draw.circle(self.background, '#0d91b6', self.rect.center, self.rect.width)
 
-    def collide(self):
-        pass
+        display.blit(self.sprite, self.rect)
+        display.blit(self.background, self.rect)
+
+    def collide(self, entity: Heretic):
+        self.active = False
+        if self.rect.colliderect(entity.phys_rect):
+            self.active = True
+            print(self.active)
+
 
 
 class Room:
@@ -149,6 +161,9 @@ class Room:
     def physics(self, heretic: Heretic):
         for wall in self.obst_list + self.containers:
             wall.collide(self.entities_list + [heretic])
+        for drop in self.drops:
+            drop.collide(heretic)
+
 
     def life(self):
         for entity in self.entities_list:
@@ -161,6 +176,7 @@ class Room:
                 if cont.is_broken:
                     loot = cont.get_broken()
                     if isinstance(cont, Container):
+                        loot.rect.topleft = cont.phys_rect.topleft
                         self.drops.append(loot)
                 else:
                     sorted_conts.append(cont)

@@ -1,5 +1,6 @@
 from classes.surrounding import *
 
+
 def generate_random_loot(classes: list[type], x, y):
     cl = random.choice(classes)
     return LyingItem(x, y, cl)

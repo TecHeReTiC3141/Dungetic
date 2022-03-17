@@ -1,8 +1,7 @@
-import pygame
-
-from scripts.constants_and_sources import *
 import scripts.constants_and_sources as c_a_s
 from classes.Heretic import Heretic
+from scripts.constants_and_sources import *
+from scripts.game_manager import GameManager
 
 
 class Interface(pygame.Surface):
@@ -31,7 +30,7 @@ button_font = pygame.font.SysFont('Ubuntu', 45)
 
 class Button(UI):
 
-    def __init__(self, x, y, width, height, text, color, action: str):
+    def __init__(self, x, y, width, height, text, color):
         self.image = pygame.Surface((width, height))
         self.image.set_colorkey(BLACK)
 
@@ -39,7 +38,6 @@ class Button(UI):
         self.rect = pygame.Rect(x, y, width, height)
         self.color = color
         self.label = button_font.render(text, True, '#010101')
-        self.action = action
 
     def draw_object(self, display: pygame.Surface):
         pygame.draw.rect(self.image, pygame.Color('Grey'), (0, 0, self.rect.width, self.rect.height), border_radius=15)
@@ -49,10 +47,41 @@ class Button(UI):
         self.image.blit(self.label, (self.rect.width // 3, self.rect.height // 5))
         display.blit(self.image, self.rect)
 
-
-    def update(self, mouse: tuple, manager):
+    def update(self, mouse,):
         if self.rect.collidepoint(mouse):
-            exec(self.action)
+            pass
+
+
+class ChangeState(Button):
+    def __init__(self, x, y, width, height, text, color, manager: GameManager, state: str):
+        super().__init__(x, y, width, height, text, color)
+        self.manager = manager
+        self.state = state
+
+    def update(self, mouse):
+        if self.rect.collidepoint(mouse):
+            self.manager.state = self.state
+
+
+class SimpleButton(Button):
+    def __init__(self, x, y, width, height, text, color, action):
+        super().__init__(x, y, width, height, text, color)
+        self.action = action
+
+    def update(self, mouse,):
+        if self.rect.collidepoint(mouse):
+            self.action()
+
+class Switcher(UI):
+
+    def __init__(self, x, y, text, state, atr: str):
+        self.x = x
+        self.y = y
+        self.rect = pygame.Rect(x, y, 80, 45)
+        self.label = button_font.render(text, True, BLACK)
+        self.images = {True: '', False: ''}
+
+
 
 
 class Inventory(Interface):
@@ -142,16 +171,16 @@ class MapInter(Interface):
 
 class MainMenu(Interface):
 
-    def __init__(self):
+    def __init__(self, manager: GameManager):
         super().__init__()
-
-        play = Button(display_width // 3, display_height // 2, 250, 80, 'Start',
-                      GREEN, 'manager.state = "main_game"')
-        ex = Button(display_width // 3, display_height // 2 + 100, 250, 80, 'Exit',
-                      RED, 'exit()')
-        self.button_list = [play, ex]
-
-
+        self.manager = manager
+        play = ChangeState(display_width // 3, display_height // 2, 250, 80, 'Start',
+                      GREEN, manager, 'main_game')
+        settings = ChangeState(display_width // 3, display_height // 2 + 100, 250, 80, 'Settings',
+                      BLUE, manager, 'settings')
+        ex = SimpleButton(display_width // 3, display_height // 2 + 200, 250, 80, 'Exit',
+                      RED, exit)
+        self.button_list = [play, settings, ex]
 
     def draw_object(self, display: pygame.Surface, ):
         self.blit(stone_floor, (0, 0))
@@ -162,6 +191,6 @@ class MainMenu(Interface):
             button.draw_object(self)
         display.blit(self, (0, 0))
 
-    def process(self, mouse: tuple, manager):
+    def process(self, mouse: tuple):
         for button in self.button_list:
-            button.update(mouse, manager)
+            button.update(mouse, )
