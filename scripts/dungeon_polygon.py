@@ -57,10 +57,6 @@ while game_cycle:
         polygon[c_a_s.curr_room].draw_object(display)
         heretic.draw_object(display)
 
-        pygame.draw.rect(display, '#FF0000', left_border)
-        pygame.draw.rect(display, '#FF0000', right_border)
-        pygame.draw.rect(display, '#FF0000', upper_border)
-        pygame.draw.rect(display, '#FF0000', lower_border)
         display.blit(text_font.render(f'{c_a_s.curr_room}', True, WHITE), (25, 25))
         if isinstance(cur_inter, Interface):
             cur_inter.draw_object(display)

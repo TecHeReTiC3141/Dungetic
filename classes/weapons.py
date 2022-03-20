@@ -17,8 +17,8 @@ class Fist(Weapon):
     hit_range = 40
 
 class Knife(Weapon):
-    sprite = {'left': pygame.image.load('../images/weapons/iron_knife.png'),
-              'right': pygame.transform.flip(pygame.image.load('../images/weapons/iron_knife.png'),
+    sprite = {'right': pygame.image.load('../images/weapons/iron_knife.png'),
+              'left': pygame.transform.flip(pygame.image.load('../images/weapons/iron_knife.png'),
                                              flip_x=True, flip_y=False)}
     damage = 8
     capability = 50

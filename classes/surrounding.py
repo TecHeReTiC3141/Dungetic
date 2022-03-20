@@ -1,4 +1,5 @@
-from classes.entities import *
+
+from classes.drops import *
 
 class Container:
     # interface for all game containers
@@ -111,48 +112,21 @@ class Vase(Wall, Breakable, Container):
         return self.visible_zone
 
 
-class LyingItem:
 
-    def __init__(self, x, y, lootcls: type):
-        self.loot = lootcls()
-        self.x = x
-        self.y = y
-        self.sprite = pygame.transform.rotate(self.loot.sprite['left'], random.randint(0, 360))
-        self.sprite.set_colorkey('#FFFFFF')
-        self.rect = self.sprite.get_rect(topleft=(x, y))
-        self.background = pygame.Surface((self.rect.width, self.rect.width))
-        self.background.set_colorkey(BLACK)
-        self.background.set_alpha(128)
-        self.active = False
-
-    def draw_object(self, display):
-        self.background.fill(BLACK)
-        if self.active:
-            # self.background.fill(WHITE)
-            pygame.draw.circle(self.background, '#0d91b6',
-                           self.background.get_rect().center, self.rect.width // 2)
-
-        display.blit(self.sprite, self.rect)
-        display.blit(self.background, self.rect.topleft)
-
-    def collide(self, entity: Heretic):
-        self.active = False
-        if self.rect.colliderect(entity.phys_rect):
-            self.active = True
-            print(self.active)
 
 
 
 class Room:
 
-    def __init__(self, obst_list: list[Wall], containers: list[Wall], entities_list: list[NPC], entrances, floor: str):
+    def __init__(self, obst_list: list[Wall], containers: list[Wall],
+                 entities_list: list[NPC], entrances, floor: str):
         self.obst_list = obst_list
         self.containers = containers
         self.drops = []
         self.entities_list = entities_list
         self.entrances = entrances
         self.floor = c_a_s.stone_floor if floor == 'stone' else c_a_s.wooden_floor
-        self.visited = False
+        self.visited = True
 
     def draw_object(self, display):
         display.blit(self.floor, (0, 0))
@@ -188,3 +162,5 @@ class Room:
         self.containers = sorted_conts.copy()
         self.entities_list = list(filter(lambda i: not i.dead,
                                          self.entities_list))
+        self.drops = list(filter(lambda i: not i.picked,
+                                                 self.drops))
