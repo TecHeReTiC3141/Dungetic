@@ -8,6 +8,7 @@ game_manager = GameManager()
 
 polygon = generate_dungeons()
 
+tick = 0
 cur_inter = None
 Map = MapInter(polygon)
 Menu = MainMenu(game_manager)
@@ -58,15 +59,16 @@ while game_cycle:
         heretic.draw_object(display)
 
         display.blit(text_font.render(f'{c_a_s.curr_room}', True, WHITE), (25, 25))
+        display.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
         if isinstance(cur_inter, Interface):
             cur_inter.draw_object(display)
         heretic.move()
-        heretic.update()
+        heretic.update(tick)
         polygon[c_a_s.curr_room].life()
         polygon[c_a_s.curr_room].physics(heretic)
 
     pygame.display.update()
 
     clock.tick(60)
-
+    tick += 1
     polygon[c_a_s.curr_room].visited = True

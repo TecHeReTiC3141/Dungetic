@@ -16,8 +16,6 @@ clock = pygame.time.Clock()
 directions = 'left right up down'.split()
 opposites = {'left': 'right', 'right': 'left', 'up': 'down', 'down': 'up'}
 
-tick = 0
-
 BLACK = '#000000'
 WHITE = '#FFFFFF'
 RED = '#FF0000'

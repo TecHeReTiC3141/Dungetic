@@ -6,14 +6,21 @@ class Drop:
         self.loot = lootcls()
         self.x = x
         self.y = y
-        self.sprite = pygame.transform.rotate(self.loot.sprite['left'], random.randint(0, 360))
+        self.sprite = pygame.transform.rotate(self.loot.sprite['left']
+                                              if isinstance(self.loot.sprite, dict) else self.loot.sprite,
+                                              random.randint(0, 360))
         self.sprite.set_colorkey('#FFFFFF')
         self.rect = self.sprite.get_rect(topleft=(x, y))
         self.active = False
         self.picked = False
+        self.autopicked = isinstance(self.loot, Money)
+
+    def draw_object(self, display):
+        pass
 
     def picked_up(self, entity: Heretic):
         self.picked = True
+        self.loot.picked_up(entity)
 
 
 class LyingItem(Drop):
@@ -39,9 +46,9 @@ class LyingItem(Drop):
         self.active = False
         if self.rect.colliderect(entity.phys_rect):
             self.active = True
-            if pygame.mouse.get_pressed()[0]:
+            if self.autopicked:
+                self.picked_up(entity)
+            elif pygame.mouse.get_pressed()[0]:
                 x, y = pygame.mouse.get_pos()
                 if self.rect.collidepoint((x, y)):
-                    entity.weapon = self.loot
                     self.picked_up(entity)
-            print(self.active)

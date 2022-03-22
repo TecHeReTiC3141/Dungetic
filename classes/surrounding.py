@@ -112,10 +112,6 @@ class Vase(Wall, Breakable, Container):
         return self.visible_zone
 
 
-
-
-
-
 class Room:
 
     def __init__(self, obst_list: list[Wall], containers: list[Wall],
@@ -152,9 +148,10 @@ class Room:
             if isinstance(cont, Breakable):
                 if cont.is_broken:
                     loot = cont.get_broken()
-                    if isinstance(cont, Container):
-                        loot.rect.topleft = cont.phys_rect.topleft
-                        self.drops.append(loot)
+                    for loo in loot:
+                        if isinstance(cont, Container):
+                            loo.rect.topleft = cont.phys_rect.topleft
+                            self.drops.append(loo)
                 else:
                     sorted_conts.append(cont)
 

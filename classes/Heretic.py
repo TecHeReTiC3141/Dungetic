@@ -42,6 +42,8 @@ class Heretic:
         self.target = target
         self.size = size
         self.speed = speed
+        self.money = 0
+        self.actual_money = 0
 
     def hit(self, entities: list, conts: list):
         if self.attack_time <= 0:
@@ -135,9 +137,11 @@ class Heretic:
             self.y = 25
             self.phys_rect.topleft = (self.x, self.y)
 
-    def update(self):
+    def update(self, tick: int):
         if self.attack_time:
             self.attack_time -= 1
+        if self.money != self.actual_money and not tick % 6:
+            self.money = self.money + 1 if self.money < self.actual_money else self.money - 1
 
     @staticmethod
     def tp(room):
@@ -163,7 +167,7 @@ class Heretic:
         # if self.direction in self.weapon.sprite:
         #     if self.direction == 'left':
         #         display.blit(self.weapon, (self.phys_rect.left - 5, self.))
-        pygame.draw.rect(display, RED, self.attack_rect)
+        #pygame.draw.rect(display, RED, self.attack_rect)
 
         self.visible_zone.blit(heretic_images[self.direction], (0, 0))
         display.blit(self.visible_zone, self.phys_rect)

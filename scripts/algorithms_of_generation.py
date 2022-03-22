@@ -1,9 +1,10 @@
 from classes.surrounding import *
 
 
-def generate_random_loot(classes: list[type], x, y):
-    cl = random.choice(classes)
-    return LyingItem(x, y, cl)
+def generate_random_loot(classes: list[type], x, y, n=1):
+    return [LyingItem(x, y, random.choice(classes)) for i in range(n)]
+
+
 
 
 def generate_room(cur_ind, dung_width, dung_length) -> Room:
@@ -61,7 +62,7 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
               j in range(random.randint(5, 10))]
     cont += [Vase(x := random.randrange(100, 905, 5), y := random.randrange(100, 705, 5),
                   width=40, height=45, movable=True, health=15,
-                  container=generate_random_loot([Knife], x, y)) for j in range(random.randint(3, 5))]
+                  container=generate_random_loot([Knife, Coin], x, y, n=3)) for j in range(random.randint(3, 5))]
     if not enters:
         enters = [dir for dir in directions if dir not in ways]
 
