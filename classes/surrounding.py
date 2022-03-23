@@ -1,4 +1,4 @@
-
+from math import *
 from classes.drops import *
 
 class Container:
@@ -112,6 +112,31 @@ class Vase(Wall, Breakable, Container):
         return self.visible_zone
 
 
+class Node:
+    '''
+    A class for nodes for pathfinding grid
+    '''
+
+    def __init__(self, x, y, width, height):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.status = 1
+
+    def collide(self, obsts: list[Wall]):
+        for wall in obsts:
+            if wall.outer_phys_rect.colliderect(self.rect):
+                self.status = 0
+                break
+
+    def draw_object(self, display):
+        pygame.draw.rect(display, [RED, BLUE][self.status], self.rect)
+
+        # drawing the grid
+        pygame.draw.line(display, BLACK, self.rect.topleft, (display_width, self.rect.top))
+        pygame.draw.line(display, BLACK, self.rect.bottomleft, (display_width, self.rect.bottom))
+        pygame.draw.line(display, BLACK, self.rect.topleft, (self.rect.left, display_height))
+        pygame.draw.line(display, BLACK, self.rect.topright, (self.rect.right, display_height))
+
+
 class Room:
 
     def __init__(self, obst_list: list[Wall], containers: list[Wall],
@@ -123,13 +148,27 @@ class Room:
         self.entrances = entrances
         self.floor = c_a_s.stone_floor if floor == 'stone' else c_a_s.wooden_floor
         self.visited = True
+        self.nodes = [[Node(j * 50, i * 50, 50, 50) for j in range(ceil(display_width / 50))]
+                      for i in range(ceil(display_height / 50))]
+        for node_l in range(len(self.nodes)):
+            for node in self.nodes[node_l]:
+                node.collide(self.obst_list)
 
-    def draw_object(self, display):
+
+    def draw_object(self, display: pygame.Surface, show_grid: bool):
         display.blit(self.floor, (0, 0))
+        if show_grid:
+            self.draw_grid(display)
         for wall in self.obst_list + self.containers + self.drops:
             wall.draw_object(display)
         for entity in self.entities_list:
             entity.draw_object(display)
+
+    def draw_grid(self, display):
+        for node_l in self.nodes:
+            for node in node_l:
+                node.draw_object(display)
+
 
     def physics(self, heretic: Heretic):
         for wall in self.obst_list + self.containers:

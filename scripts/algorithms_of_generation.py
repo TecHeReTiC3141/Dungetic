@@ -5,8 +5,6 @@ def generate_random_loot(classes: list[type], x, y, n=1):
     return [LyingItem(x, y, random.choice(classes)) for i in range(n)]
 
 
-
-
 def generate_room(cur_ind, dung_width, dung_length) -> Room:
     ways = random.sample(['down', 'right'], random.randint(1, 2))
     enters = []
