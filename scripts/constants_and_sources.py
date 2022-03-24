@@ -1,4 +1,11 @@
 import random
+from pathfinding.core.grid import Grid, Node
+from pathfinding.finder.a_star import AStarFinder
+from pathfinding.core.diagonal_movement import DiagonalMovement
+from collections import *
+
+PathFinder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+grid_size = 32
 
 from scripts.Maths import *
 

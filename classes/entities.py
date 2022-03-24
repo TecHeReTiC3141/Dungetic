@@ -11,47 +11,8 @@ class NPC(Heretic):
                  target=None, weapon=None, location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
         super().__init__(x, y, width, height, health, direction, inventory,
                          speed, target, weapon, location, attack_time, half_attack_time, backpack, size)
+        self.path = ()
 
-
-    # def draw_object(self, display):
-    #     self.visible_zone.fill((0, 0, 0))
-    #     if self.weapon is not None and self.direction == 'right':
-    #         self.weapon.draw_object(self.x + 65 - ((self.half_attack_time -
-    #                                                 self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0),
-    #                                 self.y + 30)
-    #     elif self.weapon is not None and self.direction == 'up':
-    #         self.weapon.draw_object(self.x - 15, self.y + 30 + ((self.half_attack_time -
-    #                                                              self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
-    #     pygame.draw.rect(display, (0, 0, 0), (self.x, self.y, 75, 100))
-    #     eye_colour = (0, 0, 0)
-    #     if self.direction == 'down':
-    #         pygame.draw.rect(display, (255, 255, 255), (self.x + 10, self.y + 10, 20, 20))
-    #         pygame.draw.rect(display, (255, 255, 255), (self.x + 40, self.y + 10, 20, 20))
-    #         pygame.draw.rect(display, eye_colour, (self.x + 18, self.y + 17, 4, 4))
-    #         pygame.draw.rect(display, eye_colour, (self.x + 48, self.y + 17, 4, 4))
-    #         if self.backpack:
-    #             self.backpack.draw_on_heretic(self.x + 40, self.y + 45)
-    #         if self.weapon is not None:
-    #             self.weapon.draw_object(self.x + 65, self.y + 30 - ((self.half_attack_time -
-    #                                                                  self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
-    #
-    #     elif self.direction == 'left':
-    #         pygame.draw.rect(display, (255, 255, 255), (self.x + 8, self.y + 10, 20, 20))
-    #         pygame.draw.rect(display, (255, 255, 255), (self.x + 38, self.y + 10, 20, 20))
-    #         pygame.draw.rect(display, eye_colour, (self.x + 13, self.y + 17, 4, 4))
-    #         pygame.draw.rect(display, eye_colour, (self.x + 43, self.y + 17, 4, 4))
-    #         if self.backpack:
-    #             self.backpack.draw_on_heretic(self.x + 20, self.y + 45)
-    #         if self.weapon is not None:
-    #             self.weapon.draw_object(self.x + 45 + ((self.half_attack_time -
-    #                                                     self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0),
-    #                                     self.y + 30)
-    #
-    #     elif self.direction == 'right':
-    #         pygame.draw.rect(display, (255, 255, 255), (self.x + 20, self.y + 10, 20, 20))
-    #         pygame.draw.rect(display, (255, 255, 255), (self.x + 50, self.y + 10, 20, 20))
-    #         pygame.draw.rect(display, eye_colour, (self.x + 31, self.y + 17, 4, 4))
-    #         pygame.draw.rect(display, eye_colour, (self.x + 61, self.y + 17, 4, 4))
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill((0, 0, 0))
         # if self.backpack and self.directions == 'right':
@@ -65,7 +26,6 @@ class NPC(Heretic):
         # elif self.weapon != 'none' and self.directions == 'up':
         #     self.weapon.draw_object(self.x - 15, self.y + 30 + ((self.half_attack_time -
         #                                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
-        eye_colour = (0, 0, 0)
         self.visible_zone.blit(heretic_images[self.direction], (0, 0))
         pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25), border_radius=8)
         pygame.draw.rect(display, pygame.Color('Yellow'), (self.x - 10, self.y - 28,
@@ -110,6 +70,9 @@ class NPC(Heretic):
             self.active_zone.move_ip(0, d_speed)
             self.phys_rect.move_ip(0, d_speed)
             self.attack_rect.move_ip(0, d_speed)
+
+        self.node = Node(self.phys_rect.centerx // grid_size,
+                         self.phys_rect.centery // grid_size)
 
     def passive_exist(self):
 

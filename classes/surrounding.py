@@ -1,6 +1,7 @@
 from math import *
 from classes.drops import *
 
+
 class Container:
     # interface for all game containers
 
@@ -112,7 +113,7 @@ class Vase(Wall, Breakable, Container):
         return self.visible_zone
 
 
-class Node:
+class MyNode:
     '''
     A class for nodes for pathfinding grid
     '''
@@ -148,27 +149,40 @@ class Room:
         self.entrances = entrances
         self.floor = c_a_s.stone_floor if floor == 'stone' else c_a_s.wooden_floor
         self.visited = True
-        self.nodes = [[Node(j * 50, i * 50, 50, 50) for j in range(ceil(display_width / 50))]
-                      for i in range(ceil(display_height / 50))]
+        self.nodes = [[MyNode(j * grid_size, i * grid_size, grid_size, grid_size) for j in range(ceil(display_width / grid_size))]
+                      for i in range(ceil(display_height / grid_size))]
         for node_l in range(len(self.nodes)):
             for node in self.nodes[node_l]:
                 node.collide(self.obst_list)
+        'grid for pathfinding'
+        self.grid = Grid(matrix=[[self.nodes[i][j].status for j in range(ceil(display_width / grid_size))]
+                     for i in range(ceil(display_height / grid_size))])
 
-
-    def draw_object(self, display: pygame.Surface, show_grid: bool):
-        display.blit(self.floor, (0, 0))
+    def draw_object(self, surface: pygame.Surface, show_grid: bool):
+        surface.blit(self.floor, (0, 0))
         if show_grid:
-            self.draw_grid(display)
-        for wall in self.obst_list + self.containers + self.drops:
-            wall.draw_object(display)
-        for entity in self.entities_list:
-            entity.draw_object(display)
+            self.draw_grid(surface)
+            for entity in self.entities_list:
+                if entity.path:
+                    # print(entity.path)
+                    path = [(x * grid_size + grid_size // 2, y * grid_size + grid_size // 2) for x, y in entity.path]
 
-    def draw_grid(self, display):
+                    pygame.draw.lines(surface, BLACK, False, path, width=10)
+        #     for entity in self.entities_list:
+        #         entity.visible_zone.set_alpha(128)
+        #         pygame.draw.rect(surface, GREEN, (entity.node.x * grid_size, entity.node.y * grid_size, grid_size, grid_size))
+        # else:
+        #     for entity in self.entities_list:
+        #         entity.visible_zone.set_alpha(255)
+        for wall in self.obst_list + self.containers + self.drops:
+            wall.draw_object(surface)
+        for entity in self.entities_list:
+            entity.draw_object(surface)
+
+    def draw_grid(self, surface):
         for node_l in self.nodes:
             for node in node_l:
-                node.draw_object(display)
-
+                node.draw_object(surface)
 
     def physics(self, heretic: Heretic):
         for wall in self.obst_list + self.containers:
@@ -176,6 +190,14 @@ class Room:
         for drop in self.drops:
             drop.collide(heretic)
 
+    def make_paths(self, target: Heretic):
+        target.node = self.grid.node(*target.get_center_coord())
+        for entity in self.entities_list:
+            entity.node = self.grid.node(*entity.get_center_coord())
+            entity.path, _ = PathFinder.find_path(entity.node, target.node, self.grid)
+            entity.path = deque(entity.path)
+            # print(entity.path)
+            self.grid.cleanup()
 
     def life(self):
         for entity in self.entities_list:
@@ -194,9 +216,8 @@ class Room:
                 else:
                     sorted_conts.append(cont)
 
-
         self.containers = sorted_conts.copy()
         self.entities_list = list(filter(lambda i: not i.dead,
                                          self.entities_list))
         self.drops = list(filter(lambda i: not i.picked,
-                                                 self.drops))
+                                 self.drops))

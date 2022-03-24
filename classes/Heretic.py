@@ -25,6 +25,9 @@ class Heretic:
         self.phys_rect = pygame.Rect(x, y, self.width, int(self.height))
         self.active_zone = pygame.Rect(x - 50, y - 50, self.width * 2, int(self.height * 1.5))
 
+        self.node = Node(self.phys_rect.centerx // grid_size,
+                         self.phys_rect.centery // grid_size)
+
         self.weapon = Fist()
         self.attack_rect = pygame.Rect(self.x - self.weapon.hit_range,
                                        self.y + self.height // 5,
@@ -37,11 +40,11 @@ class Heretic:
         self.location = location
         self.attack_time = attack_time
         self.half_attack_time = half_attack_time
-        self.backpack = backpack
 
         self.target = target
         self.size = size
         self.speed = speed
+
         self.money = 0
         self.actual_money = 0
 
@@ -72,6 +75,10 @@ class Heretic:
 
             self.attack_time = self.weapon.capability
             self.half_attack_time = self.weapon.capability // 2
+
+    def get_center_coord(self):
+        return self.phys_rect.centerx // grid_size, \
+               self.phys_rect.centery // grid_size
 
     def move(self):  # heretic's moving
         global c_a_s

@@ -1,4 +1,3 @@
-from classes.Heretic import *
 from classes.surrounding import *
 
 heretic = Heretic(100, 100, 75, 100, 78, random.choice(directions), [])
@@ -11,13 +10,18 @@ polygon = Room([Wall(random.randint(100, 900), random.randint(100, 900),
 tick = 0
 show_grid = False
 sp_ev = pygame.USEREVENT + 1
-show_speed = pygame.time.set_timer(sp_ev, 60)
+show_paths = pygame.USEREVENT + 2
+pygame.time.set_timer(sp_ev, 60)
+pygame.time.set_timer(show_paths, 180)
 clock = pygame.time.Clock()
 
 while game_cycle:
     for event in pygame.event.get():
         if event.type == sp_ev:
             pass
+        elif event.type == show_paths:
+            polygon.make_paths(heretic)
+
         if event.type == pygame.QUIT:
             pygame.quit()
         if event.type == pygame.KEYDOWN:

@@ -9,6 +9,7 @@ game_manager = GameManager()
 polygon = generate_dungeons()
 
 tick = 0
+draw_grid = False
 cur_inter = None
 Map = MapInter(polygon)
 Menu = MainMenu(game_manager)
@@ -18,7 +19,9 @@ print(*[''.join([str(i).rjust(3) for i in list(range(1 + dung_length * i,
       sep='\n')
 
 sp_ev = pygame.USEREVENT + 1
+show_paths = pygame.USEREVENT + 2
 pygame.time.set_timer(sp_ev, 180)
+pygame.time.set_timer(show_paths, 150)
 clock = pygame.time.Clock()
 
 while game_cycle:
@@ -29,6 +32,9 @@ while game_cycle:
         elif event.type == pygame.QUIT:
             pygame.quit()
 
+        elif event.type == show_paths:
+            polygon[c_a_s.curr_room].make_paths(heretic)
+
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_m:
                 if isinstance(cur_inter, MapInter):
@@ -36,12 +42,12 @@ while game_cycle:
                 else:
                     cur_inter = Map
 
-            elif event.key == pygame.K_g:
-                game_manager.state = 'main_game'
-
             elif event.key == pygame.K_e:
                 heretic.hit(polygon[c_a_s.curr_room].entities_list,
                             polygon[c_a_s.curr_room].containers)
+
+            elif event.key == pygame.K_g:
+                draw_grid = ~draw_grid
 
             elif event.key == pygame.K_ESCAPE:
                 game_manager.state = 'main_menu'
@@ -55,7 +61,7 @@ while game_cycle:
         Menu.draw_object(display)
 
     elif game_manager.state == 'main_game':
-        polygon[c_a_s.curr_room].draw_object(display)
+        polygon[c_a_s.curr_room].draw_object(display, draw_grid)
         heretic.draw_object(display)
 
         display.blit(text_font.render(f'{c_a_s.curr_room}', True, WHITE), (25, 25))
