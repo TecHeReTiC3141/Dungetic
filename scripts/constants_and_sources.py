@@ -1,9 +1,20 @@
 import random
-
+from typing import overload
+from pathfinding.core.grid import Grid, Node
+from pathfinding.finder.a_star import AStarFinder
+from pathfinding.core.diagonal_movement import DiagonalMovement
+from collections import *
 from scripts.Maths import *
 
-game_cycle = True
 pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.set_volume(60)
+
+PathFinder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+grid_size = 32
+
+game_cycle = True
+
 dung_length, dung_width = map(int, input('Введите длину и ширину подземелья: ').split())
 
 curr_room = random.randint(1, dung_width * dung_length)
@@ -11,6 +22,7 @@ rooms = {}
 
 display_width, display_height = (1440, 800)
 display = pygame.display.set_mode((display_width, display_height))
+pygame.display.set_caption('Dungetic')
 
 clock = pygame.time.Clock()
 directions = 'left right up down'.split()
