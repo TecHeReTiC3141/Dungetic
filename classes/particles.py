@@ -18,4 +18,4 @@ class Particle(pygame.Surface):
     def delete(self):
         self.deleted = True
 
-
+# TODO create some concrete particles

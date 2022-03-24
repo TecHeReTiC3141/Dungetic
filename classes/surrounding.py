@@ -164,16 +164,9 @@ class Room:
             self.draw_grid(surface)
             for entity in self.entities_list:
                 if len(entity.path) > 1:
-                    # print(entity.path)
-
 
                     pygame.draw.lines(surface, BLACK, False, entity.path, width=10)
-        #     for entity in self.entities_list:
-        #         entity.visible_zone.set_alpha(128)
-        #         pygame.draw.rect(surface, GREEN, (entity.node.x * grid_size, entity.node.y * grid_size, grid_size, grid_size))
-        # else:
-        #     for entity in self.entities_list:
-        #         entity.visible_zone.set_alpha(255)
+
         for wall in self.obst_list + self.containers + self.drops:
             wall.draw_object(surface)
         for entity in self.entities_list:
@@ -197,8 +190,8 @@ class Room:
 
                 entity.node = self.grid.node(*entity.get_center_coord(True))
                 entity.path, _ = PathFinder.find_path(entity.node, target.node, self.grid)
-                entity.path = deque([(x * grid_size + grid_size // 2, y * grid_size + grid_size // 2) for x, y in entity.path])
-                print(entity.targetpoint.center, entity.cur_point, entity.dirs)
+                entity.path = deque([(x * grid_size + grid_size // 2,
+                                      y * grid_size + grid_size // 2) for x, y in entity.path])
                 self.grid.cleanup()
 
     def life(self, tick: int):

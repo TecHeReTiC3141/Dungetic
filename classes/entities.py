@@ -5,11 +5,12 @@ class NPC(Heretic):
     stop = False
     delay = random.randint(250, 450)
 
-    def __init__(self, x, y, width, height, health, direction, inventory, speed, behavior_type='passive',
-                 target=None, weapon=None, location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
+    def __init__(self, x, y, width, height, health, direction, inventory, speed,
+                 target=None, weapon=Fist(), location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
         super().__init__(x, y, width, height, health, direction, inventory,
                          speed, target, weapon, location, attack_time, half_attack_time, backpack, size)
         self.path = deque()
+
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill((0, 0, 0))
         # if self.backpack and self.directions == 'right':
@@ -103,8 +104,8 @@ class NPC(Heretic):
 
 class Hostile(NPC):
 
-    def __init__(self, x, y, width, height, health, direction, inventory, speed, behavior_type='passive',
-                 target=None, weapon=None, location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
+    def __init__(self, x, y, width, height, health, direction, inventory, speed,
+                 target=None, weapon=Fist(), location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
         super().__init__(x, y, width, height, health, direction, inventory,
                          speed, target, weapon, location, attack_time, half_attack_time, backpack, size)
 
@@ -141,9 +142,23 @@ class Hostile(NPC):
         else:
             self.targetpoint = pygame.Rect((self.path[0][0] + 3, self.path[0][1] + 3), (6, 6))
 
+    def hit(self, entities: list[Heretic] = None, conts: list = None):
+        if self.attack_time <= 0:
+            for target in entities:
+                if self.active_zone.colliderect(target.active_zone):
+                    self.attack_time = self.weapon.capability
+                    target.health -= self.weapon.damage
+                    dist_x, dist_y = map(round, get_rects_dir(self.phys_rect, target.phys_rect) \
+                                         * self.weapon.damage * 10)
+                    target.x += dist_x
+                    target.y += dist_y
+                    target.phys_rect.move_ip(dist_x, dist_y)
+                    target.active_zone.move_ip(dist_x, dist_y)
+                    if target.actual_health <= 0:
+                        target.die()
+        # TODO add attacks to hostiles
+
     @staticmethod
     def produce_Hostiles(n):
         return [Hostile(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
-                    random.choice(directions), [], speed=random.randint(3, 4)) for i in range(n)]
-
-
+                        random.choice(directions), [], speed=random.randint(3, 4)) for i in range(n)]

@@ -70,7 +70,7 @@ while game_cycle:
             cur_inter.draw_object(display)
         heretic.move()
         heretic.update(tick)
-        polygon[c_a_s.curr_room].life()
+        polygon[c_a_s.curr_room].life(tick)
         polygon[c_a_s.curr_room].physics(heretic)
 
     pygame.display.update()

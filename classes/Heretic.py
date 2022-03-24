@@ -1,14 +1,12 @@
 from scripts.constants_and_sources import *
 import scripts.constants_and_sources as c_a_s
 from classes.weapons import *
-from scripts.Maths import get_rect_dist
-
 
 
 class Heretic:
 
     def __init__(self, x, y, width, height, health, direction, inventory,
-                 speed=5, strength=5, target=None, weapon=None, location=None, attack_time=0,
+                 speed=5, target=None, weapon=Fist(), location=None, attack_time=0,
                  half_attack_time=0, backpack=None, size=1.):
         self.x = x
         self.y = y
@@ -28,7 +26,7 @@ class Heretic:
         self.node = Node(self.phys_rect.centerx // grid_size,
                          self.phys_rect.centery // grid_size)
 
-        self.weapon = Fist()
+        self.weapon = weapon
         self.attack_rect = pygame.Rect(self.x - self.weapon.hit_range,
                                        self.y + self.height // 5,
                                        self.weapon.hit_range, self.height // 5 * 3)
@@ -48,23 +46,26 @@ class Heretic:
         self.money = 0
         self.actual_money = 0
 
-    def hit(self, entities: list, conts: list):
+    def hit(self, entities: list = None, conts: list = None):
         if self.attack_time <= 0:
             for entity in entities:
                 if entity.phys_rect.colliderect(self.attack_rect):
                     entity.actual_health -= self.weapon.damage
-                    dist_x, dist_y = get_rect_dist(entity.phys_rect, self.phys_rect)
+                    dist_x, dist_y = map(round, get_rects_dir(self.phys_rect, entity.phys_rect) \
+                                         * self.weapon.knockback)
                     entity.x += dist_x
                     entity.y += dist_y
                     entity.phys_rect.move_ip(dist_x, dist_y)
                     entity.active_zone.move_ip(dist_x, dist_y)
                     if entity.actual_health <= 0:
                         entity.die()
+                    self.weapon.hit_sound.play()
 
             for obst in conts:
                 if obst.phys_rect.colliderect(self.attack_rect):
                     obst.health -= self.weapon.damage
-                    dist_x, dist_y = get_rect_dist(obst.phys_rect, self.phys_rect)
+                    dist_x, dist_y = map(round, get_rects_dir(self.phys_rect, obst.phys_rect) \
+                                         * self.weapon.knockback // 2)
                     obst.x += dist_x
                     obst.y += dist_y
                     obst.phys_rect.move_ip(dist_x, dist_y)
@@ -78,7 +79,7 @@ class Heretic:
 
     def get_center_coord(self, ind):
         return (self.phys_rect.centerx // grid_size, self.phys_rect.centery // grid_size) if ind \
-        else (self.phys_rect.centerx, self.phys_rect.centery)
+            else (self.phys_rect.centerx, self.phys_rect.centery)
 
     def move(self):  # heretic's moving
         global c_a_s
@@ -174,7 +175,7 @@ class Heretic:
         # if self.direction in self.weapon.sprite:
         #     if self.direction == 'left':
         #         display.blit(self.weapon, (self.phys_rect.left - 5, self.))
-        #pygame.draw.rect(display, RED, self.attack_rect)
+        # pygame.draw.rect(display, RED, self.attack_rect)
 
         self.visible_zone.blit(heretic_images[self.direction], (0, 0))
         display.blit(self.visible_zone, self.phys_rect)
