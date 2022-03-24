@@ -76,9 +76,9 @@ class Heretic:
             self.attack_time = self.weapon.capability
             self.half_attack_time = self.weapon.capability // 2
 
-    def get_center_coord(self):
-        return self.phys_rect.centerx // grid_size, \
-               self.phys_rect.centery // grid_size
+    def get_center_coord(self, ind):
+        return (self.phys_rect.centerx // grid_size, self.phys_rect.centery // grid_size) if ind \
+        else (self.phys_rect.centerx, self.phys_rect.centery)
 
     def move(self):  # heretic's moving
         global c_a_s

@@ -1,5 +1,3 @@
-import pygame
-
 from classes.Heretic import *
 
 
@@ -11,8 +9,7 @@ class NPC(Heretic):
                  target=None, weapon=None, location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
         super().__init__(x, y, width, height, health, direction, inventory,
                          speed, target, weapon, location, attack_time, half_attack_time, backpack, size)
-        self.path = ()
-
+        self.path = deque()
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill((0, 0, 0))
         # if self.backpack and self.directions == 'right':
@@ -29,11 +26,11 @@ class NPC(Heretic):
         self.visible_zone.blit(heretic_images[self.direction], (0, 0))
         pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25), border_radius=8)
         pygame.draw.rect(display, pygame.Color('Yellow'), (self.x - 10, self.y - 28,
-                                        int(100.0 * float(self.health) / 100.0), 21), border_radius=8)
+                                                           int(100.0 * float(self.health) / 100.0), 21),
+                         border_radius=8)
         pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
                                         int(100.0 * float(self.actual_health) / 100.0), 21), border_radius=8)
         display.blit(self.visible_zone, self.phys_rect)
-
 
     def walk(self):
         if self.direction == 'left' and self.collised_walls['left'] is None:
@@ -89,11 +86,10 @@ class NPC(Heretic):
                 or (self.y <= 0 and self.direction == 'up') or (self.y >= 685 and self.direction == 'down'):
             self.direction = opposites[self.direction]
         self.delay -= 1
+
+    def update(self, tick: int):
         if self.health > self.actual_health:
             self.health -= .1
-
-    def hostile_exist(self):
-        pass
 
     def die(self):
         # drop loot or smth like that
@@ -103,3 +99,51 @@ class NPC(Heretic):
     def produce_NPC(n):
         return [NPC(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
                     random.choice(directions), [], speed=random.randint(3, 4)) for i in range(n)]
+
+
+class Hostile(NPC):
+
+    def __init__(self, x, y, width, height, health, direction, inventory, speed, behavior_type='passive',
+                 target=None, weapon=None, location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
+        super().__init__(x, y, width, height, health, direction, inventory,
+                         speed, target, weapon, location, attack_time, half_attack_time, backpack, size)
+
+        self.targetpoint = pygame.Rect(self.phys_rect.center, (5, 5))
+        self.cur_point = pygame.math.Vector2(self.get_center_coord(False))
+        self.dirs = pygame.math.Vector2([0, 0])
+
+    def hostile_exist(self):
+        if self.path:
+            next_point = pygame.math.Vector2(self.targetpoint.center)
+            self.cur_point = pygame.math.Vector2(self.get_center_coord(False))
+            if (next_point - self.cur_point).length() != 0:
+                self.dirs = (next_point - self.cur_point).normalize() * self.speed
+
+            if self.dirs.x > 0:
+                self.direction = 'right'
+            elif self.dirs.x < 0:
+                self.direction = 'left'
+            if self.dirs.y < 0:
+                self.direction = 'up'
+            elif self.dirs.y > .2:
+                self.direction = 'down'
+            self.x += round(self.dirs.x)
+            self.y += round(self.dirs.y)
+            self.phys_rect.move_ip(round(self.dirs.x),
+                                   round(self.dirs.y))
+            if self.targetpoint.collidepoint(self.phys_rect.center):
+                self.nextpoint()
+
+    def nextpoint(self):
+        self.path.popleft()
+        if not self.path:
+            self.targetpoint = pygame.Rect(self.phys_rect.center, (6, 6))
+        else:
+            self.targetpoint = pygame.Rect((self.path[0][0] + 3, self.path[0][1] + 3), (6, 6))
+
+    @staticmethod
+    def produce_Hostiles(n):
+        return [Hostile(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
+                    random.choice(directions), [], speed=random.randint(3, 4)) for i in range(n)]
+
+

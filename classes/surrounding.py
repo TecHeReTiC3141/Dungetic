@@ -35,7 +35,7 @@ class Wall:
         self.phys_rect = pygame.Rect(x, y, width, height)
         self.inner_phys_rect = pygame.Rect(x + 5, y + 5,
                                            max(width - 10, 10), max(height - 10, 10))
-        self.outer_phys_rect = pygame.Rect(x - 5, y - 5, width + 10, height + 10)
+        self.outer_phys_rect = pygame.Rect(x - 10, y - 10, width + 20, height + 20)
         self.visible_zone = pygame.Surface((width, height))
         self.visible_zone.set_colorkey('#FFFFFF')
         self.collised = collised
@@ -163,11 +163,11 @@ class Room:
         if show_grid:
             self.draw_grid(surface)
             for entity in self.entities_list:
-                if entity.path:
+                if len(entity.path) > 1:
                     # print(entity.path)
-                    path = [(x * grid_size + grid_size // 2, y * grid_size + grid_size // 2) for x, y in entity.path]
 
-                    pygame.draw.lines(surface, BLACK, False, path, width=10)
+
+                    pygame.draw.lines(surface, BLACK, False, entity.path, width=10)
         #     for entity in self.entities_list:
         #         entity.visible_zone.set_alpha(128)
         #         pygame.draw.rect(surface, GREEN, (entity.node.x * grid_size, entity.node.y * grid_size, grid_size, grid_size))
@@ -191,17 +191,23 @@ class Room:
             drop.collide(heretic)
 
     def make_paths(self, target: Heretic):
-        target.node = self.grid.node(*target.get_center_coord())
+        target.node = self.grid.node(*target.get_center_coord(True))
         for entity in self.entities_list:
-            entity.node = self.grid.node(*entity.get_center_coord())
-            entity.path, _ = PathFinder.find_path(entity.node, target.node, self.grid)
-            entity.path = deque(entity.path)
-            # print(entity.path)
-            self.grid.cleanup()
+            if isinstance(entity, Hostile):
 
-    def life(self):
+                entity.node = self.grid.node(*entity.get_center_coord(True))
+                entity.path, _ = PathFinder.find_path(entity.node, target.node, self.grid)
+                entity.path = deque([(x * grid_size + grid_size // 2, y * grid_size + grid_size // 2) for x, y in entity.path])
+                print(entity.targetpoint.center, entity.cur_point, entity.dirs)
+                self.grid.cleanup()
+
+    def life(self, tick: int):
         for entity in self.entities_list:
-            entity.passive_exist()
+            if isinstance(entity, Hostile):
+                entity.hostile_exist()
+            else:
+                entity.passive_exist()
+            entity.update(tick)
 
     def clear(self):
         sorted_conts = []

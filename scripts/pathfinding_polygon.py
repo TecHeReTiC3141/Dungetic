@@ -4,15 +4,16 @@ heretic = Heretic(100, 100, 75, 100, 78, random.choice(directions), [])
 
 vase = Vase(random.randint(100, 300), random.randint(100, 300), 50, 50)
 polygon = Room([Wall(random.randint(100, 900), random.randint(100, 900),
-            random.randint(50, 150), random.randint(50, 150)) for i in range(random.randint(7, 10))],
-               [vase], NPC.produce_NPC(random.randint(2, 4)), None, 'wooden', )
+            random.randint(50, 150), random.randint(50, 150)) for i in range(random.randint(9, 15))],
+               [vase], NPC.produce_NPC(random.randint(1, 2))
+               + Hostile.produce_Hostiles(random.randint(2, 3)), None, 'wooden', )
 
 tick = 0
 show_grid = False
 sp_ev = pygame.USEREVENT + 1
 show_paths = pygame.USEREVENT + 2
 pygame.time.set_timer(sp_ev, 60)
-pygame.time.set_timer(show_paths, 180)
+pygame.time.set_timer(show_paths, 150)
 clock = pygame.time.Clock()
 
 while game_cycle:
@@ -36,7 +37,7 @@ while game_cycle:
     heretic.move()
     heretic.update(tick)
     pygame.display.update()
-    polygon.life()
+    polygon.life(tick)
     polygon.physics(heretic)
     tick += 1
     clock.tick(60)
