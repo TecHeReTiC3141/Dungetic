@@ -12,8 +12,11 @@ class Heretic:
         self.y = y
         self.width = width
         self.height = height
+
         self.health = health
         self.actual_health = health
+        self.regeneration_delay = 0
+
         self.dead = False
         self.direction = direction
         self.inventory = inventory
@@ -51,7 +54,9 @@ class Heretic:
         if self.attack_time <= 0:
             for entity in entities:
                 if entity.phys_rect.colliderect(self.attack_rect):
-                    entity.actual_health -= self.weapon.damage
+                    entity.actual_health = max(entity.actual_health -
+                                               self.weapon.damage, 0)
+                    entity.regeneration = -1
                     dist_x, dist_y = map(round, get_rects_dir(self.phys_rect, entity.phys_rect) \
                                          * self.weapon.knockback)
                     entity.x += dist_x
@@ -145,14 +150,23 @@ class Heretic:
     def update(self, tick: int):
         self.active_zone.topleft = (self.phys_rect.left - self.width // 10,
                                     self.phys_rect.top + self.height // 10)
+
+        if not tick % 10:
+            self.regenerate()
         if self.health > self.actual_health:
             self.health -= .1
+        if self.regeneration_delay > 0:
+            self.regeneration_delay -= 1
 
         if self.attack_time > 0:
             self.attack_time -= 1
 
         if self.money != self.actual_money and not tick % 6:
             self.money = self.money + 1 if self.money < self.actual_money else self.money - 1
+
+    def regenerate(self):
+        if self.regeneration_delay == 0:
+            self.actual_health = min(self.actual_health + 2, 100)
 
     @staticmethod
     def tp(room):
@@ -189,6 +203,14 @@ class Heretic:
                 display.blit(self.weapon.sprite['right'], (self.attack_rect.left, self.attack_rect.midleft[1]))
 
         # display.blit(self.attack_surf, self.attack_rect)
+        if self.attack_time > 0:
+
+            pygame.draw.rect(display, (0, 0, 0),
+                             (self.phys_rect.centerx - self.weapon.capability // 2,
+                              self.y - 45, self.weapon.capability, 14), border_radius=8)
+            pygame.draw.rect(display, BLUE,
+                             (self.phys_rect.centerx - self.weapon.capability // 2 + 2,
+                              self.y - 44, self.attack_time - 4, 12))
         pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25), border_radius=8)
         pygame.draw.rect(display, pygame.Color('Yellow'), (self.x - 10, self.y - 28,
                                                            int(100.0 * float(self.health) / 100.0), 21),

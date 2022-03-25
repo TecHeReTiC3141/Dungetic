@@ -12,26 +12,7 @@ class NPC(Heretic):
         self.path = deque()
 
     def draw_object(self, display: pygame.Surface):
-        self.visible_zone.fill((0, 0, 0))
-        # if self.backpack and self.directions == 'right':
-        #     self.backpack.draw_on_self(self.x + 25, self.y + 45)
-        # elif self.backpack and self.directions == 'up':
-        #     self.backpack.draw_on_self(self.x - 5, self.y + 45)
-        # if self.weapon != 'none' and self.directions == 'right':
-        #     self.weapon.draw_object(self.x + 65 - ((self.half_attack_time -
-        #                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0),
-        #                                self.y + 30)
-        # elif self.weapon != 'none' and self.directions == 'up':
-        #     self.weapon.draw_object(self.x - 15, self.y + 30 + ((self.half_attack_time -
-        #                                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
-        self.visible_zone.blit(heretic_images[self.direction], (0, 0))
-        pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25), border_radius=8)
-        pygame.draw.rect(display, pygame.Color('Yellow'), (self.x - 10, self.y - 28,
-                                                           int(100.0 * float(self.health) / 100.0), 21),
-                         border_radius=8)
-        pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
-                                        int(100.0 * float(self.actual_health) / 100.0), 21), border_radius=8)
-        display.blit(self.visible_zone, self.phys_rect)
+        super().draw_object(display)
 
     def walk(self):
         if self.direction == 'left' and self.collised_walls['left'] is None:
@@ -145,8 +126,9 @@ class Hostile(NPC):
         if self.attack_time <= 0:
             for target in entities:
                 if self.active_zone.colliderect(target.active_zone):
-                    self.attack_time = self.weapon.capability
-                    target.actual_health -= self.weapon.damage
+                    self.attack_time = self.weapon.capability * 2
+                    target.actual_health = max(target.actual_health - self.weapon.damage, 0)
+                    target.regeneration = self.weapon.damage * 20
                     dist_x, dist_y = map(round, get_rects_dir(self.phys_rect, target.phys_rect) \
                                          * self.weapon.damage * 10)
                     target.x += dist_x
@@ -155,12 +137,10 @@ class Hostile(NPC):
                     target.active_zone.move_ip(dist_x, dist_y)
                     if target.actual_health <= 0:
                         target.die()
-        # TODO add attacks to hostiles
 
     def draw_object(self, display: pygame.Surface):
         super().draw_object(display)
-        display.blit(text_font.render(str(self.attack_time), True, (0, 0, 0)),
-                     (self.phys_rect.centerx, self.phys_rect.top - 30))
+
     @staticmethod
     def produce_Hostiles(n):
         return [Hostile(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,

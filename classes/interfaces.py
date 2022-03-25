@@ -72,6 +72,7 @@ class SimpleButton(Button):
         if self.rect.collidepoint(mouse):
             self.action()
 
+
 class Switcher(UI):
 
     def __init__(self, x, y, text, state, atr: str):
@@ -80,8 +81,6 @@ class Switcher(UI):
         self.rect = pygame.Rect(x, y, 80, 45)
         self.label = button_font.render(text, True, BLACK)
         self.images = {True: '', False: ''}
-
-
 
 
 class Inventory(Interface):
