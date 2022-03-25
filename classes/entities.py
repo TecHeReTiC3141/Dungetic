@@ -88,10 +88,6 @@ class NPC(Heretic):
             self.direction = opposites[self.direction]
         self.delay -= 1
 
-    def update(self, tick: int):
-        if self.health > self.actual_health:
-            self.health -= .1
-
     def die(self):
         # drop loot or smth like that
         self.dead = True
@@ -108,7 +104,7 @@ class Hostile(NPC):
                  target=None, weapon=Fist(), location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
         super().__init__(x, y, width, height, health, direction, inventory,
                          speed, target, weapon, location, attack_time, half_attack_time, backpack, size)
-
+        self.target = []
         self.targetpoint = pygame.Rect(self.phys_rect.center, (5, 5))
         self.cur_point = pygame.math.Vector2(self.get_center_coord(False))
         self.dirs = pygame.math.Vector2([0, 0])
@@ -132,8 +128,11 @@ class Hostile(NPC):
             self.y += round(self.dirs.y)
             self.phys_rect.move_ip(round(self.dirs.x),
                                    round(self.dirs.y))
+            self.active_zone.move_ip(round(self.dirs.x),
+                                   round(self.dirs.y))
             if self.targetpoint.collidepoint(self.phys_rect.center):
                 self.nextpoint()
+            self.hit(entities=self.target)
 
     def nextpoint(self):
         self.path.popleft()
@@ -147,7 +146,7 @@ class Hostile(NPC):
             for target in entities:
                 if self.active_zone.colliderect(target.active_zone):
                     self.attack_time = self.weapon.capability
-                    target.health -= self.weapon.damage
+                    target.actual_health -= self.weapon.damage
                     dist_x, dist_y = map(round, get_rects_dir(self.phys_rect, target.phys_rect) \
                                          * self.weapon.damage * 10)
                     target.x += dist_x
@@ -158,6 +157,10 @@ class Hostile(NPC):
                         target.die()
         # TODO add attacks to hostiles
 
+    def draw_object(self, display: pygame.Surface):
+        super().draw_object(display)
+        display.blit(text_font.render(str(self.attack_time), True, (0, 0, 0)),
+                     (self.phys_rect.centerx, self.phys_rect.top - 30))
     @staticmethod
     def produce_Hostiles(n):
         return [Hostile(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,

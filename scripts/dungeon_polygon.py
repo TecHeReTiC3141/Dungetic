@@ -3,7 +3,7 @@ from scripts.algorithms_of_generation import generate_dungeons
 from classes.interfaces import Interface, MapInter, MainMenu
 from scripts.game_manager import GameManager
 
-heretic = Heretic(100, 100, 75, 100, 78, random.choice(directions), [])
+heretic = Heretic(100, 100, 75, 100, 100, random.choice(directions), [])
 game_manager = GameManager()
 
 polygon = generate_dungeons()

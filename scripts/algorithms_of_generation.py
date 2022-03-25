@@ -10,7 +10,7 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
     enters = []
     walls = []
     cont = []
-    entities = NPC.produce_NPC(random.randint(2, 5))
+    entities = NPC.produce_NPC(random.randint(1, 3)) + Hostile.produce_Hostiles(random.randint(2, 3))
     if cur_ind > dung_length and 'down' in rooms[cur_ind - dung_length].entrances:
         walls.append(Wall(0, 0, width=random.randint(display_width // 2 - 250, display_width // 2 - 100),
                           height=random.randint(50, 100)))

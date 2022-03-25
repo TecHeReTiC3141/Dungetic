@@ -187,7 +187,7 @@ class Room:
         target.node = self.grid.node(*target.get_center_coord(True))
         for entity in self.entities_list:
             if isinstance(entity, Hostile):
-
+                entity.target = [target]
                 entity.node = self.grid.node(*entity.get_center_coord(True))
                 entity.path, _ = PathFinder.find_path(entity.node, target.node, self.grid)
                 entity.path = deque([(x * grid_size + grid_size // 2,

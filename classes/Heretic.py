@@ -21,7 +21,8 @@ class Heretic:
         self.light_zone = []
         self.visible_zone = pygame.Surface((self.width, self.height))
         self.phys_rect = pygame.Rect(x, y, self.width, int(self.height))
-        self.active_zone = pygame.Rect(x - 50, y - 50, self.width * 2, int(self.height * 1.5))
+        self.active_zone = pygame.Rect(x - self.width // 10, y + self.height // 10,
+                                       self.width * 1.2, int(self.height * .8))
 
         self.node = Node(self.phys_rect.centerx // grid_size,
                          self.phys_rect.centery // grid_size)
@@ -88,7 +89,6 @@ class Heretic:
             self.direction = 'left'
             l_speed = self.speed_directions['left']
             self.x -= l_speed
-            self.active_zone.move_ip(-l_speed, 0)
             self.phys_rect.move_ip(-l_speed, 0)
             self.attack_rect.move_ip(-l_speed, 0)
             self.attack_rect.update(self.x - self.weapon.hit_range,
@@ -99,7 +99,6 @@ class Heretic:
             self.direction = 'right'
             r_speed = self.speed_directions['right']
             self.x += r_speed
-            self.active_zone.move_ip(r_speed, 0)
             self.phys_rect.move_ip(r_speed, 0)
             self.attack_rect.move_ip(r_speed, 0)
             self.attack_rect.update(self.phys_rect.right, self.y + self.height // 5,
@@ -109,7 +108,6 @@ class Heretic:
             self.direction = 'up'
             u_speed = self.speed_directions['up']
             self.y -= u_speed
-            self.active_zone.move_ip(0, -u_speed)
             self.phys_rect.move_ip(0, -u_speed)
             self.attack_rect.move_ip(0, -u_speed)
             self.attack_rect.update(self.x + self.width // 5, self.y - self.weapon.hit_range,
@@ -119,7 +117,6 @@ class Heretic:
             self.direction = 'down'
             d_speed = self.speed_directions['down']
             self.y += d_speed
-            self.active_zone.move_ip(0, d_speed)
             self.phys_rect.move_ip(0, d_speed)
             self.attack_rect.move_ip(0, d_speed)
             self.attack_rect.update(self.x + self.width // 5, self.y + self.height,
@@ -146,8 +143,14 @@ class Heretic:
             self.phys_rect.topleft = (self.x, self.y)
 
     def update(self, tick: int):
-        if self.attack_time:
+        self.active_zone.topleft = (self.phys_rect.left - self.width // 10,
+                                    self.phys_rect.top + self.height // 10)
+        if self.health > self.actual_health:
+            self.health -= .1
+
+        if self.attack_time > 0:
             self.attack_time -= 1
+
         if self.money != self.actual_money and not tick % 6:
             self.money = self.money + 1 if self.money < self.actual_money else self.money - 1
 
@@ -176,7 +179,7 @@ class Heretic:
         #     if self.direction == 'left':
         #         display.blit(self.weapon, (self.phys_rect.left - 5, self.))
         # pygame.draw.rect(display, RED, self.attack_rect)
-
+        pygame.draw.rect(display, WHITE, self.active_zone)
         self.visible_zone.blit(heretic_images[self.direction], (0, 0))
         display.blit(self.visible_zone, self.phys_rect)
         if self.direction in self.weapon.sprite:
@@ -186,6 +189,10 @@ class Heretic:
                 display.blit(self.weapon.sprite['right'], (self.attack_rect.left, self.attack_rect.midleft[1]))
 
         # display.blit(self.attack_surf, self.attack_rect)
-    #  pygame.draw.rect(self.visible_zone, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25))
-    #    pygame.draw.rect(self.visible_zone, RED, (self.x - 10, self.y - 28,
-    #       int(100.0 * float(self.health) / 100.0), 21))
+        pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25), border_radius=8)
+        pygame.draw.rect(display, pygame.Color('Yellow'), (self.x - 10, self.y - 28,
+                                                           int(100.0 * float(self.health) / 100.0), 21),
+                         border_radius=8)
+        pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
+                                        int(100.0 * float(self.actual_health) / 100.0), 21), border_radius=8)
+
