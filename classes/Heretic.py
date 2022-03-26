@@ -6,8 +6,7 @@ from classes.weapons import *
 class Heretic:
 
     def __init__(self, x, y, width, height, health, direction, inventory,
-                 speed=5, target=None, weapon=Fist(), location=None, attack_time=0,
-                 half_attack_time=0, backpack=None, size=1.):
+                 speed=5, target=None, weapon=Fist(), location=None, size=1.):
         self.x = x
         self.y = y
         self.width = width
@@ -40,8 +39,8 @@ class Heretic:
         self.speed_directions = dict.fromkeys(directions, 5)
 
         self.location = location
-        self.attack_time = attack_time
-        self.half_attack_time = half_attack_time
+        self.attack_time = 0
+        self.half_attack_time = 0
 
         self.target = target
         self.size = size
@@ -56,7 +55,7 @@ class Heretic:
                 if entity.phys_rect.colliderect(self.attack_rect):
                     entity.actual_health = max(entity.actual_health -
                                                self.weapon.damage, 0)
-                    entity.regeneration = -1
+                    entity.regeneration_delay = -1
                     dist_x, dist_y = map(round, get_rects_dir(self.phys_rect, entity.phys_rect) \
                                          * self.weapon.knockback)
                     entity.x += dist_x
@@ -81,7 +80,6 @@ class Heretic:
                         obst.get_broken()
 
             self.attack_time = self.weapon.capability
-            self.half_attack_time = self.weapon.capability // 2
 
     def get_center_coord(self, ind):
         return (self.phys_rect.centerx // grid_size, self.phys_rect.centery // grid_size) if ind \
@@ -96,20 +94,15 @@ class Heretic:
             self.x -= l_speed
             self.phys_rect.move_ip(-l_speed, 0)
             self.attack_rect.move_ip(-l_speed, 0)
-            self.attack_rect.update(self.x - self.weapon.hit_range,
-                                    self.y + self.height // 5,
-                                    self.weapon.hit_range, self.height // 5 * 3)
 
-        if keys[pygame.K_d] and self.x < display_width - self.width - 5:
+        if keys[pygame.K_d]:
             self.direction = 'right'
             r_speed = self.speed_directions['right']
             self.x += r_speed
             self.phys_rect.move_ip(r_speed, 0)
             self.attack_rect.move_ip(r_speed, 0)
-            self.attack_rect.update(self.phys_rect.right, self.y + self.height // 5,
-                                    self.weapon.hit_range, self.height // 5 * 3)
 
-        if keys[pygame.K_w] and self.y > -3:
+        if keys[pygame.K_w]:
             self.direction = 'up'
             u_speed = self.speed_directions['up']
             self.y -= u_speed
@@ -118,7 +111,7 @@ class Heretic:
             self.attack_rect.update(self.x + self.width // 5, self.y - self.weapon.hit_range,
                                     self.width // 5 * 3, self.weapon.hit_range)
 
-        if keys[pygame.K_s] and self.y < display_height - self.height - 5:
+        if keys[pygame.K_s]:
             self.direction = 'down'
             d_speed = self.speed_directions['down']
             self.y += d_speed
@@ -148,8 +141,16 @@ class Heretic:
             self.phys_rect.topleft = (self.x, self.y)
 
     def update(self, tick: int):
+        # TODO fixed bugs connected with regeneration
         self.active_zone.topleft = (self.phys_rect.left - self.width // 10,
                                     self.phys_rect.top + self.height // 10)
+        if self.direction == 'left':
+            self.attack_rect.update(self.x - self.weapon.hit_range,
+                                    self.y + self.height // 5,
+                                    self.weapon.hit_range, self.height // 5 * 3)
+        elif self.direction == 'right':
+            self.attack_rect.update(self.phys_rect.right, self.y + self.height // 5,
+                                    self.weapon.hit_range, self.height // 5 * 3)
 
         if not tick % 10:
             self.regenerate()

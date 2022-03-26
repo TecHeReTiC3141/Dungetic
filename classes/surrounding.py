@@ -216,7 +216,16 @@ class Room:
                     sorted_conts.append(cont)
 
         self.containers = sorted_conts.copy()
-        self.entities_list = list(filter(lambda i: not i.dead,
-                                         self.entities_list))
+
+        alive = []
+        for entity in self.entities_list:
+            if entity.dead:
+                for loot in entity.loot:
+                    if isinstance(loot, Drop):
+                        self.drops.append(loot)
+            else:
+                alive.append(entity)
+        self.entities_list = alive.copy()
+
         self.drops = list(filter(lambda i: not i.picked,
                                  self.drops))

@@ -27,8 +27,8 @@ class Fist(Weapon):
 
 
 class Knife(Weapon):
-    sprite = {'right': pygame.image.load('../images/weapons/iron_knife.png'),
-              'left': pygame.transform.flip(pygame.image.load('../images/weapons/iron_knife.png'),
+    sprite = {'right': pygame.image.load('../images/weapons/knife/iron_knife.png'),
+              'left': pygame.transform.flip(pygame.image.load('../images/weapons/knife/iron_knife.png'),
                                              flip_x=True, flip_y=False)}
     damage = 8
     knockback = 35
@@ -46,11 +46,13 @@ class Money:
         self.value = 0
 
 
-class Coin(Money):
-    sprite = pygame.image.load('../images/coin.png').convert_alpha()
+class GoldCoin(Money):
+    sprite = pygame.image.load('../images/Money/gold_coin.png').convert_alpha()
     value = 5
 
-
+class SilverCoin(Money):
+    sprite = pygame.image.load('../images/Money/silver_coin.png').convert_alpha()
+    value = 2
 
 
 

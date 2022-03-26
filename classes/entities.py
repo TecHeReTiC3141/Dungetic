@@ -6,10 +6,11 @@ class NPC(Heretic):
     delay = random.randint(250, 450)
 
     def __init__(self, x, y, width, height, health, direction, inventory, speed,
-                 target=None, weapon=Fist(), location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
+                 target=None, weapon=Fist(), loot=None, location=None, size=1.):
         super().__init__(x, y, width, height, health, direction, inventory,
-                         speed, target, weapon, location, attack_time, half_attack_time, backpack, size)
+                         speed, target, weapon, location, size)
         self.path = deque()
+        self.loot = [] if loot is None else loot
 
     def draw_object(self, display: pygame.Surface):
         super().draw_object(display)
@@ -69,22 +70,26 @@ class NPC(Heretic):
             self.direction = opposites[self.direction]
         self.delay -= 1
 
-    def die(self):
+    def die(self) -> list:
         # drop loot or smth like that
         self.dead = True
+        for loot in self.loot:
+            loot.rect.topleft = self.phys_rect.topleft
+        print(self.loot)
+        return self.loot
 
     @staticmethod
-    def produce_NPC(n):
+    def produce_NPC(n, loot: list):
         return [NPC(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
-                    random.choice(directions), [], speed=random.randint(3, 4)) for i in range(n)]
+                    random.choice(directions), [], speed=random.randint(3, 4), loot=loot) for i in range(n)]
 
 
 class Hostile(NPC):
 
     def __init__(self, x, y, width, height, health, direction, inventory, speed,
-                 target=None, weapon=Fist(), location=None, attack_time=0, half_attack_time=0, backpack=None, size=1.):
+                 target=None, weapon=Fist(), location=None, loot=None, size=1.):
         super().__init__(x, y, width, height, health, direction, inventory,
-                         speed, target, weapon, location, attack_time, half_attack_time, backpack, size)
+                         speed, target, weapon, loot, location, size)
         self.target = []
         self.targetpoint = pygame.Rect(self.phys_rect.center, (5, 5))
         self.cur_point = pygame.math.Vector2(self.get_center_coord(False))
@@ -110,7 +115,7 @@ class Hostile(NPC):
             self.phys_rect.move_ip(round(self.dirs.x),
                                    round(self.dirs.y))
             self.active_zone.move_ip(round(self.dirs.x),
-                                   round(self.dirs.y))
+                                     round(self.dirs.y))
             if self.targetpoint.collidepoint(self.phys_rect.center):
                 self.nextpoint()
             self.hit(entities=self.target)
@@ -128,7 +133,7 @@ class Hostile(NPC):
                 if self.active_zone.colliderect(target.active_zone):
                     self.attack_time = self.weapon.capability * 2
                     target.actual_health = max(target.actual_health - self.weapon.damage, 0)
-                    target.regeneration = self.weapon.damage * 20
+                    target.regeneration_delay = self.weapon.damage * 20
                     dist_x, dist_y = map(round, get_rects_dir(self.phys_rect, target.phys_rect) \
                                          * self.weapon.damage * 10)
                     target.x += dist_x
@@ -142,6 +147,6 @@ class Hostile(NPC):
         super().draw_object(display)
 
     @staticmethod
-    def produce_Hostiles(n):
-        return [Hostile(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
-                        random.choice(directions), [], speed=random.randint(3, 4)) for i in range(n)]
+    def produce_Hostiles(n, loot: list):
+        return [Hostile(random.randint(300, 800), random.randint(200, 600), 75, 100, 15,
+                        random.choice(directions), [], speed=random.randint(3, 4), loot=loot) for i in range(n)]
