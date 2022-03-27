@@ -42,13 +42,14 @@ class LyingItem(Drop):
         display.blit(self.sprite, self.rect)
         display.blit(self.background, self.rect.topleft)
 
-    def collide(self, entity: Heretic):
+    def collide(self, entities: list[Heretic]):
         self.active = False
-        if self.rect.colliderect(entity.phys_rect):
-            self.active = True
-            if self.autopicked:
-                self.picked_up(entity)
-            elif pygame.mouse.get_pressed()[0]:
-                x, y = pygame.mouse.get_pos()
-                if self.rect.collidepoint((x, y)):
+        for entity in entities:
+            if self.rect.colliderect(entity.phys_rect):
+                self.active = True
+                if self.autopicked:
                     self.picked_up(entity)
+                elif pygame.mouse.get_pressed()[0]:
+                    x, y = pygame.mouse.get_pos()
+                    if self.rect.collidepoint((x, y)):
+                        self.picked_up(entity)

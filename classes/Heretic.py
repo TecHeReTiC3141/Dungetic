@@ -14,7 +14,7 @@ class Heretic:
 
         self.health = health
         self.actual_health = health
-        self.regeneration_delay = 0
+        self.regeneration_delay = -1
 
         self.dead = False
         self.direction = direction
@@ -141,7 +141,6 @@ class Heretic:
             self.phys_rect.topleft = (self.x, self.y)
 
     def update(self, tick: int):
-        # TODO fixed bugs connected with regeneration
         self.active_zone.topleft = (self.phys_rect.left - self.width // 10,
                                     self.phys_rect.top + self.height // 10)
         if self.direction == 'left':

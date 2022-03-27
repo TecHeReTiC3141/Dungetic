@@ -18,15 +18,15 @@ print(*[''.join([str(i).rjust(3) for i in list(range(1 + dung_length * i,
                                                      dung_length * (i + 1) + 1))]) for i in range(dung_width)],
       sep='\n')
 
-sp_ev = pygame.USEREVENT + 1
+wipe = pygame.USEREVENT + 1
 show_paths = pygame.USEREVENT + 2
-pygame.time.set_timer(sp_ev, 180)
+pygame.time.set_timer(wipe, 120)
 pygame.time.set_timer(show_paths, 150)
 clock = pygame.time.Clock()
 
 while game_cycle:
     for event in pygame.event.get():
-        if event.type == sp_ev:
+        if event.type == wipe:
             polygon[c_a_s.curr_room].clear()
             # print(heretic.collised_walls, heretic.speed_directions)
         elif event.type == pygame.QUIT:

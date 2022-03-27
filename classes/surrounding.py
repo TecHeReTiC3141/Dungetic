@@ -16,7 +16,6 @@ class Breakable:
         super().__init__(*args)
 
     def get_broken(self):
-        print(f'{self} broken')
         self.is_broken = True
         if isinstance(self, Container):
             return self.content
@@ -181,7 +180,8 @@ class Room:
         for wall in self.obst_list + self.containers:
             wall.collide(self.entities_list + [heretic])
         for drop in self.drops:
-            drop.collide(heretic)
+            drop.collide([heretic])
+        # TODO let npcs pick up drops if it can be useful
 
     def make_paths(self, target: Heretic):
         target.node = self.grid.node(*target.get_center_coord(True))

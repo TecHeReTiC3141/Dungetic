@@ -75,11 +75,12 @@ class NPC(Heretic):
         self.dead = True
         for loot in self.loot:
             loot.rect.topleft = self.phys_rect.topleft
-        print(self.loot)
+            loot.picked = False
+        print([i.picked for i in self.loot])
         return self.loot
 
     @staticmethod
-    def produce_NPC(n, loot: list):
+    def produce_NPC(n, loot: list=None):
         return [NPC(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
                     random.choice(directions), [], speed=random.randint(3, 4), loot=loot) for i in range(n)]
 
@@ -147,6 +148,6 @@ class Hostile(NPC):
         super().draw_object(display)
 
     @staticmethod
-    def produce_Hostiles(n, loot: list):
+    def produce_Hostiles(n, loot: list=None):
         return [Hostile(random.randint(300, 800), random.randint(200, 600), 75, 100, 15,
                         random.choice(directions), [], speed=random.randint(3, 4), loot=loot) for i in range(n)]

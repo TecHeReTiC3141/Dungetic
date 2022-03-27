@@ -1,5 +1,6 @@
 import pygame
 
+
 class Weapon:
     sprite = None
     damage = None
@@ -42,8 +43,11 @@ class Money:
     value = None
 
     def picked_up(self, entity):
-        entity.actual_money += self.value
-        self.value = 0
+        if hasattr(entity, 'loot'):
+            entity.loot.append(self)
+        else:
+            entity.actual_money += self.value
+            self.value = 0
 
 
 class GoldCoin(Money):
