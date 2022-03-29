@@ -1,7 +1,9 @@
 import scripts.constants_and_sources as c_a_s
 from classes.Heretic import Heretic
 from scripts.constants_and_sources import *
+from classes.weapons import *
 from scripts.game_manager import GameManager
+
 
 
 class Interface(pygame.Surface):
@@ -53,6 +55,7 @@ class Button(UI):
 
 
 class ChangeState(Button):
+
     def __init__(self, x, y, width, height, text, color, manager: GameManager, state: str):
         super().__init__(x, y, width, height, text, color)
         self.manager = manager
@@ -64,6 +67,7 @@ class ChangeState(Button):
 
 
 class SimpleButton(Button):
+
     def __init__(self, x, y, width, height, text, color, action):
         super().__init__(x, y, width, height, text, color)
         self.action = action
@@ -85,36 +89,36 @@ class Switcher(UI):
 
 class Inventory(Interface):
 
-    def draw_object(self, display, heretic: Heretic):
+    def __init__(self, entity: Heretic):
+        super().__init__()
+        self.entity = entity
+
+    def draw_object(self, display):
         self.fill((184, 173, 118))
         self.blit(inventory_font.render('Инвентарь', True, (0, 0, 0)), (120, 10))
         self.blit(inventory_font.render('Часы: день/ночь', True, (0, 0, 0)), (800, 10))
         pygame.draw.rect(self, (0, 0, 0), (800, 150, 600, 60))
         pygame.draw.rect(self, (184, 173, 118), (1260, 155, 130, 50))
-        pygame.draw.rect(self, (200, 0, 0), (810, 155, int(445 * heretic.health // 100), 50))
+        pygame.draw.rect(self, (200, 0, 0), (810, 155, int(445 * self.entity.health // 100), 50))
         pygame.draw.rect(self, (0, 0, 200), (810, 230, 130, 130))
         pygame.draw.rect(self, (190, 190, 190), (825, 245, 100, 100))
         pygame.draw.rect(self, (0, 0, 200), (970, 230, 130, 130))
         pygame.draw.rect(self, (190, 190, 190), (985, 245, 100, 100))
-        if heretic.weapon != 'none':
-            heretic.weapon.draw_object(865, 260)
-            self.blit(active_font.render(heretic.weapon.type, True, (0, 0, 0)), (825, 365))
+        if isinstance(self.entity.weapon, Weapon):
+            self.entity.weapon.draw_object(display, x=865, y=260)
+            #self.blit(active_font.render(self.entity.weapon.type, True, (0, 0, 0)), (825, 365))
         else:
             pygame.draw.rect(self, (184, 173, 118), (860, 260, 20, 45))
             pygame.draw.polygon(self, (184, 173, 118), ((860, 260), (870, 252), (880, 260)))
             pygame.draw.rect(self, (184, 173, 118), (850, 300, 40, 6))
             pygame.draw.rect(self, (184, 173, 118), (864, 306, 12, 20))
 
-        if heretic.backpack:
-            heretic.backpack.draw_object(1000, 260)
-            self.blit(active_font.render(heretic.backpack.type, True, (0, 0, 0)), (960, 365))
-        else:
-            pygame.draw.rect(self, (184, 173, 118), (1000, 260, 50, 70))
-            pygame.draw.lines(self, (184, 173, 118), True, ((1000, 260), (1040, 245), (1060, 270)), 8)
-            pygame.draw.polygon(self, (184, 173, 118),
-                                ((998, 260), (998, 285), (1025, 295), (1052, 285), (1052, 260)))
+        pygame.draw.rect(self, (184, 173, 118), (1000, 260, 50, 70))
+        pygame.draw.lines(self, (184, 173, 118), True, ((1000, 260), (1040, 245), (1060, 270)), 8)
+        pygame.draw.polygon(self, (184, 173, 118),
+                            ((998, 260), (998, 285), (1025, 295), (1052, 285), (1052, 260)))
 
-            pygame.draw.circle(self, (184, 173, 118), (1035, 289), 3)
+        pygame.draw.circle(self, (184, 173, 118), (1035, 289), 3)
 
         pygame.draw.line(self, (161, 96, 54), (700, 0), (700, 900), 100)
 
@@ -127,7 +131,7 @@ class Inventory(Interface):
             for j in range(100, 801, 150):
                 pygame.draw.rect(self, (0, 0, 200), (i, j, 130, 130))
                 pygame.draw.rect(self, (190, 190, 190), (i + 15, j + 15, 100, 100))
-        for i in range(len(heretic.inventory)):
+        for i in range(len(self.entity.inventory)):
             pass
         # if 100 < pos[0] < 650 and pos[1] > 100:
         #     pos_index = (pos[0] - 50) // 150 + (pos[1] - 100) // 150 * 4

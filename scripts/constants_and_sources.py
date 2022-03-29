@@ -35,7 +35,7 @@ GREEN = '#00FF00'
 BLUE = '#0000FF'
 
 # images and surfaces
-map_image = pygame.image.load('../images/old_map2.jpg').convert_alpha()
+map_image = pygame.image.load('../images/interfaces/old_map2.jpg').convert_alpha()
 cursor_for_battle = pygame.image.load('../images/sword.png')
 cursor_for_battle = pygame.transform.scale(cursor_for_battle,
                                            (cursor_for_battle.get_width() // 5, cursor_for_battle.get_height() // 5))

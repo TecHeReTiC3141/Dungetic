@@ -193,14 +193,13 @@ class Heretic:
         #     if self.direction == 'left':
         #         display.blit(self.weapon, (self.phys_rect.left - 5, self.))
         # pygame.draw.rect(display, RED, self.attack_rect)
-        pygame.draw.rect(display, WHITE, self.active_zone)
         self.visible_zone.blit(heretic_images[self.direction], (0, 0))
         display.blit(self.visible_zone, self.phys_rect)
         if self.direction in self.weapon.sprite:
             if self.direction == 'left':
-                display.blit(self.weapon.sprite['left'], (self.attack_rect.midtop[0], self.attack_rect.midleft[1]))
+                self.weapon.draw_object(display, x=self.attack_rect.midtop[0], y=self.attack_rect.midleft[1], dir='left')
             elif self.direction == 'right':
-                display.blit(self.weapon.sprite['right'], (self.attack_rect.left, self.attack_rect.midleft[1]))
+                self.weapon.draw_object(display, x=self.attack_rect.left, y=self.attack_rect.midleft[1], dir='right')
 
         # display.blit(self.attack_surf, self.attack_rect)
         if self.attack_time > 0:

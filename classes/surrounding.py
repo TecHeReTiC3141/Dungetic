@@ -181,7 +181,6 @@ class Room:
             wall.collide(self.entities_list + [heretic])
         for drop in self.drops:
             drop.collide([heretic])
-        # TODO let npcs pick up drops if it can be useful
 
     def make_paths(self, target: Heretic):
         target.node = self.grid.node(*target.get_center_coord(True))

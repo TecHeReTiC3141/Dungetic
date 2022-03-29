@@ -2,15 +2,19 @@ import pygame
 
 
 class Weapon:
-    sprite = None
+    sprite = {}
     damage = None
     capability = None
     hit_range = None
     knockback = None
     hit_sound = None
 
-    def draw_object(self, display):
-        pass
+    def draw_object(self, display: pygame.Surface, x=0, y=0, dir='left'):
+        try:
+            display.blit(self.sprite[dir], (x, y))
+        except KeyError as e:
+            print(f'Unknown direction for {self}')
+
 
     def picked_up(self, entity):
         entity.weapon = self
