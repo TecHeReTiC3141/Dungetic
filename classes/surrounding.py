@@ -1,4 +1,6 @@
-from classes.entities import *
+from math import *
+from classes.drops import *
+
 
 class Container:
     # interface for all game containers
@@ -14,7 +16,6 @@ class Breakable:
         super().__init__(*args)
 
     def get_broken(self):
-        print(f'{self} broken')
         self.is_broken = True
         if isinstance(self, Container):
             return self.content
@@ -33,7 +34,7 @@ class Wall:
         self.phys_rect = pygame.Rect(x, y, width, height)
         self.inner_phys_rect = pygame.Rect(x + 5, y + 5,
                                            max(width - 10, 10), max(height - 10, 10))
-        self.outer_phys_rect = pygame.Rect(x - 5, y - 5, width + 10, height + 10)
+        self.outer_phys_rect = pygame.Rect(x - 10, y - 10, width + 20, height + 20)
         self.visible_zone = pygame.Surface((width, height))
         self.visible_zone.set_colorkey('#FFFFFF')
         self.collised = collised
@@ -111,48 +112,94 @@ class Vase(Wall, Breakable, Container):
         return self.visible_zone
 
 
-class LyingItem:
+class MyNode:
+    '''
+    A class for nodes for pathfinding grid
+    '''
 
-    def __init__(self, x, y, lootcls: type):
-        self.loot = lootcls()
-        self.x = x
-        self.y = y
-        self.sprite = pygame.transform.rotate(self.loot.sprite['left'], random.randint(0, 360))
-        self.sprite.set_colorkey('#FFFFFF')
-        self.rect = self.sprite.get_rect(topleft=(x, y))
+    def __init__(self, x, y, width, height):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.status = 1
+
+    def collide(self, obsts: list[Wall]):
+        for wall in obsts:
+            if wall.outer_phys_rect.colliderect(self.rect):
+                self.status = 0
+                break
 
     def draw_object(self, display):
-        display.blit(self.sprite, self.rect)
+        pygame.draw.rect(display, [RED, BLUE][self.status], self.rect)
 
-    def collide(self):
-        pass
+        # drawing the grid
+        pygame.draw.line(display, BLACK, self.rect.topleft, (display_width, self.rect.top))
+        pygame.draw.line(display, BLACK, self.rect.bottomleft, (display_width, self.rect.bottom))
+        pygame.draw.line(display, BLACK, self.rect.topleft, (self.rect.left, display_height))
+        pygame.draw.line(display, BLACK, self.rect.topright, (self.rect.right, display_height))
 
 
 class Room:
 
-    def __init__(self, obst_list: list[Wall], containers: list[Wall], entities_list: list[NPC], entrances, floor: str):
+    def __init__(self, obst_list: list[Wall], containers: list[Wall],
+                 entities_list: list[NPC], entrances, floor: str):
         self.obst_list = obst_list
         self.containers = containers
         self.drops = []
         self.entities_list = entities_list
         self.entrances = entrances
         self.floor = c_a_s.stone_floor if floor == 'stone' else c_a_s.wooden_floor
-        self.visited = False
+        self.visited = True
+        self.nodes = [[MyNode(j * grid_size, i * grid_size, grid_size, grid_size) for j in range(ceil(display_width / grid_size))]
+                      for i in range(ceil(display_height / grid_size))]
+        for node_l in range(len(self.nodes)):
+            for node in self.nodes[node_l]:
+                node.collide(self.obst_list)
+        'grid for pathfinding'
+        self.grid = Grid(matrix=[[self.nodes[i][j].status for j in range(ceil(display_width / grid_size))]
+                     for i in range(ceil(display_height / grid_size))])
 
-    def draw_object(self, display):
-        display.blit(self.floor, (0, 0))
+    def draw_object(self, surface: pygame.Surface, show_grid: bool):
+        surface.blit(self.floor, (0, 0))
+        if show_grid:
+            self.draw_grid(surface)
+            for entity in self.entities_list:
+                if len(entity.path) > 1:
+
+                    pygame.draw.lines(surface, BLACK, False, entity.path, width=10)
+
         for wall in self.obst_list + self.containers + self.drops:
-            wall.draw_object(display)
+            wall.draw_object(surface)
         for entity in self.entities_list:
-            entity.draw_object(display)
+            entity.draw_object(surface)
+
+    def draw_grid(self, surface):
+        for node_l in self.nodes:
+            for node in node_l:
+                node.draw_object(surface)
 
     def physics(self, heretic: Heretic):
         for wall in self.obst_list + self.containers:
             wall.collide(self.entities_list + [heretic])
+        for drop in self.drops:
+            drop.collide([heretic])
 
-    def life(self):
+    def make_paths(self, target: Heretic):
+        target.node = self.grid.node(*target.get_center_coord(True))
         for entity in self.entities_list:
-            entity.passive_exist()
+            if isinstance(entity, Hostile):
+                entity.target = [target]
+                entity.node = self.grid.node(*entity.get_center_coord(True))
+                entity.path, _ = PathFinder.find_path(entity.node, target.node, self.grid)
+                entity.path = deque([(x * grid_size + grid_size // 2,
+                                      y * grid_size + grid_size // 2) for x, y in entity.path])
+                self.grid.cleanup()
+
+    def life(self, tick: int):
+        for entity in self.entities_list:
+            if isinstance(entity, Hostile):
+                entity.hostile_exist()
+            else:
+                entity.passive_exist()
+            entity.update(tick)
 
     def clear(self):
         sorted_conts = []
@@ -160,12 +207,24 @@ class Room:
             if isinstance(cont, Breakable):
                 if cont.is_broken:
                     loot = cont.get_broken()
-                    if isinstance(cont, Container):
-                        self.drops.append(loot)
+                    for loo in loot:
+                        if isinstance(cont, Container):
+                            loo.rect.topleft = cont.phys_rect.topleft
+                            self.drops.append(loo)
                 else:
                     sorted_conts.append(cont)
 
-
         self.containers = sorted_conts.copy()
-        self.entities_list = list(filter(lambda i: not i.dead,
-                                         self.entities_list))
+
+        alive = []
+        for entity in self.entities_list:
+            if entity.dead:
+                for loot in entity.loot:
+                    if isinstance(loot, Drop):
+                        self.drops.append(loot)
+            else:
+                alive.append(entity)
+        self.entities_list = alive.copy()
+
+        self.drops = list(filter(lambda i: not i.picked,
+                                 self.drops))

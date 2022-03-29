@@ -1,9 +1,20 @@
 import random
-
+from typing import overload
+from pathfinding.core.grid import Grid, Node
+from pathfinding.finder.a_star import AStarFinder
+from pathfinding.core.diagonal_movement import DiagonalMovement
+from collections import *
 from scripts.Maths import *
 
-game_cycle = True
 pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.set_volume(60)
+
+PathFinder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+grid_size = 32
+
+game_cycle = True
+
 dung_length, dung_width = map(int, input('Введите длину и ширину подземелья: ').split())
 
 curr_room = random.randint(1, dung_width * dung_length)
@@ -11,12 +22,11 @@ rooms = {}
 
 display_width, display_height = (1440, 800)
 display = pygame.display.set_mode((display_width, display_height))
+pygame.display.set_caption('Dungetic')
 
 clock = pygame.time.Clock()
 directions = 'left right up down'.split()
 opposites = {'left': 'right', 'right': 'left', 'up': 'down', 'down': 'up'}
-
-tick = 0
 
 BLACK = '#000000'
 WHITE = '#FFFFFF'
@@ -25,7 +35,7 @@ GREEN = '#00FF00'
 BLUE = '#0000FF'
 
 # images and surfaces
-map_image = pygame.image.load('../images/old_map2.jpg').convert_alpha()
+map_image = pygame.image.load('../images/interfaces/old_map2.jpg').convert_alpha()
 cursor_for_battle = pygame.image.load('../images/sword.png')
 cursor_for_battle = pygame.transform.scale(cursor_for_battle,
                                            (cursor_for_battle.get_width() // 5, cursor_for_battle.get_height() // 5))

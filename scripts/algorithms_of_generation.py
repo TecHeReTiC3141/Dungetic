@@ -1,8 +1,8 @@
 from classes.surrounding import *
 
-def generate_random_loot(classes: list[type], x, y):
-    cl = random.choice(classes)
-    return LyingItem(x, y, cl)
+
+def generate_random_loot(classes: list[type], x, y, n=1):
+    return [LyingItem(x, y, random.choice(classes)) for i in range(n)]
 
 
 def generate_room(cur_ind, dung_width, dung_length) -> Room:
@@ -10,7 +10,8 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
     enters = []
     walls = []
     cont = []
-    entities = NPC.produce_NPC(random.randint(2, 5))
+    entities = NPC.produce_NPC(random.randint(1, 3)) \
+               + Hostile.produce_Hostiles(random.randint(2, 3))
     if cur_ind > dung_length and 'down' in rooms[cur_ind - dung_length].entrances:
         walls.append(Wall(0, 0, width=random.randint(display_width // 2 - 250, display_width // 2 - 100),
                           height=random.randint(50, 100)))
@@ -59,10 +60,14 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
                    height=random.randrange(50, 120, 5), movable=False) for
               j in range(random.randint(5, 10))]
     cont += [Vase(x := random.randrange(100, 905, 5), y := random.randrange(100, 705, 5),
-                  width=40, height=45, movable=True, health=15,
-                  container=generate_random_loot([Knife], x, y)) for j in range(random.randint(3, 5))]
+                  width=40, height=45, movable=True, health=10,
+                  container=generate_random_loot([Knife, GoldCoin, SilverCoin], x, y, n=3))
+             for j in range(random.randint(3, 5))]
     if not enters:
         enters = [dir for dir in directions if dir not in ways]
+
+    for entity in entities:
+        entity.loot = generate_random_loot([SilverCoin, GoldCoin], 0, 0, n=random.randint(1, 2))
 
     return Room(walls, cont, entities, enters, floor=random.choice(['stone', 'wooden']))
 
