@@ -19,8 +19,10 @@ class Drop:
         pass
 
     def picked_up(self, entity: Heretic):
+        if not self.picked:
+            self.loot.picked_up(entity)
         self.picked = True
-        self.loot.picked_up(entity)
+
 
 
 class LyingItem(Drop):

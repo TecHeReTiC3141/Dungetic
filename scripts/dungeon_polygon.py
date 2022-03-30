@@ -3,7 +3,7 @@ from scripts.algorithms_of_generation import generate_dungeons
 from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter
 from scripts.game_manager import GameManager
 
-heretic = Heretic(100, 100, 75, 100, 100, random.choice(directions), [])
+heretic = Heretic(100, 100, 75, 100, 100, random.choice(directions))
 game_manager = GameManager()
 
 polygon = generate_dungeons()
@@ -21,7 +21,7 @@ print(*[''.join([str(i).rjust(3) for i in list(range(1 + dung_length * i,
 
 wipe = pygame.USEREVENT + 1
 show_paths = pygame.USEREVENT + 2
-pygame.time.set_timer(wipe, 120)
+pygame.time.set_timer(wipe, 10)
 pygame.time.set_timer(show_paths, 150)
 clock = pygame.time.Clock()
 

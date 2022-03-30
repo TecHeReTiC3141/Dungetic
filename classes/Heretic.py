@@ -1,11 +1,11 @@
 from scripts.constants_and_sources import *
 import scripts.constants_and_sources as c_a_s
-from classes.weapons import *
+from classes.loot import *
 
 
 class Heretic:
 
-    def __init__(self, x, y, width, height, health, direction, inventory,
+    def __init__(self, x, y, width, height, health, direction,
                  speed=5, target=None, weapon=Fist(), location=None, size=1.):
         self.x = x
         self.y = y
@@ -18,7 +18,9 @@ class Heretic:
 
         self.dead = False
         self.direction = direction
-        self.inventory = inventory
+
+        self.inventory = []
+        self.max_capacity = 20
 
         self.light_zone = []
         self.visible_zone = pygame.Surface((self.width, self.height))
@@ -176,7 +178,9 @@ class Heretic:
     def die(self):
         pass
 
-    def draw_object(self, display: pygame.Surface):
+    def draw_object(self, display: pygame.Surface, x=None, y=None):
+        if x is None and y is None:
+            x, y = self.phys_rect.topleft
         self.visible_zone.fill((0, 0, 0))
         # if self.backpack and self.directions == 'right':
         #     self.backpack.draw_on_self(self.x + 25, self.y + 45)
@@ -194,7 +198,7 @@ class Heretic:
         #         display.blit(self.weapon, (self.phys_rect.left - 5, self.))
         # pygame.draw.rect(display, RED, self.attack_rect)
         self.visible_zone.blit(heretic_images[self.direction], (0, 0))
-        display.blit(self.visible_zone, self.phys_rect)
+        display.blit(self.visible_zone, (x, y))
         if self.direction in self.weapon.sprite:
             if self.direction == 'left':
                 self.weapon.draw_object(display, x=self.attack_rect.midtop[0], y=self.attack_rect.midleft[1], dir='left')
@@ -205,15 +209,15 @@ class Heretic:
         if self.attack_time > 0:
 
             pygame.draw.rect(display, (0, 0, 0),
-                             (self.phys_rect.centerx - self.weapon.capability // 2,
-                              self.y - 45, self.weapon.capability, 14), border_radius=8)
+                             (x + self.phys_rect.width // 2 - self.weapon.capability // 2,
+                              y - 45, self.weapon.capability, 14), border_radius=8)
             pygame.draw.rect(display, BLUE,
-                             (self.phys_rect.centerx - self.weapon.capability // 2 + 2,
-                              self.y - 44, self.attack_time - 4, 12))
-        pygame.draw.rect(display, (0, 0, 0), (self.x - 15, self.y - 30, 110, 25), border_radius=8)
-        pygame.draw.rect(display, pygame.Color('Yellow'), (self.x - 10, self.y - 28,
+                             (x + self.phys_rect.width // 2 - self.weapon.capability // 2 + 2,
+                              y - 44, self.attack_time - 4, 12))
+        pygame.draw.rect(display, (0, 0, 0), (x - 15, y - 30, 110, 25), border_radius=8)
+        pygame.draw.rect(display, pygame.Color('Yellow'), (x - 10, y - 28,
                                                            int(100.0 * float(self.health) / 100.0), 21),
                          border_radius=8)
-        pygame.draw.rect(display, RED, (self.x - 10, self.y - 28,
+        pygame.draw.rect(display, RED, (x - 10, y - 28,
                                         int(100.0 * float(self.actual_health) / 100.0), 21), border_radius=8)
 

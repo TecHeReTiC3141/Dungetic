@@ -1,9 +1,8 @@
 import scripts.constants_and_sources as c_a_s
 from classes.Heretic import Heretic
 from scripts.constants_and_sources import *
-from classes.weapons import *
+from classes.loot import *
 from scripts.game_manager import GameManager
-
 
 
 class Interface(pygame.Surface):
@@ -49,7 +48,7 @@ class Button(UI):
         self.image.blit(self.label, (self.rect.width // 3, self.rect.height // 5))
         display.blit(self.image, self.rect)
 
-    def update(self, mouse,):
+    def update(self, mouse, ):
         if self.rect.collidepoint(mouse):
             pass
 
@@ -72,7 +71,7 @@ class SimpleButton(Button):
         super().__init__(x, y, width, height, text, color)
         self.action = action
 
-    def update(self, mouse,):
+    def update(self, mouse, ):
         if self.rect.collidepoint(mouse):
             self.action()
 
@@ -93,11 +92,10 @@ class InventoryInter(Interface):
         super().__init__()
         self.entity = entity
         skills = ChangeState(display_width // 4, display_height // 6, 250, 80, 'Skills',
-                           GREEN, manager, 'inventory_skills')
+                             GREEN, manager, 'inventory_skills')
         stats = ChangeState(display_width // 4, display_height // 6 + 90, 250, 80, 'Stats',
-                               RED, manager, 'inventory_stats')
+                            RED, manager, 'inventory_stats')
         self.button_list = [skills, stats]
-
 
     def alt_draw_object(self, display):
         self.fill((184, 173, 118))
@@ -112,7 +110,7 @@ class InventoryInter(Interface):
         pygame.draw.rect(self, (190, 190, 190), (985, 245, 100, 100))
         if isinstance(self.entity.weapon, Weapon):
             self.entity.weapon.draw_object(display, x=865, y=260)
-            #self.blit(active_font.render(self.entity.weapon.type, True, (0, 0, 0)), (825, 365))
+            # self.blit(active_font.render(self.entity.weapon.type, True, (0, 0, 0)), (825, 365))
         else:
             pygame.draw.rect(self, (184, 173, 118), (860, 260, 20, 45))
             pygame.draw.polygon(self, (184, 173, 118), ((860, 260), (870, 252), (880, 260)))
@@ -151,11 +149,15 @@ class InventoryInter(Interface):
 
     def draw_object(self, display: pygame.Surface, ):
         self.blit(inventory_image, (0, 0))
+        self.entity.draw_object(self, x=820, y=110)
+        self.blit(inventory_font.render(f'{self.entity.money}', True, '#f8b800'), (95 + 15 * len(str(self.entity.money)), 100))
+        for i in range(len(self.entity.inventory)):
+            row, col = i // 4, i % 5
+            if isinstance(self.entity.inventory[i], Loot):
+                self.entity.inventory[i].draw_object(self, x=70 + row * 120, y=340 + col * 120)
         for button in self.button_list:
             button.draw_object(self)
         display.blit(self, (0, 0))
-
-
 
 
 class MapInter(Interface):
@@ -192,11 +194,11 @@ class MainMenu(Interface):
         super().__init__()
         self.manager = manager
         play = ChangeState(display_width // 3, display_height // 2, 250, 80, 'Start',
-                      GREEN, manager, 'main_game')
+                           GREEN, manager, 'main_game')
         settings = ChangeState(display_width // 3, display_height // 2 + 100, 250, 80, 'Settings',
-                      BLUE, manager, 'settings')
+                               BLUE, manager, 'settings')
         ex = SimpleButton(display_width // 3, display_height // 2 + 200, 250, 80, 'Exit',
-                      RED, exit)
+                          RED, exit)
         self.button_list = [play, settings, ex]
 
     def draw_object(self, display: pygame.Surface, ):

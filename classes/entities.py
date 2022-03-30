@@ -5,9 +5,9 @@ class NPC(Heretic):
     stop = False
     delay = random.randint(250, 450)
 
-    def __init__(self, x, y, width, height, health, direction, inventory, speed,
+    def __init__(self, x, y, width, height, health, direction, speed,
                  target=None, weapon=Fist(), loot=None, location=None, size=1.):
-        super().__init__(x, y, width, height, health, direction, inventory,
+        super().__init__(x, y, width, height, health, direction,
                          speed, target, weapon, location, size)
         self.path = deque()
         self.loot = [] if loot is None else loot
@@ -82,14 +82,14 @@ class NPC(Heretic):
     @staticmethod
     def produce_NPC(n, loot: list=None):
         return [NPC(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
-                    random.choice(directions), [], speed=random.randint(3, 4), loot=loot) for i in range(n)]
+                    random.choice(directions), speed=random.randint(3, 4), loot=loot) for i in range(n)]
 
 
 class Hostile(NPC):
 
-    def __init__(self, x, y, width, height, health, direction, inventory, speed,
+    def __init__(self, x, y, width, height, health, direction, speed,
                  target=None, weapon=Fist(), location=None, loot=None, size=1.):
-        super().__init__(x, y, width, height, health, direction, inventory,
+        super().__init__(x, y, width, height, health, direction,
                          speed, target, weapon, loot, location, size)
         self.target = []
         self.targetpoint = pygame.Rect(self.phys_rect.center, (5, 5))
@@ -150,4 +150,4 @@ class Hostile(NPC):
     @staticmethod
     def produce_Hostiles(n, loot: list=None):
         return [Hostile(random.randint(300, 800), random.randint(200, 600), 75, 100, 15,
-                        random.choice(directions), [], speed=random.randint(3, 4), loot=loot) for i in range(n)]
+                        random.choice(directions), speed=random.randint(3, 4), loot=loot) for i in range(n)]

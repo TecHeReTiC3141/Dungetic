@@ -1,7 +1,14 @@
 import pygame
 
+class Loot:
 
-class Weapon:
+    def draw_object(self, display: pygame.Surface, x=0, y=0, dir='left'):
+        pass
+
+    def picked_up(self, entity):
+        pass
+
+class Weapon(Loot):
     sprite = {}
     damage = None
     capability = None
@@ -15,15 +22,17 @@ class Weapon:
         except KeyError as e:
             print(f'Unknown direction for {self}')
 
-
     def picked_up(self, entity):
-        entity.weapon = self
-
+        if isinstance(entity.weapon, Fist):
+            entity.weapon = self
+        else:
+            if len(entity.inventory) < entity.max_capacity:
+                entity.inventory.append(self)
 
 
 class Fist(Weapon):
     sprite = {'left': pygame.image.load('../images/weapons/fist/fist_left.png'),
-              'right':  pygame.image.load('../images/weapons/fist/fist_right.png')}
+              'right': pygame.image.load('../images/weapons/fist/fist_right.png')}
     damage = 5
     knockback = 25
     capability = 45
@@ -34,7 +43,7 @@ class Fist(Weapon):
 class Knife(Weapon):
     sprite = {'right': pygame.image.load('../images/weapons/knife/iron_knife.png'),
               'left': pygame.transform.flip(pygame.image.load('../images/weapons/knife/iron_knife.png'),
-                                             flip_x=True, flip_y=False)}
+                                            flip_x=True, flip_y=False)}
     damage = 8
     knockback = 35
     capability = 50
@@ -42,7 +51,7 @@ class Knife(Weapon):
     hit_sound = pygame.mixer.Sound('../sounds/weapons/sword/swing.mp3')
 
 
-class Money:
+class Money(Loot):
     sprite = None
     value = None
 
@@ -58,9 +67,7 @@ class GoldCoin(Money):
     sprite = pygame.image.load('../images/Money/gold_coin.png').convert_alpha()
     value = 5
 
+
 class SilverCoin(Money):
     sprite = pygame.image.load('../images/Money/silver_coin.png').convert_alpha()
     value = 2
-
-
-
