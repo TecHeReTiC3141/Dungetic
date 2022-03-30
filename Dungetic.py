@@ -1,6 +1,6 @@
 from classes.Heretic import Heretic
 from classes.entities import produce_NPC
-from classes.interfaces import MapInter, Inventory
+from classes.interfaces import MapInter, InventoryInter
 from classes.surrounding import Wall, Vase, Room
 from scripts.constants_and_sources import *
 from scripts.algorithms_of_generation import generate_room, generate_dungeons
@@ -19,7 +19,7 @@ pygame.display.set_caption('Dungetic')
 bullets_list = []
 
 Map = MapInter((display_width, display_height))
-Invent = Inventory((display_width, display_height))
+Invent = InventoryInter((display_width, display_height))
 
 heretic = Heretic(100, 100, 75, 100, 100, 'left',
                   [], location=random.randint(1, dung_width * dung_length))

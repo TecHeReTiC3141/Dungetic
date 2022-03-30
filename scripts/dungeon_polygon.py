@@ -1,6 +1,6 @@
 from classes.surrounding import *
 from scripts.algorithms_of_generation import generate_dungeons
-from classes.interfaces import Interface, MapInter, MainMenu
+from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter
 from scripts.game_manager import GameManager
 
 heretic = Heretic(100, 100, 75, 100, 100, random.choice(directions), [])
@@ -12,6 +12,7 @@ tick = 0
 draw_grid = False
 cur_inter = None
 Map = MapInter(polygon)
+Inventory = InventoryInter(heretic, game_manager)
 Menu = MainMenu(game_manager)
 
 print(*[''.join([str(i).rjust(3) for i in list(range(1 + dung_length * i,
@@ -41,6 +42,12 @@ while game_cycle:
                     cur_inter = None
                 else:
                     cur_inter = Map
+
+            elif event.key == pygame.K_i:
+                if isinstance(cur_inter, InventoryInter):
+                    cur_inter = None
+                else:
+                    cur_inter = Inventory
 
             elif event.key == pygame.K_e:
                 heretic.hit(polygon[c_a_s.curr_room].entities_list,

@@ -87,13 +87,19 @@ class Switcher(UI):
         self.images = {True: '', False: ''}
 
 
-class Inventory(Interface):
+class InventoryInter(Interface):
 
-    def __init__(self, entity: Heretic):
+    def __init__(self, entity: Heretic, manager: GameManager):
         super().__init__()
         self.entity = entity
+        skills = ChangeState(display_width // 4, display_height // 6, 250, 80, 'Skills',
+                           GREEN, manager, 'inventory_skills')
+        stats = ChangeState(display_width // 4, display_height // 6 + 90, 250, 80, 'Stats',
+                               RED, manager, 'inventory_stats')
+        self.button_list = [skills, stats]
 
-    def draw_object(self, display):
+
+    def alt_draw_object(self, display):
         self.fill((184, 173, 118))
         self.blit(inventory_font.render('Инвентарь', True, (0, 0, 0)), (120, 10))
         self.blit(inventory_font.render('Часы: день/ночь', True, (0, 0, 0)), (800, 10))
@@ -127,10 +133,10 @@ class Inventory(Interface):
         for i in range(510, 871, 60):
             pygame.draw.line(self, (0, 0, 0), (880, i), (1350, i), 5)
 
-        for i in range(50, 601, 150):
-            for j in range(100, 801, 150):
-                pygame.draw.rect(self, (0, 0, 200), (i, j, 130, 130))
-                pygame.draw.rect(self, (190, 190, 190), (i + 15, j + 15, 100, 100))
+        for i in range(30, 521, 120):
+            for j in range(320, 750, 120):
+                pygame.draw.rect(self, (0, 0, 200), (i, j, 110, 110), border_radius=8)
+                pygame.draw.rect(self, (190, 190, 190), (i + 15, j + 15, 80, 80))
         for i in range(len(self.entity.inventory)):
             pass
         # if 100 < pos[0] < 650 and pos[1] > 100:
@@ -142,6 +148,14 @@ class Inventory(Interface):
         #     for i in range(len(chosen_item.description)):
         #         display.blit(active_font.render(chosen_item.description[i], True, (0, 0, 0)), (880, 465 + i * 60))
         super().draw_object(display)
+
+    def draw_object(self, display: pygame.Surface, ):
+        self.blit(inventory_image, (0, 0))
+        for button in self.button_list:
+            button.draw_object(self)
+        display.blit(self, (0, 0))
+
+
 
 
 class MapInter(Interface):
