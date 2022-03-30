@@ -1,6 +1,7 @@
 import pygame
 
 class Loot:
+    sprite = {}
 
     def draw_object(self, display: pygame.Surface, x=0, y=0, dir='left'):
         pass
@@ -9,7 +10,7 @@ class Loot:
         pass
 
 class Weapon(Loot):
-    sprite = {}
+
     damage = None
     capability = None
     hit_range = None
@@ -71,3 +72,11 @@ class GoldCoin(Money):
 class SilverCoin(Money):
     sprite = pygame.image.load('../images/Money/silver_coin.png').convert_alpha()
     value = 2
+
+class Consumable(Loot):
+    pass
+
+class Potion(Consumable):
+    sprite = pygame.image.load('../images/Comsubles/live_potion.png')
+
+# TODO create more types and objects for game loot
