@@ -48,6 +48,7 @@ while game_cycle:
                     cur_inter = None
                 else:
                     cur_inter = Inventory
+                    Inventory.open()
 
             elif event.key == pygame.K_e:
                 heretic.hit(polygon[c_a_s.curr_room].entities_list,
@@ -75,10 +76,11 @@ while game_cycle:
         display.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
         if isinstance(cur_inter, Interface):
             cur_inter.draw_object(display)
-        heretic.move()
-        heretic.update(tick)
-        polygon[c_a_s.curr_room].life(tick)
-        polygon[c_a_s.curr_room].physics(heretic)
+        if cur_inter is None:
+            heretic.move()
+            heretic.update(tick)
+            polygon[c_a_s.curr_room].life(tick)
+            polygon[c_a_s.curr_room].physics(heretic)
 
     pygame.display.update()
 

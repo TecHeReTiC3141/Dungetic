@@ -1,27 +1,28 @@
 import pygame
 
+
 class Loot:
     sprite = {}
 
-    def draw_object(self, display: pygame.Surface, x=0, y=0, dir='left'):
-        pass
+    def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left'):
+        try:
+            if isinstance(self.sprite, dict):
+                display.blit(self.sprite[direct], (x, y))
+            else:
+                display.blit(self.sprite, (x, y))
+        except KeyError:
+            print(f'Unknown direction for {self}')
 
     def picked_up(self, entity):
         pass
 
-class Weapon(Loot):
 
+class Weapon(Loot):
     damage = None
     capability = None
     hit_range = None
     knockback = None
     hit_sound = None
-
-    def draw_object(self, display: pygame.Surface, x=0, y=0, dir='left'):
-        try:
-            display.blit(self.sprite[dir], (x, y))
-        except KeyError as e:
-            print(f'Unknown direction for {self}')
 
     def picked_up(self, entity):
         if isinstance(entity.weapon, Fist):
@@ -73,8 +74,10 @@ class SilverCoin(Money):
     sprite = pygame.image.load('../images/Money/silver_coin.png').convert_alpha()
     value = 2
 
+
 class Consumable(Loot):
     pass
+
 
 class Potion(Consumable):
     sprite = pygame.image.load('../images/Comsubles/live_potion.png')

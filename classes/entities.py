@@ -12,7 +12,7 @@ class NPC(Heretic):
         self.path = deque()
         self.loot = [] if loot is None else loot
 
-    def draw_object(self, display: pygame.Surface):
+    def draw_object(self, display: pygame.Surface, x=None, y=None):
         super().draw_object(display)
 
     def walk(self):

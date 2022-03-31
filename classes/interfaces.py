@@ -86,6 +86,33 @@ class Switcher(UI):
         self.images = {True: '', False: ''}
 
 
+class InterContainer(Button):
+
+    def __init__(self, x, y, width, height, ind=-1, active=True):
+        self.image = pygame.Surface((width, height))
+        self.rect = self.image.get_rect(topleft=(x, y))
+        self.content = None
+        self.active = active
+        self.ind = ind
+
+
+    def draw_object(self, display: pygame.Surface):
+        self.image.fill((184, 173, 118))
+        pygame.draw.rect(self.image, (0, 0, 200), (0, 0, self.rect.width,
+                                                 self.rect.height), border_radius=8)
+        pygame.draw.rect(self.image, (190, 190, 190), (15, 15,
+                                                 self.rect.width - 30,
+                                                 self.rect.height - 30))
+        if isinstance(self.content, Loot):
+            self.content.draw_object(self.image,
+                                     self.rect.width // 6,
+                                     self.rect.height // 6)
+        display.blit(self.image, self.rect)
+
+    def update(self, mouse, ):
+        if self.active and self.rect.collidepoint(mouse):
+            pass
+
 class InventoryInter(Interface):
 
     def __init__(self, entity: Heretic, manager: GameManager):
@@ -96,6 +123,9 @@ class InventoryInter(Interface):
         stats = ChangeState(display_width // 4, display_height // 6 + 90, 250, 80, 'Stats',
                             RED, manager, 'inventory_stats')
         self.button_list = [skills, stats]
+        self.containers = [InterContainer(i, j, 110, 110, ind=i + j * 5)
+                           for j in range(320, 750, 120)
+                           for i in range(50, 550, 120)]
 
     def alt_draw_object(self, display):
         self.fill((184, 173, 118))
@@ -151,13 +181,15 @@ class InventoryInter(Interface):
         self.blit(inventory_image, (0, 0))
         self.entity.draw_object(self, x=820, y=110)
         self.blit(inventory_font.render(f'{self.entity.money}', True, '#f8b800'), (95 + 15 * len(str(self.entity.money)), 100))
-        for i in range(len(self.entity.inventory)):
-            row, col = i // 4, i % 5
-            if isinstance(self.entity.inventory[i], Loot):
-                self.entity.inventory[i].draw_object(self, x=70 + row * 120, y=340 + col * 120)
         for button in self.button_list:
             button.draw_object(self)
+        for container in self.containers:
+            container.draw_object(self)
         display.blit(self, (0, 0))
+
+    def open(self):
+        for i in range(len(self.entity.inventory)):
+            self.containers[i].content = self.entity.inventory[i]
 
 
 class MapInter(Interface):
