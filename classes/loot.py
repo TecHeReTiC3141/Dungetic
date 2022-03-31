@@ -14,7 +14,8 @@ class Loot:
             print(f'Unknown direction for {self}')
 
     def picked_up(self, entity):
-        pass
+        if len(entity.inventory) < entity.max_capacity:
+            entity.inventory.append(self)
 
 
 class Weapon(Loot):

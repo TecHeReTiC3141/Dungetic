@@ -67,7 +67,7 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
         enters = [dir for dir in directions if dir not in ways]
 
     for entity in entities:
-        entity.loot = generate_random_loot([SilverCoin, GoldCoin], 0, 0, n=random.randint(1, 2))
+        entity.loot = generate_random_loot([SilverCoin, GoldCoin, Potion], 0, 0, n=random.randint(1, 2))
 
     return Room(walls, cont, entities, enters, floor=random.choice(['stone', 'wooden']))
 
