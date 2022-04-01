@@ -4,7 +4,7 @@ from classes.loot import *
 
 
 class Heretic:
-
+    # TODO try to transform entities into pygame.sprites
     def __init__(self, x, y, width, height, health, direction,
                  speed=5, target=None, weapon=Fist(), location=None, size=1.):
         self.width = width

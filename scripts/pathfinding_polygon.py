@@ -2,7 +2,7 @@ from classes.surrounding import *
 
 heretic = Heretic(100, 100, 75, 100, 78, random.choice(directions), speed=5, weapon=Knife())
 
-vase = Vase(random.randint(100, 300), random.randint(100, 300), 50, 50)
+vase = Vase(random.randint(100, 300), random.randint(100, 300), 50, 50, movable=True)
 polygon = Room([Wall(random.randint(100, 900), random.randint(100, 900),
             random.randint(50, 150), random.randint(50, 150)) for i in range(random.randint(9, 15))],
                [vase], NPC.produce_NPC(random.randint(1, 2))
