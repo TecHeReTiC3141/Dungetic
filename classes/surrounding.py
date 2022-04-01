@@ -52,45 +52,51 @@ class Wall:
     def collide(self, entities: list[Heretic]):
 
         for entity in entities:
+            if isinstance(entity, NPC):
 
-            if entity.phys_rect.collidelist([self.outer_phys_rect, self.phys_rect]) == -1:
-                for direct in entity.collised_walls:
-                    if entity.collised_walls[direct] == self:
-                        entity.speed_directions[direct] = 5
-                        entity.collised_walls[direct] = None
+                if entity.cur_rect.collidelist([self.outer_phys_rect, self.phys_rect]) == -1:
+                    for direct in entity.collised_walls:
+                        if entity.collised_walls[direct] == self:
+                            entity.speed_directions[direct] = 5
+                            entity.collised_walls[direct] = None
 
-            if self.phys_rect.colliderect(entity.phys_rect):
-                move = [0, 0]
-                if self.phys_rect.left + 15 >= entity.phys_rect.right:
-                    move[0] = max(5 - self.weight, 1)
-                    entity.collised_walls['right'] = self
-                    if not self.movable:
-                        entity.speed_directions['right'] = 0
-                    else:
-                        entity.speed_directions['right'] = max(5 - self.weight, 1)
+                if self.phys_rect.colliderect(entity.cur_rect):
+                    move = [0, 0]
+                    if self.phys_rect.left + 15 >= entity.cur_rect.right:
+                        move[0] = max(5 - self.weight, 1)
+                        entity.collised_walls['right'] = self
+                        if not self.movable:
+                            entity.speed_directions['right'] = 0
+                        else:
+                            entity.speed_directions['right'] = max(5 - self.weight, 1)
 
-                if self.phys_rect.right - 15 <= entity.phys_rect.left:
-                    move[0] = -max(5 - self.weight, 1)
-                    entity.collised_walls['left'] = self
-                    if not self.movable:
-                        entity.speed_directions['left'] = 0
-                    else:
-                        entity.speed_directions['left'] = max(5 - self.weight, 1)
-                if self.phys_rect.top + 15 >= entity.phys_rect.bottom:
-                    move[1] = max(5 - self.weight, 1)
-                    entity.collised_walls['down'] = self
-                    if not self.movable:
-                        entity.speed_directions['down'] = 0
-                    else:
-                        entity.speed_directions['down'] = max(5 - self.weight, 1)
+                    if self.phys_rect.right - 15 <= entity.cur_rect.left:
+                        move[0] = -max(5 - self.weight, 1)
+                        entity.collised_walls['left'] = self
+                        if not self.movable:
+                            entity.speed_directions['left'] = 0
+                        else:
+                            entity.speed_directions['left'] = max(5 - self.weight, 1)
+                    if self.phys_rect.top + 15 >= entity.cur_rect.bottom:
+                        move[1] = max(5 - self.weight, 1)
+                        entity.collised_walls['down'] = self
+                        if not self.movable:
+                            entity.speed_directions['down'] = 0
+                        else:
+                            entity.speed_directions['down'] = max(5 - self.weight, 1)
 
-                if self.phys_rect.bottom - 15 <= entity.phys_rect.top:
-                    move[1] = -max(5 - self.weight, 1)
-                    entity.collised_walls['up'] = self
-                    if not self.movable:
-                        entity.speed_directions['up'] = 0
-                    else:
-                        entity.speed_directions['up'] = max(5 - self.weight, 1)
+                    if self.phys_rect.bottom - 15 <= entity.cur_rect.top:
+                        move[1] = -max(5 - self.weight, 1)
+                        entity.collised_walls['up'] = self
+                        if not self.movable:
+                            entity.speed_directions['up'] = 0
+                        else:
+                            entity.speed_directions['up'] = max(5 - self.weight, 1)
+                #
+                 #     if entity.cur_rect.colliderect(self.phys_rect):
+                #         diff = entity.prev_rect - entity.cur_rect
+                #         if diff.x < 0:
+
 
                 if self.movable:
                     self.phys_rect.move_ip(*move)

@@ -47,7 +47,7 @@ class LyingItem(Drop):
     def collide(self, entities: list[Heretic]):
         self.active = False
         for entity in entities:
-            if self.rect.colliderect(entity.phys_rect):
+            if self.rect.colliderect(entity.cur_rect):
                 self.active = True
                 if self.autopicked:
                     self.picked_up(entity)
