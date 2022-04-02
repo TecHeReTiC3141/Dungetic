@@ -61,6 +61,9 @@ while game_cycle:
                 game_manager.state = 'main_menu'
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            if isinstance(cur_inter, InventoryInter):
+                print('proc')
+                cur_inter.process(event.button, pygame.mouse.get_pos())
             if event.button == 1:
                 if game_manager.state == 'main_menu':
                     Menu.process(pygame.mouse.get_pos())
@@ -76,7 +79,7 @@ while game_cycle:
         display.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
         if isinstance(cur_inter, Interface):
             cur_inter.draw_object(display)
-        if cur_inter is None:
+        else:
             heretic.move()
             heretic.update(tick)
             polygon[c_a_s.curr_room].life(tick)

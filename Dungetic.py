@@ -121,7 +121,7 @@ while True:
         heretic.move()
 
     if current_interface == 'Inventory':
-        Invent.draw_object(display, heretic)
+        Invent.draw(display, heretic)
 
     else:
         display.fill((252, 240, 188))
@@ -139,7 +139,7 @@ while True:
         '''
 
         if current_interface == 'Map':
-            Map.draw_object(display, rooms)
+            Map.draw(display, rooms)
             # print(i, j, (i - 90) // 80, (j - 90) // 80 * dung_length)
 
     display.blit(text_font.render(str(curr_room), True, (255, 255, 255)), (950, 20))

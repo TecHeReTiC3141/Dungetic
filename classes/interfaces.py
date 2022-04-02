@@ -22,7 +22,7 @@ class Interface(pygame.Surface):
 
 class UI:
 
-    def action(self, mouse: tuple):
+    def action(self, mouse: tuple, entity: Heretic=None, action_type: int=None):
         pass
 
 
@@ -101,6 +101,7 @@ class InterContainer(Button):
         pygame.draw.rect(self.image, (0, 0, 200), (0, 0, self.rect.width,
                                                  self.rect.height), border_radius=8)
         pygame.draw.rect(self.image, (190, 190, 190), (15, 15,
+
                                                  self.rect.width - 30,
                                                  self.rect.height - 30))
         if isinstance(self.content, Loot):
@@ -109,9 +110,14 @@ class InterContainer(Button):
                                      self.rect.height // 6)
         display.blit(self.image, self.rect)
 
-    def update(self, mouse, ):
-        if self.active and self.rect.collidepoint(mouse):
-            pass
+    def update(self, mouse: tuple, entity: Heretic=None, action_type: int=None):
+        print(self.rect, mouse)
+        if isinstance(self.content, Loot) and self.active and self.rect.collidepoint(mouse):
+            print(self.content)
+            if action_type == 1:
+                return self.content
+            elif action_type == 3:
+                self.content.interact(entity)
 
 class InventoryInter(Interface):
 
@@ -126,6 +132,7 @@ class InventoryInter(Interface):
         self.containers = [InterContainer(i, j, 110, 110, ind=i + j * 5)
                            for j in range(320, 750, 120)
                            for i in range(50, 550, 120)]
+        self.selected_item = None
 
     def alt_draw_object(self, display):
         self.fill((184, 173, 118))
@@ -183,13 +190,27 @@ class InventoryInter(Interface):
         self.blit(inventory_font.render(f'{self.entity.money}', True, '#f8b800'), (95 + 15 * len(str(self.entity.money)), 100))
         for button in self.button_list:
             button.draw_object(self)
+
         for container in self.containers:
             container.draw_object(self)
+
+        if isinstance(self.selected_item, Loot):
+            self.selected_item.draw_object(self, x=785, y=430)
+
         display.blit(self, (0, 0))
 
     def open(self):
         for i in range(len(self.entity.inventory)):
             self.containers[i].content = self.entity.inventory[i]
+
+    def process(self, action_type, mouse):
+        for container in self.containers:
+            self.selected_item = container.update(mouse, self.entity, action_type)
+            print(self.selected_item, container.content)
+            if self.selected_item is not None:
+                break
+        self.entity.inventory = list(filter(lambda i: not i.deletion,
+                                            self.entity.inventory))
 
 
 class MapInter(Interface):

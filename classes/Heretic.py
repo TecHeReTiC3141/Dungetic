@@ -6,7 +6,7 @@ from classes.loot import *
 class Heretic:
     # TODO try to transform entities into pygame.sprites
     def __init__(self, x, y, width, height, health, direction,
-                 speed=5, target=None, weapon=Fist(), location=None, size=1.):
+                 speed=6, target=None, weapon=Fist(), location=None, size=1.):
         self.width = width
         self.height = height
 
@@ -71,7 +71,7 @@ class Heretic:
             for obst in conts:
                 if obst.phys_rect.colliderect(self.attack_rect):
                     obst.health -= self.weapon.damage
-                    dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, obst.cur_rect) \
+                    dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, obst.phys_rect) \
                                          * self.weapon.knockback // 2)
 
                     obst.phys_rect.move_ip(dist_x, dist_y)

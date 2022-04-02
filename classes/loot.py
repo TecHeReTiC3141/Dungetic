@@ -3,6 +3,8 @@ import pygame
 
 class Loot:
     sprite = {}
+    descr = []
+    deletion = False
 
     def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left'):
         try:
@@ -16,6 +18,9 @@ class Loot:
     def picked_up(self, entity):
         if len(entity.inventory) < entity.max_capacity:
             entity.inventory.append(self)
+
+    def interact(self, entity):
+        pass
 
 
 class Weapon(Loot):
@@ -31,6 +36,14 @@ class Weapon(Loot):
         else:
             if len(entity.inventory) < entity.max_capacity:
                 entity.inventory.append(self)
+
+    def interact(self, entity):
+        if not isinstance(entity.weapon, Fist):
+            entity.inventory.append(entity.weapon)
+            entity.weapon.deletion = False
+
+        entity.weapon = self
+        self.deletion = True
 
 
 class Fist(Weapon):
@@ -81,6 +94,12 @@ class Consumable(Loot):
 
 
 class Potion(Consumable):
+
+    def interact(self, entity):
+        entity.actual_health = max(entity.actual_health, 100)
+        self.deletion = True
+
+
     sprite = pygame.image.load('../images/Comsubles/live_potion.png')
 
 # TODO create more types and objects for game loot
