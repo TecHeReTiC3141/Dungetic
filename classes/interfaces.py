@@ -209,7 +209,10 @@ class InventoryInter(Interface):
             print(self.selected_item, container.content)
             if self.selected_item is not None:
                 break
-        self.entity.inventory = list(filter(lambda i: not i.deletion,
+        for i in range(len(self.entity.inventory)):
+            if self.containers[i].content.deletion:
+                self.entity.inventory[i] = None
+        self.entity.inventory = list(filter(lambda i: i is not None,
                                             self.entity.inventory))
 
 
