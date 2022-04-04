@@ -166,6 +166,7 @@ class Room:
         self.drops = []
         self.entities_list = entities_list
         self.entrances = entrances
+        self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
         self.floor = c_a_s.stone_floor if floor == 'stone' else c_a_s.wooden_floor
         self.visited = True
         self.nodes = [
@@ -246,6 +247,7 @@ class Room:
             else:
                 alive.append(entity)
         self.entities_list = alive.copy()
+        self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
 
         self.drops = list(filter(lambda i: not i.picked,
                                  self.drops))

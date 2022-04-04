@@ -81,7 +81,7 @@ while game_cycle:
             cur_inter.draw_object(display)
         else:
             heretic.move()
-            heretic.update(tick)
+            heretic.update(tick, polygon[c_a_s.curr_room].is_safe)
             polygon[c_a_s.curr_room].life(tick)
             polygon[c_a_s.curr_room].physics(heretic)
 

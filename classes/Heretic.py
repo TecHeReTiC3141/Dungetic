@@ -125,7 +125,7 @@ class Heretic:
             self.cur_rect.top = 25
             self.cur_rect.topleft = (self.cur_rect.left, self.cur_rect.top)
 
-    def update(self, tick: int):
+    def update(self, tick: int, is_safe: bool=None):
 
         self.prev_rect = self.cur_rect.copy()
         if self.vector.length():
@@ -152,7 +152,7 @@ class Heretic:
                                     self.cur_rect.top + self.height,
                                     self.width // 5 * 3, self.weapon.hit_range)
 
-        if not tick % 10:
+        if not tick % 10 and is_safe:
             self.regenerate()
         if self.health > self.actual_health:
             self.health -= .1

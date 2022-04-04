@@ -118,6 +118,8 @@ class InterContainer(Button):
                 return self.content
             elif action_type == 3:
                 self.content.interact(entity)
+                if self.content.deletion:
+                    self.content = None
 
 class InventoryInter(Interface):
 
@@ -200,6 +202,8 @@ class InventoryInter(Interface):
         display.blit(self, (0, 0))
 
     def open(self):
+        for i in range(len(self.containers)):
+            self.containers[i].content = None
         for i in range(len(self.entity.inventory)):
             self.containers[i].content = self.entity.inventory[i]
 
@@ -210,7 +214,9 @@ class InventoryInter(Interface):
             if self.selected_item is not None:
                 break
         for i in range(len(self.entity.inventory)):
-            if self.containers[i].content.deletion:
+            if self.containers[i].content is None or \
+                    isinstance(self.containers[i], Loot)\
+                    and self.containers[i].content.deletion:
                 self.entity.inventory[i] = None
         self.entity.inventory = list(filter(lambda i: i is not None,
                                             self.entity.inventory))
