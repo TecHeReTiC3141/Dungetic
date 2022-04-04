@@ -1,5 +1,6 @@
 from math import *
 from classes.drops import *
+from classes.decors import *
 
 
 class Container:
@@ -164,6 +165,7 @@ class Room:
         self.obst_list = obst_list
         self.containers = containers
         self.drops = []
+        self.decors = []
         self.entities_list = entities_list
         self.entrances = entrances
         self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
@@ -191,6 +193,10 @@ class Room:
             wall.draw_object(surface)
         for entity in self.entities_list:
             entity.draw_object(surface)
+        for decor in self.decors:
+            if isinstance(decor, Decor):
+                decor.draw_object(surface)
+
 
     def draw_grid(self, surface):
         for node_l in self.nodes:
@@ -248,6 +254,9 @@ class Room:
                 alive.append(entity)
         self.entities_list = alive.copy()
         self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
-
+        if self.is_safe:
+            self.decors.append(Banner(display_width // 3, 20, 'The room was cleaned', 240))
         self.drops = list(filter(lambda i: not i.picked,
                                  self.drops))
+        self.decors = list(filter(lambda i: i.life_time > 0,
+                                 self.decors))
