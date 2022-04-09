@@ -90,14 +90,19 @@ class SilverCoin(Money):
 
 
 class Consumable(Loot):
-    pass
+
+    effect = ()
 
 
 class Potion(Consumable):
 
+    effect = ('+ 15', 'red')
+
+
     def interact(self, entity):
-        entity.actual_health = max(entity.actual_health, 100)
+        entity.actual_health = min(entity.actual_health + 15, 100)
         self.deletion = True
+        return self.effect
 
 
     sprite = pygame.image.load('../images/Comsubles/live_potion.png')

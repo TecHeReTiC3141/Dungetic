@@ -61,8 +61,10 @@ class NPC(Heretic):
             else:
                 self.stop = True
             self.delay = random.randint(250, 450)
-        if (self.cur_rect.left <= 10 and self.direction == 'left') or (self.cur_rect.left >= 920 and self.direction == 'right') \
-                or (self.cur_rect.top <= 0 and self.direction == 'up') or (self.cur_rect.top >= 685 and self.direction == 'down'):
+        if (self.cur_rect.left <= 10 and self.direction == 'left') or (
+                self.cur_rect.left >= 920 and self.direction == 'right') \
+                or (self.cur_rect.top <= 0 and self.direction == 'up') or (
+                self.cur_rect.top >= 685 and self.direction == 'down'):
             self.direction = opposites[self.direction]
         self.delay -= 1
 
@@ -76,7 +78,7 @@ class NPC(Heretic):
         return self.loot
 
     @staticmethod
-    def produce_NPC(n, loot: list=None):
+    def produce_NPC(n, loot: list = None):
         return [NPC(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
                     random.choice(directions), speed=random.randint(3, 4), loot=loot) for i in range(n)]
 
@@ -132,7 +134,7 @@ class Hostile(NPC):
                     self.attack_time = self.weapon.capability * 2
                     target.actual_health = max(target.actual_health - self.weapon.damage, 0)
                     target.regeneration_delay = self.weapon.damage * 20
-                    dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, target.cur_rect) \
+                    dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, target.cur_rect)
                                          * self.weapon.damage * 10)
                     target.cur_rect.move_ip(dist_x, dist_y)
                     target.active_zone.move_ip(dist_x, dist_y)
@@ -143,6 +145,6 @@ class Hostile(NPC):
         super().draw_object(display)
 
     @staticmethod
-    def produce_Hostiles(n, loot: list=None):
+    def produce_Hostiles(n, loot: list = None):
         return [Hostile(random.randint(300, 800), random.randint(200, 600), 75, 100, 15,
                         random.choice(directions), speed=random.randint(3, 4), loot=loot) for i in range(n)]

@@ -196,6 +196,7 @@ class Room:
         for decor in self.decors:
             if isinstance(decor, Decor):
                 decor.draw_object(surface)
+                print(decor.life_time)
 
 
     def draw_grid(self, surface):
@@ -253,9 +254,11 @@ class Room:
             else:
                 alive.append(entity)
         self.entities_list = alive.copy()
+
+        if len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0 and not self.is_safe:
+            self.decors.append(Banner(display_width // 3, 20, 'The room was cleaned', 180))
         self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
-        if self.is_safe:
-            self.decors.append(Banner(display_width // 3, 20, 'The room was cleaned', 240))
+
         self.drops = list(filter(lambda i: not i.picked,
                                  self.drops))
         self.decors = list(filter(lambda i: i.life_time > 0,

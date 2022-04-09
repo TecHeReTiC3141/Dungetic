@@ -58,7 +58,7 @@ class Heretic:
                     entity.actual_health = max(entity.actual_health -
                                                self.weapon.damage, 0)
                     entity.regeneration_delay = -1
-                    dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, entity.cur_rect) \
+                    dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, entity.cur_rect)
                                          * self.weapon.knockback)
 
                     entity.cur_rect.move_ip(dist_x, dist_y)
@@ -71,7 +71,7 @@ class Heretic:
             for obst in conts:
                 if obst.phys_rect.colliderect(self.attack_rect):
                     obst.health -= self.weapon.damage
-                    dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, obst.phys_rect) \
+                    dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, obst.phys_rect)
                                          * self.weapon.knockback // 2)
 
                     obst.phys_rect.move_ip(dist_x, dist_y)
@@ -125,7 +125,7 @@ class Heretic:
             self.cur_rect.top = 25
             self.cur_rect.topleft = (self.cur_rect.left, self.cur_rect.top)
 
-    def update(self, tick: int, is_safe: bool=None):
+    def update(self, tick: int, is_safe: bool = None):
 
         self.prev_rect = self.cur_rect.copy()
         if self.vector.length():
@@ -200,13 +200,13 @@ class Heretic:
         display.blit(self.visible_zone, (x, y))
         if self.direction in self.weapon.sprite:
             if self.direction == 'left':
-                self.weapon.draw_object(display, x=self.attack_rect.midtop[0], y=self.attack_rect.midleft[1], direct='left')
+                self.weapon.draw_object(display, x=self.attack_rect.midtop[0], y=self.attack_rect.midleft[1],
+                                        direct='left')
             elif self.direction == 'right':
                 self.weapon.draw_object(display, x=self.attack_rect.left, y=self.attack_rect.midleft[1], direct='right')
 
         # display.blit(self.attack_surf, self.attack_rect)
         if self.attack_time > 0:
-
             pygame.draw.rect(display, (0, 0, 0),
                              (x + self.cur_rect.width // 2 - self.weapon.capability // 2,
                               y - 45, self.weapon.capability, 14), border_radius=8)

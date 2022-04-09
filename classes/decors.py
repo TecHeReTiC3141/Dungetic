@@ -27,7 +27,7 @@ class Particle(Decor):
 
 class Banner(Decor):
 
-    def __init__(self, x, y, text, life_time: int):
+    def __init__(self, x, y, text, life_time: int, color='Black'):
         self.text = active_font.render(text, True, 'Black')
         self.surf = pygame.Surface(self.text.get_size())
         self.rect = self.surf.get_rect(topleft=(x, y))
@@ -36,7 +36,7 @@ class Banner(Decor):
         self.life_time = life_time
 
     def draw_object(self, display: pygame.Surface, x=0, y=0):
-        display.blit(self.surf, self.rect)
+        display.blit(self.surf, self.rect if x == y == 0 else (x, y))
         self.life_time -= 1
 
 # TODO create some concrete particles
