@@ -13,6 +13,8 @@ pygame.mixer.music.set_volume(60)
 PathFinder = AStarFinder(diagonal_movement=DiagonalMovement.always)
 grid_size = 32
 
+phys_eps = 10e-2
+
 game_cycle = True
 
 dung_length, dung_width = map(int, input('Введите длину и ширину подземелья: ').split())

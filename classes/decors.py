@@ -12,10 +12,12 @@ class Decor(pygame.Surface):
 
 class Particle(Decor):
 
-    def __init__(self, x, y, width, height, life_time: int, direction: str):
+    def __init__(self, x, y, width, height, life_time: int, speed=3):
         super().__init__((width, height))
+        self.rect = self.get_rect(topleft=(x, y))
         self.life_time = life_time
-        self.directions = direction.split()
+        self.directions = pygame.math.Vector2()
+        self.speed = speed
         self.deleted = False
 
     def draw_object(self, display, x=0, y=0):
@@ -23,6 +25,31 @@ class Particle(Decor):
 
     def move(self):
         pass
+
+class Blood(Particle):
+
+    def __init__(self, x, y, width, height, life_time: int, type: str, speed=3):
+        super().__init__(x, y, width, height, life_time, speed)
+        if type == 'up':
+            self.directions = pygame.math.Vector2(random.uniform(-2, 2),
+                                                  random.uniform(-2, -1))
+        elif type == 'down':
+            self.directions = pygame.math.Vector2(random.uniform(-.5, .5),
+                                                  1)
+
+    def draw_object(self, display, x=0, y=0):
+        self.fill('#e61624')
+        display.blit(self, self.rect)
+        self.life_time -= 1
+        if self.life_time <= 0:
+            self.deleted = True
+
+    def move(self):
+        if self.directions.length():
+            self.rect.move_ip(self.directions.normalize() * self.speed)
+        self.directions.y += .1
+        self.directions.x = self.directions.x - .1 if self.directions.x > 0 else  self.directions.x - .1
+
 
 
 class Banner(Decor):

@@ -229,7 +229,6 @@ class InventoryInter(Interface):
                     self.cur_effect = Banner(810, 280, text, 150, color)
                     print(type(self.cur_effect))
 
-
             if self.selected_item is not None:
                 break
 

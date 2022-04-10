@@ -195,8 +195,11 @@ class Room:
             entity.draw_object(surface)
         for decor in self.decors:
             if isinstance(decor, Decor):
-                decor.draw_object(surface)
-                print(decor.life_time)
+                if isinstance(decor, Banner):
+                    decor.draw_object(surface)
+                elif isinstance(decor, Particle):
+                    decor.draw_object(surface)
+                    decor.move()
 
 
     def draw_grid(self, surface):

@@ -51,8 +51,8 @@ while game_cycle:
                     Inventory.open()
 
             elif event.key == pygame.K_e:
-                heretic.hit(polygon[c_a_s.curr_room].entities_list,
-                            polygon[c_a_s.curr_room].containers)
+                polygon[c_a_s.curr_room].decors.extend(heretic.hit(polygon[c_a_s.curr_room].entities_list,
+                            polygon[c_a_s.curr_room].containers))
 
             elif event.key == pygame.K_g:
                 draw_grid = ~draw_grid
@@ -62,7 +62,6 @@ while game_cycle:
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if isinstance(cur_inter, InventoryInter):
-                print('proc')
                 cur_inter.process(event.button, pygame.mouse.get_pos())
             if event.button == 1:
                 if game_manager.state == 'main_menu':

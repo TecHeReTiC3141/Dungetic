@@ -1,6 +1,8 @@
 from scripts.constants_and_sources import *
 import scripts.constants_and_sources as c_a_s
 from classes.loot import *
+from classes.decors import *
+
 
 
 class Heretic:
@@ -51,7 +53,8 @@ class Heretic:
         self.money = 0
         self.actual_money = 0
 
-    def hit(self, entities: list = None, conts: list = None):
+    def hit(self, entities: list = None, conts: list = None) -> list:
+        blood_list = []
         if self.attack_time <= 0:
             for entity in entities:
                 if entity.cur_rect.colliderect(self.attack_rect):
@@ -60,6 +63,10 @@ class Heretic:
                     entity.regeneration_delay = -1
                     dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, entity.cur_rect)
                                          * self.weapon.knockback)
+                    blood_list.extend([Blood(random.randint(entity.cur_rect.left,entity.cur_rect.right),
+                                             random.randint(entity.cur_rect.top,entity.cur_rect.midleft[1]),
+                                             random.randint(10, 15), random.randint(10, 15), random.randint(60, 90),
+                                             type=random.choice(['down', 'up'])) for i in range(self.weapon.damage // 5)])
 
                     entity.cur_rect.move_ip(dist_x, dist_y)
                     entity.active_zone.move_ip(dist_x, dist_y)
@@ -81,6 +88,7 @@ class Heretic:
                         obst.get_broken()
 
             self.attack_time = self.weapon.capability
+        return blood_list
 
     def get_center_coord(self, ind):
         return (self.cur_rect.centerx // grid_size, self.cur_rect.centery // grid_size) if ind \
@@ -152,10 +160,15 @@ class Heretic:
                                     self.cur_rect.top + self.height,
                                     self.width // 5 * 3, self.weapon.hit_range)
 
-        if not tick % 10 and is_safe:
+        if not tick % 25 and is_safe:
             self.regenerate()
+
         if self.health > self.actual_health:
             self.health -= .1
+
+        elif self.health < self.actual_health:
+            self.health += .1
+
         if self.regeneration_delay > 0:
             self.regeneration_delay -= 1
 
@@ -167,7 +180,7 @@ class Heretic:
 
     def regenerate(self):
         if self.regeneration_delay == 0:
-            self.actual_health = min(self.actual_health + 2, 100)
+            self.actual_health = min(self.actual_health + 5, 100)
 
     @staticmethod
     def tp(room):
@@ -214,8 +227,15 @@ class Heretic:
                              (x + self.cur_rect.width // 2 - self.weapon.capability // 2 + 2,
                               y - 44, self.attack_time - 4, 12))
         pygame.draw.rect(display, (0, 0, 0), (x - 15, y - 30, 110, 25), border_radius=8)
-        pygame.draw.rect(display, pygame.Color('Yellow'), (x - 10, y - 28,
-                                                           int(100.0 * float(self.health) / 100.0), 21),
-                         border_radius=8)
-        pygame.draw.rect(display, RED, (x - 10, y - 28,
-                                        int(100.0 * float(self.actual_health) / 100.0), 21), border_radius=8)
+        if self.health >= self.actual_health:
+            pygame.draw.rect(display, pygame.Color('Yellow'), (x - 10, y - 28,
+                                                               int(100.0 * float(self.health) / 100.0), 21),
+                             border_radius=8)
+            pygame.draw.rect(display, RED, (x - 10, y - 28,
+                                            int(100.0 * float(self.actual_health) / 100.0), 21), border_radius=8)
+        else:
+            pygame.draw.rect(display, pygame.Color('Green'), (x - 10, y - 28,
+                                                               int(100.0 * float(self.actual_health) / 100.0), 21),
+                             border_radius=8)
+            pygame.draw.rect(display, RED, (x - 10, y - 28,
+                                            int(100.0 * float(self.health) / 100.0), 21), border_radius=8)
