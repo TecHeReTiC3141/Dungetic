@@ -65,8 +65,8 @@ class Heretic:
                                          * self.weapon.knockback)
                     blood_list.extend([Blood(random.randint(entity.cur_rect.left,entity.cur_rect.right),
                                              random.randint(entity.cur_rect.top,entity.cur_rect.midleft[1]),
-                                             random.randint(10, 15), random.randint(10, 15), random.randint(60, 90),
-                                             type=random.choice(['down', 'up'])) for i in range(self.weapon.damage // 5)])
+                                             random.randint(10, 15), random.randint(10, 15), random.randint(70, 90),
+                                             type=random.choice(['down', 'up']), speed=5) for i in range(self.weapon.damage // 4)])
 
                     entity.cur_rect.move_ip(dist_x, dist_y)
                     entity.active_zone.move_ip(dist_x, dist_y)
@@ -137,8 +137,9 @@ class Heretic:
 
         self.prev_rect = self.cur_rect.copy()
         if self.vector.length():
-            self.cur_rect.move_ip(self.vector.normalize() * self.speed)
-            self.attack_rect.move_ip(self.vector.normalize() * self.speed)
+            norm_dir = self.vector.normalize() * self.speed
+            self.cur_rect.move_ip(round(norm_dir.x), round(norm_dir.y))
+            self.attack_rect.move_ip(round(norm_dir.x), round(norm_dir.y))
         self.vector.x, self.vector.y = 0, 0
         self.active_zone.topleft = (self.cur_rect.left - self.width // 10,
                                     self.cur_rect.top + self.height // 10)

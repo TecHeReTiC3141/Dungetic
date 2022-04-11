@@ -258,11 +258,20 @@ class Room:
                 alive.append(entity)
         self.entities_list = alive.copy()
 
+        new_decors = []
+        for decor in self.decors:
+            if isinstance(decor, Decor):
+                if decor.life_time <= 0:
+                    new = decor.delete()
+                    if isinstance(new, Decor):
+                        new_decors.append(new)
+                else:
+                    new_decors.append(decor)
+        self.decors = new_decors.copy()
+
         if len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0 and not self.is_safe:
             self.decors.append(Banner(display_width // 3, 20, 'The room was cleaned', 180))
         self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
 
         self.drops = list(filter(lambda i: not i.picked,
                                  self.drops))
-        self.decors = list(filter(lambda i: i.life_time > 0,
-                                 self.decors))

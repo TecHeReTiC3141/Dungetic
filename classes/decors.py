@@ -9,6 +9,9 @@ class Decor(pygame.Surface):
     def move(self):
         pass
 
+    def delete(self):
+        pass
+
 
 class Particle(Decor):
 
@@ -18,38 +21,51 @@ class Particle(Decor):
         self.life_time = life_time
         self.directions = pygame.math.Vector2()
         self.speed = speed
-        self.deleted = False
 
     def draw_object(self, display, x=0, y=0):
         pass
 
     def move(self):
+        pass
+
+    def delete(self):
         pass
 
 class Blood(Particle):
 
     def __init__(self, x, y, width, height, life_time: int, type: str, speed=3):
         super().__init__(x, y, width, height, life_time, speed)
+        self.type = type
         if type == 'up':
             self.directions = pygame.math.Vector2(random.uniform(-2, 2),
-                                                  random.uniform(-2, -1))
+                                                  random.uniform(-6, -3))
         elif type == 'down':
-            self.directions = pygame.math.Vector2(random.uniform(-.5, .5),
-                                                  1)
+            self.directions = pygame.math.Vector2(0,
+                                                  0)
+            self.life_time //= 3
 
     def draw_object(self, display, x=0, y=0):
-        self.fill('#e61624')
+        self.fill(RED) #e61624
         display.blit(self, self.rect)
         self.life_time -= 1
-        if self.life_time <= 0:
-            self.deleted = True
 
     def move(self):
         if self.directions.length():
-            self.rect.move_ip(self.directions.normalize() * self.speed)
-        self.directions.y += .1
-        self.directions.x = self.directions.x - .1 if self.directions.x > 0 else  self.directions.x - .1
+            norm_dir = self.directions.normalize() * self.speed
+            self.rect.move_ip(round(norm_dir.x), round(norm_dir.y))
+        self.directions.y += phys_eps
+        if self.type == 'up':
+            self.directions.x = self.directions.x - phys_eps if self.directions.x > 0 else  self.directions.x + phys_eps
 
+    def delete(self):
+        return SplatBlood(self.rect.left, self.rect.top,
+                          self.rect.width, self.rect.height,
+                          random.randint(90, 180), type=None, speed=0)
+
+class SplatBlood(Blood):
+
+    def draw_object(self, display, x=0, y=0):
+        super().draw_object(display, x, y)
 
 
 class Banner(Decor):
