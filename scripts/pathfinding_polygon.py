@@ -1,8 +1,8 @@
 from classes.surrounding import *
 
-heretic = Heretic(100, 100, 75, 100, 78, random.choice(directions), [], weapon=Knife())
+heretic = Heretic(100, 100, 75, 100, 78, random.choice(directions), speed=5, weapon=Knife())
 
-vase = Vase(random.randint(100, 300), random.randint(100, 300), 50, 50)
+vase = Vase(random.randint(100, 300), random.randint(100, 300), 50, 50, movable=True)
 polygon = Room([Wall(random.randint(100, 900), random.randint(100, 900),
             random.randint(50, 150), random.randint(50, 150)) for i in range(random.randint(9, 15))],
                [vase], NPC.produce_NPC(random.randint(1, 2))
@@ -35,10 +35,11 @@ while game_cycle:
 
     polygon.draw_object(display, show_grid)
     heretic.draw_object(display)
+    polygon.life(tick)
+    polygon.physics(heretic)
     heretic.move()
     heretic.update(tick)
     pygame.display.update()
-    polygon.life(tick)
-    polygon.physics(heretic)
+
     tick += 1
     clock.tick(60)

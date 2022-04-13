@@ -1,9 +1,9 @@
 from scripts.algorithms_of_generation import *
 from classes.interfaces import *
 
-heretic = Heretic(100, 100, 100, 100, 100, 'left', [])
-
-inventory = Inventory(heretic)
+heretic = Heretic(75, 100, 75, 100, 100, 'right', [])
+game_manager = GameManager()
+inventory = InventoryInter(heretic, game_manager)
 
 
 while True:
@@ -12,4 +12,6 @@ while True:
             quit()
 
     inventory.draw_object(display)
+    display.blit(text_font.render(str(pygame.mouse.get_pos()), True, 'Black'), (10, 10))
+    #pygame.image.save(inventory, '../images/interfaces/inventory.jpg')
     pygame.display.update()

@@ -1,5 +1,6 @@
 from math import *
 from classes.drops import *
+from classes.decors import *
 
 
 class Container:
@@ -49,53 +50,73 @@ class Wall:
         display.blit(self.visible_zone, self.phys_rect)
         # pygame.draw.rect(display, ('#AAAAAA'), self.inner_phys_rect)
 
-    def collide(self, entities: list[Heretic]):
+    def collide(self, entities: list[Heretic], direction: str):
 
         for entity in entities:
-
-            if entity.phys_rect.collidelist([self.outer_phys_rect, self.phys_rect]) == -1:
-                for direct in entity.collised_walls:
-                    if entity.collised_walls[direct] == self:
-                        entity.speed_directions[direct] = 5
-                        entity.collised_walls[direct] = None
-
-            if self.phys_rect.colliderect(entity.phys_rect):
+            if isinstance(entity, NPC):
+                if entity.cur_rect.collidelist([self.outer_phys_rect, self.phys_rect]) == -1:
+                    for direct in entity.collised_walls:
+                        if entity.collised_walls[direct] == self:
+                            entity.speed_directions[direct] = 5
+                            entity.collised_walls[direct] = None
                 move = [0, 0]
-                if self.phys_rect.left + 15 >= entity.phys_rect.right:
-                    move[0] = max(5 - self.weight, 1)
-                    entity.collised_walls['right'] = self
-                    if not self.movable:
-                        entity.speed_directions['right'] = 0
-                    else:
-                        entity.speed_directions['right'] = max(5 - self.weight, 1)
+                if self.phys_rect.colliderect(entity.cur_rect):
 
-                if self.phys_rect.right - 15 <= entity.phys_rect.left:
-                    move[0] = -max(5 - self.weight, 1)
-                    entity.collised_walls['left'] = self
-                    if not self.movable:
-                        entity.speed_directions['left'] = 0
-                    else:
-                        entity.speed_directions['left'] = max(5 - self.weight, 1)
-                if self.phys_rect.top + 15 >= entity.phys_rect.bottom:
-                    move[1] = max(5 - self.weight, 1)
-                    entity.collised_walls['down'] = self
-                    if not self.movable:
-                        entity.speed_directions['down'] = 0
-                    else:
-                        entity.speed_directions['down'] = max(5 - self.weight, 1)
+                    if self.phys_rect.left + 15 >= entity.cur_rect.right:
+                        move[0] = max(5 - self.weight, 1)
+                        entity.collised_walls['right'] = self
+                        if not self.movable:
+                            entity.speed_directions['right'] = 0
+                        else:
+                            entity.speed_directions['right'] = max(5 - self.weight, 1)
 
-                if self.phys_rect.bottom - 15 <= entity.phys_rect.top:
-                    move[1] = -max(5 - self.weight, 1)
-                    entity.collised_walls['up'] = self
-                    if not self.movable:
-                        entity.speed_directions['up'] = 0
-                    else:
-                        entity.speed_directions['up'] = max(5 - self.weight, 1)
+                    if self.phys_rect.right - 15 <= entity.cur_rect.left:
+                        move[0] = -max(5 - self.weight, 1)
+                        entity.collised_walls['left'] = self
+                        if not self.movable:
+                            entity.speed_directions['left'] = 0
+                        else:
+                            entity.speed_directions['left'] = max(5 - self.weight, 1)
+                    if self.phys_rect.top + 15 >= entity.cur_rect.bottom:
+                        move[1] = max(5 - self.weight, 1)
+                        entity.collised_walls['down'] = self
+                        if not self.movable:
+                            entity.speed_directions['down'] = 0
+                        else:
+                            entity.speed_directions['down'] = max(5 - self.weight, 1)
 
-                if self.movable:
-                    self.phys_rect.move_ip(*move)
-                    self.inner_phys_rect.move_ip(*move)
-                    self.outer_phys_rect.move_ip(*move)
+                    if self.phys_rect.bottom - 15 <= entity.cur_rect.top:
+                        move[1] = -max(5 - self.weight, 1)
+                        entity.collised_walls['up'] = self
+                        if not self.movable:
+                            entity.speed_directions['up'] = 0
+                        else:
+                            entity.speed_directions['up'] = max(5 - self.weight, 1)
+            else:
+                if entity.cur_rect.colliderect(self.phys_rect):
+                    if direction == 'hor':
+                        # left side
+                        if entity.cur_rect.right >= self.phys_rect.left >= entity.prev_rect.right:
+                            entity.cur_rect.right = self.phys_rect.left
+                            move[0] = max(5 - self.weight, 1)
+                        # right side
+                        elif entity.cur_rect.left <= self.phys_rect.right <= entity.prev_rect.left:
+                            entity.cur_rect.left = self.phys_rect.right
+                            move[0] = -max(5 - self.weight, 1)
+                    else:
+                        # top side
+                        if entity.cur_rect.bottom >= self.phys_rect.top >= entity.prev_rect.bottom:
+                            entity.cur_rect.bottom = self.phys_rect.top
+                            move[1] = max(5 - self.weight, 1)
+                        # bottom side
+                        elif entity.cur_rect.top <= self.phys_rect.bottom <= entity.prev_rect.top:
+                            entity.cur_rect.top = self.phys_rect.bottom
+                            move[1] = -max(5 - self.weight, 1)
+
+            if self.movable:
+                self.phys_rect.move_ip(*move)
+                self.inner_phys_rect.move_ip(*move)
+                self.outer_phys_rect.move_ip(*move)
 
 
 class Vase(Wall, Breakable, Container):
@@ -144,32 +165,49 @@ class Room:
         self.obst_list = obst_list
         self.containers = containers
         self.drops = []
+        self.decors = []
         self.entities_list = entities_list
         self.entrances = entrances
+        self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
         self.floor = c_a_s.stone_floor if floor == 'stone' else c_a_s.wooden_floor
         self.visited = True
-        self.nodes = [[MyNode(j * grid_size, i * grid_size, grid_size, grid_size) for j in range(ceil(display_width / grid_size))]
-                      for i in range(ceil(display_height / grid_size))]
+        self.nodes = [
+            [MyNode(j * grid_size, i * grid_size, grid_size, grid_size) for j in range(ceil(display_width / grid_size))]
+            for i in range(ceil(display_height / grid_size))]
         for node_l in range(len(self.nodes)):
             for node in self.nodes[node_l]:
                 node.collide(self.obst_list)
         'grid for pathfinding'
         self.grid = Grid(matrix=[[self.nodes[i][j].status for j in range(ceil(display_width / grid_size))]
-                     for i in range(ceil(display_height / grid_size))])
+                                 for i in range(ceil(display_height / grid_size))])
 
-    def draw_object(self, surface: pygame.Surface, show_grid: bool):
+    def draw_object(self, surface: pygame.Surface, tick: int, show_grid: bool):
         surface.blit(self.floor, (0, 0))
         if show_grid:
             self.draw_grid(surface)
             for entity in self.entities_list:
                 if len(entity.path) > 1:
-
                     pygame.draw.lines(surface, BLACK, False, entity.path, width=10)
 
         for wall in self.obst_list + self.containers + self.drops:
             wall.draw_object(surface)
+
+        for decor in self.decors:
+            if isinstance(decor, Decor):
+                if isinstance(decor, Particle) and decor.type == 'background':
+                    decor.draw_object(surface)
+                    decor.move(tick)
+
         for entity in self.entities_list:
             entity.draw_object(surface)
+        for decor in self.decors:
+            if isinstance(decor, Decor):
+                if isinstance(decor, Banner):
+                    decor.draw_object(surface)
+                elif isinstance(decor, Particle) and decor.type != 'background':
+                    decor.draw_object(surface)
+                    decor.move(tick)
+
 
     def draw_grid(self, surface):
         for node_l in self.nodes:
@@ -178,7 +216,8 @@ class Room:
 
     def physics(self, heretic: Heretic):
         for wall in self.obst_list + self.containers:
-            wall.collide(self.entities_list + [heretic])
+            wall.collide(self.entities_list + [heretic], 'hor')
+            wall.collide(self.entities_list + [heretic], 'vert')
         for drop in self.drops:
             drop.collide([heretic])
 
@@ -225,6 +264,21 @@ class Room:
             else:
                 alive.append(entity)
         self.entities_list = alive.copy()
+
+        new_decors = []
+        for decor in self.decors:
+            if isinstance(decor, Decor):
+                if decor.life_time <= 0:
+                    new = decor.delete()
+                    if isinstance(new, Decor):
+                        new_decors.append(new)
+                else:
+                    new_decors.append(decor)
+        self.decors = new_decors.copy()
+
+        if len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0 and not self.is_safe:
+            self.decors.append(Banner(display_width // 3, 20, 'The room was cleaned', 180))
+        self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
 
         self.drops = list(filter(lambda i: not i.picked,
                                  self.drops))
