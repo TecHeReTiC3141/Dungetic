@@ -181,7 +181,7 @@ class Room:
         self.grid = Grid(matrix=[[self.nodes[i][j].status for j in range(ceil(display_width / grid_size))]
                                  for i in range(ceil(display_height / grid_size))])
 
-    def draw_object(self, surface: pygame.Surface, show_grid: bool):
+    def draw_object(self, surface: pygame.Surface, tick: int, show_grid: bool):
         surface.blit(self.floor, (0, 0))
         if show_grid:
             self.draw_grid(surface)
@@ -191,15 +191,22 @@ class Room:
 
         for wall in self.obst_list + self.containers + self.drops:
             wall.draw_object(surface)
+
+        for decor in self.decors:
+            if isinstance(decor, Decor):
+                if isinstance(decor, Particle) and decor.type == 'background':
+                    decor.draw_object(surface)
+                    decor.move(tick)
+
         for entity in self.entities_list:
             entity.draw_object(surface)
         for decor in self.decors:
             if isinstance(decor, Decor):
                 if isinstance(decor, Banner):
                     decor.draw_object(surface)
-                elif isinstance(decor, Particle):
+                elif isinstance(decor, Particle) and decor.type != 'background':
                     decor.draw_object(surface)
-                    decor.move()
+                    decor.move(tick)
 
 
     def draw_grid(self, surface):

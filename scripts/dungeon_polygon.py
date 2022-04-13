@@ -71,7 +71,7 @@ while game_cycle:
         Menu.draw_object(display)
 
     elif game_manager.state == 'main_game':
-        polygon[c_a_s.curr_room].draw_object(display, draw_grid)
+        polygon[c_a_s.curr_room].draw_object(display, tick, draw_grid)
         heretic.draw_object(display)
 
         display.blit(text_font.render(f'{c_a_s.curr_room}', True, WHITE), (25, 25))

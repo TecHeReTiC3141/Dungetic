@@ -161,14 +161,14 @@ class Heretic:
                                     self.cur_rect.top + self.height,
                                     self.width // 5 * 3, self.weapon.hit_range)
 
-        if not tick % 25 and is_safe:
+        if not tick % 10 and is_safe:
             self.regenerate()
 
         if self.health > self.actual_health:
-            self.health -= .1
+            self.health -= .2
 
         elif self.health < self.actual_health:
-            self.health += .1
+            self.health += .2
 
         if self.regeneration_delay > 0:
             self.regeneration_delay -= 1
@@ -181,7 +181,7 @@ class Heretic:
 
     def regenerate(self):
         if self.regeneration_delay == 0:
-            self.actual_health = min(self.actual_health + 5, 100)
+            self.actual_health = min(self.actual_health + 2, 100)
 
     @staticmethod
     def tp(room):
