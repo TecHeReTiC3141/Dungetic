@@ -76,12 +76,12 @@ class Heretic:
                     self.weapon.hit_sound.play()
 
             for obst in conts:
-                if obst.phys_rect.colliderect(self.attack_rect):
+                if obst.cur_rect.colliderect(self.attack_rect):
                     obst.health -= self.weapon.damage
-                    dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, obst.phys_rect)
+                    dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, obst.cur_rect)
                                          * self.weapon.knockback // 2)
 
-                    obst.phys_rect.move_ip(dist_x, dist_y)
+                    obst.cur_rect.move_ip(dist_x, dist_y)
                     obst.active_zone.move_ip(dist_x, dist_y)
                     print(obst.health)
                     if obst.health <= 0:

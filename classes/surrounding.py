@@ -32,7 +32,8 @@ class Wall:
         self.health = height
         self.weight = width * height // 2500
         self.active_zone = pygame.Rect(x - 100, y, width + 51, height + 1)
-        self.phys_rect = pygame.Rect(x, y, width, height)
+        self.cur_rect = pygame.Rect(x, y, width, height)
+        self.prev_rect = self.cur_rect.copy()
         self.inner_phys_rect = pygame.Rect(x + 5, y + 5,
                                            max(width - 10, 10), max(height - 10, 10))
         self.outer_phys_rect = pygame.Rect(x - 10, y - 10, width + 20, height + 20)
@@ -47,22 +48,22 @@ class Wall:
         # pygame.draw.rect(display, ('#CCCCCC'), self.outer_phys_rect)
         pygame.draw.rect(self.visible_zone, (70, 70, 70), (0, 0, self.width, self.height))
 
-        display.blit(self.visible_zone, self.phys_rect)
+        display.blit(self.visible_zone, self.cur_rect)
         # pygame.draw.rect(display, ('#AAAAAA'), self.inner_phys_rect)
 
-    def collide(self, entities: list[Heretic], direction: str):
+    def collide(self, entities: list[Heretic], direction: str, walls_list: list):
 
         for entity in entities:
             if isinstance(entity, NPC):
-                if entity.cur_rect.collidelist([self.outer_phys_rect, self.phys_rect]) == -1:
+                if entity.cur_rect.collidelist([self.outer_phys_rect, self.cur_rect]) == -1:
                     for direct in entity.collised_walls:
                         if entity.collised_walls[direct] == self:
                             entity.speed_directions[direct] = 5
                             entity.collised_walls[direct] = None
                 move = [0, 0]
-                if self.phys_rect.colliderect(entity.cur_rect):
+                if self.cur_rect.colliderect(entity.cur_rect):
 
-                    if self.phys_rect.left + 15 >= entity.cur_rect.right:
+                    if self.cur_rect.left + 15 >= entity.cur_rect.right:
                         move[0] = max(5 - self.weight, 1)
                         entity.collised_walls['right'] = self
                         if not self.movable:
@@ -70,14 +71,14 @@ class Wall:
                         else:
                             entity.speed_directions['right'] = max(5 - self.weight, 1)
 
-                    if self.phys_rect.right - 15 <= entity.cur_rect.left:
+                    if self.cur_rect.right - 15 <= entity.cur_rect.left:
                         move[0] = -max(5 - self.weight, 1)
                         entity.collised_walls['left'] = self
                         if not self.movable:
                             entity.speed_directions['left'] = 0
                         else:
                             entity.speed_directions['left'] = max(5 - self.weight, 1)
-                    if self.phys_rect.top + 15 >= entity.cur_rect.bottom:
+                    if self.cur_rect.top + 15 >= entity.cur_rect.bottom:
                         move[1] = max(5 - self.weight, 1)
                         entity.collised_walls['down'] = self
                         if not self.movable:
@@ -85,7 +86,7 @@ class Wall:
                         else:
                             entity.speed_directions['down'] = max(5 - self.weight, 1)
 
-                    if self.phys_rect.bottom - 15 <= entity.cur_rect.top:
+                    if self.cur_rect.bottom - 15 <= entity.cur_rect.top:
                         move[1] = -max(5 - self.weight, 1)
                         entity.collised_walls['up'] = self
                         if not self.movable:
@@ -93,30 +94,64 @@ class Wall:
                         else:
                             entity.speed_directions['up'] = max(5 - self.weight, 1)
             else:
-                if entity.cur_rect.colliderect(self.phys_rect):
+                if entity.cur_rect.colliderect(self.cur_rect):
                     if direction == 'hor':
                         # left side
-                        if entity.cur_rect.right >= self.phys_rect.left >= entity.prev_rect.right:
-                            entity.cur_rect.right = self.phys_rect.left
+                        if entity.cur_rect.right >= self.cur_rect.left >= entity.prev_rect.right:
+                            entity.cur_rect.right = self.cur_rect.left
                             move[0] = max(5 - self.weight, 1)
                         # right side
-                        elif entity.cur_rect.left <= self.phys_rect.right <= entity.prev_rect.left:
-                            entity.cur_rect.left = self.phys_rect.right
+                        elif entity.cur_rect.left <= self.cur_rect.right <= entity.prev_rect.left:
+                            entity.cur_rect.left = self.cur_rect.right
                             move[0] = -max(5 - self.weight, 1)
                     else:
                         # top side
-                        if entity.cur_rect.bottom >= self.phys_rect.top >= entity.prev_rect.bottom:
-                            entity.cur_rect.bottom = self.phys_rect.top
+                        if entity.cur_rect.bottom >= self.cur_rect.top >= entity.prev_rect.bottom:
+                            entity.cur_rect.bottom = self.cur_rect.top
                             move[1] = max(5 - self.weight, 1)
                         # bottom side
-                        elif entity.cur_rect.top <= self.phys_rect.bottom <= entity.prev_rect.top:
-                            entity.cur_rect.top = self.phys_rect.bottom
+                        elif entity.cur_rect.top <= self.cur_rect.bottom <= entity.prev_rect.top:
+                            entity.cur_rect.top = self.cur_rect.bottom
                             move[1] = -max(5 - self.weight, 1)
 
             if self.movable:
-                self.phys_rect.move_ip(*move)
+                self.prev_rect = self.cur_rect.copy()
+
+                self.cur_rect.move_ip(*move)
                 self.inner_phys_rect.move_ip(*move)
                 self.outer_phys_rect.move_ip(*move)
+                for wall in walls_list:
+                    if self.cur_rect.colliderect(wall.cur_rect):
+                        if direction == 'hor':
+                            # left side
+                            if self.cur_rect.right >= wall.cur_rect.left >= self.prev_rect.right:
+                                if not wall.movable:
+                                    self.cur_rect.right = wall.cur_rect.left
+                                else:
+                                    wall.cur_rect.left = self.cur_rect.right
+
+                            # right side
+                            elif self.cur_rect.left <= wall.cur_rect.right <= self.prev_rect.left:
+                                if not wall.movable:
+                                    self.cur_rect.left = wall.cur_rect.right
+                                else:
+                                    wall.cur_rect.right = self.cur_rect.left
+
+                        else:
+                            # top side
+                            if self.cur_rect.bottom >= wall.cur_rect.top >= self.prev_rect.bottom:
+                                if not wall.movable:
+                                    self.cur_rect.bottom = wall.cur_rect.top
+                                else:
+                                    wall.cur_rect.top = self.cur_rect.bottom
+
+                            # bottom side
+                            elif self.cur_rect.top <= wall.cur_rect.bottom <= self.prev_rect.top:
+                                if not wall.movable:
+                                    self.cur_rect.top = wall.cur_rect.bottom
+                                else:
+                                    wall.cur_rect.bottom = self.cur_rect.top
+
 
 
 class Vase(Wall, Breakable, Container):
@@ -128,8 +163,8 @@ class Vase(Wall, Breakable, Container):
 
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill('#FFFFFF')
-        display.blit(self.visible_zone, self.phys_rect)
-        display.blit(self.sprite, self.phys_rect)
+        display.blit(self.visible_zone, self.cur_rect)
+        display.blit(self.sprite, self.cur_rect)
         return self.visible_zone
 
 
@@ -225,8 +260,8 @@ class Room:
 
     def physics(self, heretic: Heretic):
         for wall in self.obst_list + self.containers:
-            wall.collide(self.entities_list + [heretic], 'hor')
-            wall.collide(self.entities_list + [heretic], 'vert')
+            wall.collide(self.entities_list + [heretic], 'hor', self.obst_list + self.containers)
+            wall.collide(self.entities_list + [heretic], 'vert', self.obst_list + self.containers)
         for drop in self.drops:
             drop.collide([heretic])
 
