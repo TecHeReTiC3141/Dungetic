@@ -7,6 +7,7 @@ def generate_random_loot(classes: list[type], x, y, n=1):
 
 def generate_room(cur_ind, dung_width, dung_length) -> Room:
     ways = random.sample(['down', 'right'], random.randint(1, 2))
+    room_type = random.choice(['common', 'common', 'storage'])
     enters = []
     walls = []
     cont = []
@@ -61,15 +62,21 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
               j in range(random.randint(5, 10))]
     cont += [Vase(x := random.randrange(100, 905, 5), y := random.randrange(100, 705, 5),
                   width=40, height=45, movable=True, health=10,
-                  container=generate_random_loot([Knife, GoldCoin, SilverCoin], x, y, n=3))
+                  container=generate_random_loot([Potion, GoldCoin, SilverCoin], x, y, n=random.randint(1, 3)))
              for j in range(random.randint(3, 5))]
+    if room_type == 'storage':
+        cont += [Crate(x := random.randrange(100, 905, 5), y := random.randrange(100, 705, 5),
+                      width=random.randint(45, 80), height=random.randint(45, 80), movable=True, health=10,
+                      container=generate_random_loot([Knife, GoldCoin, SilverCoin], x, y, n=random.randint(2, 3)))
+                 for j in range(random.randint(3, 5))]
+
     if not enters:
         enters = [dir for dir in directions if dir not in ways]
 
     for entity in entities:
         entity.loot = generate_random_loot([SilverCoin, GoldCoin, Potion], 0, 0, n=random.randint(1, 2))
 
-    return Room(walls, cont, entities, enters, floor=random.choice(['stone', 'wooden']))
+    return Room(walls, cont, entities, enters, floor=random.choice(['stone', 'wooden']), type=room_type)
 
 
 def generate_dungeons() -> dict[int, Room]:
