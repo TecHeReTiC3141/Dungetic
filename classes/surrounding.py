@@ -113,7 +113,7 @@ class Wall:
                         elif entity.cur_rect.top <= self.cur_rect.bottom <= entity.prev_rect.top:
                             entity.cur_rect.top = self.cur_rect.bottom
                             move[1] = -max(5 - self.weight, 1)
-
+            # TODO update physics for all entities
             if self.movable:
                 self.prev_rect = self.cur_rect.copy()
 
@@ -159,6 +159,7 @@ class Vase(Wall, Breakable, Container):
     def __init__(self, x, y, width, height, collised=False, movable=False, health=120, container=None):
         super().__init__(x, y, width, height, collised, movable, health, container)
         self.sprite = pygame.image.load('../images/surroundings/Vase1.png').convert_alpha()
+        self.cur_rect.update(*self.cur_rect.topleft, *self.sprite.get_size())
         self.sprite.set_colorkey('#FFFFFF')
 
     def draw_object(self, display: pygame.Surface):
@@ -175,7 +176,7 @@ class Crate(Vase):
         super().__init__(x, y, width, height, collised,
                          movable, health, container)
         self.sprite = pygame.transform.scale(pygame.image.load('../images/surroundings/crate.png'), (width, height))
-
+        self.cur_rect.update(*self.cur_rect.topleft, width, height)
 
 class MyNode:
     '''
@@ -292,7 +293,7 @@ class Room:
                     loot = cont.get_broken()
                     for loo in loot:
                         if isinstance(cont, Container):
-                            loo.rect.topleft = cont.phys_rect.topleft
+                            loo.rect.topleft = cont.cur_rect.topleft
                             self.drops.append(loo)
                 else:
                     sorted_conts.append(cont)
