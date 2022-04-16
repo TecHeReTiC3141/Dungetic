@@ -254,7 +254,10 @@ class MapInter(Interface):
             for i in range(90, 90 + dung_length * 80, 80):
                 r_ind = (i - 90) // 80 + (j - 90) // 80 * dung_length + 1
                 if rooms[r_ind].visited:
-                    pygame.draw.rect(display, (240, 240, 240), (i, j, 45, 35))
+                    if rooms[r_ind].type == 'common':
+                        pygame.draw.rect(display, (240, 240, 240), (i, j, 45, 35))
+                    elif rooms[r_ind].type == 'storage':
+                        pygame.draw.rect(display, '#8d6712', (i, j, 45, 35))
                     if 'up' in rooms[r_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (i + 12, j - 25, 20, 25))
                     if 'down' in rooms[r_ind].entrances:

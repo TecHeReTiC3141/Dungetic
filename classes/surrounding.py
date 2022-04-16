@@ -123,7 +123,7 @@ class Vase(Wall, Breakable, Container):
 
     def __init__(self, x, y, width, height, collised=False, movable=False, health=120, container=None):
         super().__init__(x, y, width, height, collised, movable, health, container)
-        self.sprite = pygame.image.load('../images/Vase1.png').convert_alpha()
+        self.sprite = pygame.image.load('../images/surroundings/Vase1.png').convert_alpha()
         self.sprite.set_colorkey('#FFFFFF')
 
     def draw_object(self, display: pygame.Surface):
@@ -131,6 +131,15 @@ class Vase(Wall, Breakable, Container):
         display.blit(self.visible_zone, self.phys_rect)
         display.blit(self.sprite, self.phys_rect)
         return self.visible_zone
+
+
+class Crate(Vase):
+
+    def __init__(self, x, y, width, height, collised=False,
+                 movable=False, health=120, container=None):
+        super().__init__(x, y, width, height, collised,
+                         movable, health, container)
+        self.sprite = pygame.transform.scale(pygame.image.load('../images/surroundings/crate.png'), (width, height))
 
 
 class MyNode:
@@ -161,7 +170,7 @@ class MyNode:
 class Room:
 
     def __init__(self, obst_list: list[Wall], containers: list[Wall],
-                 entities_list: list[NPC], entrances, floor: str):
+                 entities_list: list[NPC], entrances, floor: str, type: str = 'common'):
         self.obst_list = obst_list
         self.containers = containers
         self.drops = []
@@ -171,6 +180,7 @@ class Room:
         self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
         self.floor = c_a_s.stone_floor if floor == 'stone' else c_a_s.wooden_floor
         self.visited = True
+        self.type = type
         self.nodes = [
             [MyNode(j * grid_size, i * grid_size, grid_size, grid_size) for j in range(ceil(display_width / grid_size))]
             for i in range(ceil(display_height / grid_size))]
@@ -207,7 +217,6 @@ class Room:
                 elif isinstance(decor, Particle) and decor.type != 'background':
                     decor.draw_object(surface)
                     decor.move(tick)
-
 
     def draw_grid(self, surface):
         for node_l in self.nodes:
