@@ -198,7 +198,7 @@ class InventoryInter(Interface):
             print(self.cur_effect.surf)
             self.cur_effect.draw_object(self)
             if self.cur_effect.life_time <= 0:
-                self.cur_effect.life_time = None
+                self.cur_effect = None
 
         for button in self.button_list:
             button.draw_object(self)
@@ -208,14 +208,19 @@ class InventoryInter(Interface):
 
         if isinstance(self.selected_item, Loot):
             self.selected_item.draw_object(self, x=785, y=430)
+            for line in range(len(self.selected_item.descr)):
+                self.blit(active_font.render(self.selected_item.descr[line],
+                                                True, BLACK), (890, 470 + line * 50))
 
         display.blit(self, (0, 0))
 
     def open(self):
+        self.selected_item = None
         for i in range(len(self.containers)):
             self.containers[i].content = None
         for i in range(len(self.entity.inventory)):
             self.containers[i].content = self.entity.inventory[i]
+
 
     def process(self, action_type, mouse):
         for container in self.containers:
