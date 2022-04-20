@@ -5,6 +5,7 @@ from pathfinding.finder.a_star import AStarFinder
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from collections import *
 from scripts.Maths import *
+import PySimpleGUI as sg
 
 pygame.init()
 pygame.mixer.init()

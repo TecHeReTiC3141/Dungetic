@@ -70,6 +70,9 @@ while game_cycle:
     if game_manager.state == 'main_menu':
         Menu.draw_object(display)
 
+    elif game_manager.state == 'settings':
+        print('set')
+
     elif game_manager.state == 'main_game':
         polygon[c_a_s.curr_room].draw_object(display, tick, draw_grid)
         heretic.draw_object(display)

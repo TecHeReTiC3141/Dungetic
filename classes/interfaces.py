@@ -63,6 +63,10 @@ class ChangeState(Button):
     def update(self, mouse):
         if self.rect.collidepoint(mouse):
             self.manager.state = self.state
+            if self.state == 'settings':
+                sg.popup('In progress')
+                self.manager.state = 'main_menu'
+
 
 
 class SimpleButton(Button):
@@ -191,9 +195,12 @@ class InventoryInter(Interface):
 
     def draw_object(self, display: pygame.Surface, ):
         self.blit(inventory_image, (0, 0))
-        self.entity.draw_object(self, x=820, y=110)
+        self.entity.draw_object(self, x=820, y=110, in_game=False)
         self.blit(inventory_font.render(f'{self.entity.money}', True, '#f8b800'),
                   (95 + 15 * len(str(self.entity.money)), 100))
+        # TODO put heretic's weapon in container
+        self.entity.weapon.draw_object(self, x=1040, y=310, direct='right')
+
         if isinstance(self.cur_effect, Banner):
             print(self.cur_effect.surf)
             self.cur_effect.draw_object(self)

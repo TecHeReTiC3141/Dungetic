@@ -101,7 +101,7 @@ class Potion(Consumable):
              "Попробовать эту дрянь или",
              "умереть от ран"]
 
-    effect = ('+ 15', 'red')
+    effect = ('+ 15', '#FF0000')
 
 
     def interact(self, entity):

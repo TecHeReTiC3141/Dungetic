@@ -191,7 +191,7 @@ class Heretic:
     def die(self):
         pass
 
-    def draw_object(self, display: pygame.Surface, x=None, y=None):
+    def draw_object(self, display: pygame.Surface, x=None, y=None, in_game=True):
         if x is None and y is None:
             x, y = self.cur_rect.topleft
         self.visible_zone.fill((0, 0, 0))
@@ -213,12 +213,14 @@ class Heretic:
         self.visible_zone.blit(heretic_images[self.direction], (0, 0))
         display.blit(self.visible_zone, (x, y))
         if self.direction in self.weapon.sprite:
-            if self.direction == 'left':
-                self.weapon.draw_object(display, x=self.attack_rect.midtop[0], y=self.attack_rect.midleft[1],
-                                        direct='left')
-            elif self.direction == 'right':
-                self.weapon.draw_object(display, x=self.attack_rect.left, y=self.attack_rect.midleft[1], direct='right')
-
+            if in_game:
+                if self.direction == 'left':
+                    self.weapon.draw_object(display, x=self.attack_rect.midtop[0],
+                                            y=self.attack_rect.midleft[1],
+                                            direct='left')
+                elif self.direction == 'right':
+                    self.weapon.draw_object(display, x=self.attack_rect.left,
+                                            y=self.attack_rect.midleft[1], direct='right')
         # display.blit(self.attack_surf, self.attack_rect)
         if self.attack_time > 0:
             pygame.draw.rect(display, (0, 0, 0),
