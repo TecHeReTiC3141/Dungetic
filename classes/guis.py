@@ -14,7 +14,7 @@ class Settings:
             ])],
             [sg.HorizontalSeparator()],
             [sg.Frame('Graphics', [
-                [sg.Text('Resolution'), sg.Spin(['720x480', '900x600'], key='-RES-'),
+                [sg.Text('Resolution'), sg.Spin(['720x480', '900x600', '1080x720'], key='-RES-'),
                  sg.Checkbox('Fullscreen', key='-FULLSCREEN-')]
             ],)],
             [sg.Push(), sg.Button('Reset', button_color='red'), sg.Button('Apply', button_color='green')]
@@ -31,17 +31,20 @@ class Settings:
                 break
 
             elif event == 'Apply':
-                blood, res, full = values['-BLOOD-'], values['-RES-'].split('x'), values['-FULLSCREEN-']
-                print(blood, res, full)
+                blood, res, full = values['-BLOOD-'], \
+                                   tuple(map(int, values['-RES-'].split('x'))), \
+                                   values['-FULLSCREEN-']
+                self.manager.update(res, blood, full)
                 self.close()
                 break
 
-    # TODO manager and settings
+
     def close(self):
         self.window.close()
         print('closed')
 
-manager = GameManager()
+
+manager = GameManager((720, 480))
 
 settings = Settings(manager)
 
