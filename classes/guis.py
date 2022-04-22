@@ -14,7 +14,7 @@ class Settings:
             ])],
             [sg.HorizontalSeparator()],
             [sg.Frame('Graphics', [
-                [sg.Text('Resolution'), sg.Spin(['720x480', '900x600', '1080x720'], key='-RES-'),
+                [sg.Text('Resolution'), sg.Spin(['720x480', '900x600', '1080x720', '1440x900'], key='-RES-'),
                  sg.Checkbox('Fullscreen', key='-FULLSCREEN-')]
             ],)],
             [sg.Push(), sg.Button('Reset', button_color='red'), sg.Button('Apply', button_color='green')]
@@ -42,10 +42,3 @@ class Settings:
     def close(self):
         self.window.close()
         print('closed')
-
-
-manager = GameManager((720, 480))
-
-settings = Settings(manager)
-
-settings.run()

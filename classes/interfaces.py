@@ -3,6 +3,7 @@ from classes.Heretic import Heretic
 from classes.loot import *
 from scripts.game_manager import GameManager
 from classes.decors import *
+from classes.guis import *
 
 
 class Interface(pygame.Surface):
@@ -64,7 +65,8 @@ class ChangeState(Button):
         if self.rect.collidepoint(mouse):
             self.manager.state = self.state
             if self.state == 'settings':
-                sg.popup('In progress')
+                settings = Settings(self.manager)
+                settings.run()
                 self.manager.state = 'main_menu'
 
 
