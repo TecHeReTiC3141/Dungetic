@@ -36,6 +36,7 @@ class Settings:
                 self.close()
                 break
 
+    # TODO manager and settings
     def close(self):
         self.window.close()
         print('closed')

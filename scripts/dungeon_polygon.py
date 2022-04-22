@@ -4,7 +4,7 @@ from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter
 from scripts.game_manager import GameManager
 
 heretic = Heretic(100, 100, 75, 100, 100, random.choice(directions))
-game_manager = GameManager()
+game_manager = GameManager((display_width, display_height))
 
 polygon = generate_dungeons()
 
@@ -68,19 +68,19 @@ while game_cycle:
                     Menu.process(pygame.mouse.get_pos())
 
     if game_manager.state == 'main_menu':
-        Menu.draw_object(display)
+        Menu.draw_object(game_manager.display)
 
     elif game_manager.state == 'settings':
         print('set')
 
     elif game_manager.state == 'main_game':
-        polygon[c_a_s.curr_room].draw_object(display, tick, draw_grid)
-        heretic.draw_object(display)
+        polygon[c_a_s.curr_room].draw_object(game_manager.display, tick, draw_grid)
+        heretic.draw_object(game_manager.display)
 
-        display.blit(text_font.render(f'{c_a_s.curr_room}', True, WHITE), (25, 25))
-        display.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
+        game_manager.display.blit(text_font.render(f'{c_a_s.curr_room}', True, WHITE), (25, 25))
+        game_manager.display.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
         if isinstance(cur_inter, Interface):
-            cur_inter.draw_object(display)
+            cur_inter.draw_object(game_manager.display)
         else:
             heretic.move()
             heretic.update(tick, polygon[c_a_s.curr_room].is_safe)
