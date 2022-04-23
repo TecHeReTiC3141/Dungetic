@@ -246,8 +246,9 @@ class InventoryInter(Interface):
 
 class MapInter(Interface):
 
-    def __init__(self, rooms: dict):
+    def __init__(self, rooms: dict, game_manager: GameManager):
         super().__init__()
+        self.manager = game_manager
         self.rooms = rooms
 
     def draw_object(self, display):
@@ -269,7 +270,7 @@ class MapInter(Interface):
                         pygame.draw.rect(display, (200, 200, 200), (i + 45, j + 7, 20, 20))
                     if 'left' in rooms[r_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (i - 15, j + 7, 15, 20))
-                    if r_ind == c_a_s.curr_room:
+                    if r_ind == self.manager.curr_room:
                         pygame.draw.rect(display, BLACK, (i + 5, j + 7, 15, 20))
                 else:
                     pygame.draw.rect(display, (10, 10, 10), (i, j, 45, 35))

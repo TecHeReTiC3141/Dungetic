@@ -214,7 +214,7 @@ class Room:
         self.entities_list = entities_list
         self.entrances = entrances
         self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
-        self.floor = c_a_s.stone_floor if floor == 'stone' else c_a_s.wooden_floor
+        self.floor = stone_floor if floor == 'stone' else wooden_floor
         self.visited = True
         self.type = type
         self.nodes = [

@@ -1,4 +1,6 @@
 import pygame
+from scripts.constants_and_sources import *
+pygame.mixer.init()
 
 
 class Loot:

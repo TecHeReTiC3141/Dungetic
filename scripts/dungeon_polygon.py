@@ -4,8 +4,6 @@ from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter
 from scripts.game_manager import GameManager
 
 
-
-
 polygon = generate_dungeons()
 
 tick = 0
@@ -13,10 +11,10 @@ draw_grid = False
 cur_inter = None
 
 game_manager = GameManager((display_width, display_height),
-                           polygon, c_a_s.curr_room)
+                           polygon, curr_room)
 heretic = Heretic(100, 100, 75, 100, 100, random.choice(directions), game_manager)
 
-Map = MapInter(polygon)
+Map = MapInter(polygon, game_manager)
 Inventory = InventoryInter(heretic, game_manager)
 Menu = MainMenu(game_manager)
 

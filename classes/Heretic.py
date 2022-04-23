@@ -1,5 +1,3 @@
-from scripts.constants_and_sources import *
-import scripts.constants_and_sources as c_a_s
 from classes.loot import *
 from classes.decors import *
 from scripts.game_manager import GameManager
@@ -65,7 +63,8 @@ class Heretic:
                     entity.regeneration_delay = -1
                     dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, entity.cur_rect)
                                          * self.weapon.knockback)
-                    blood_list.extend([Blood(random.randint(entity.cur_rect.left, entity.cur_rect.right),
+                    if self.manager.blood:
+                        blood_list.extend([Blood(random.randint(entity.cur_rect.left, entity.cur_rect.right),
                                              random.randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
                                              random.randint(10, 15), random.randint(10, 15), random.randint(50, 70),
                                              type=random.choice(['down', 'up']), speed=5) for i in
