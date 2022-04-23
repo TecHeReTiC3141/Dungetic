@@ -2,11 +2,12 @@ from scripts.constants_and_sources import *
 import scripts.constants_and_sources as c_a_s
 from classes.loot import *
 from classes.decors import *
+from scripts.game_manager import GameManager
 
 
 class Heretic:
     # TODO try to transform entities into pygame.sprites
-    def __init__(self, x, y, width, height, health, direction,
+    def __init__(self, x, y, width, height, health, direction, manager: GameManager,
                  speed=6, target=None, weapon=Fist(), location=None, size=1.):
         self.width = width
         self.height = height
@@ -51,6 +52,8 @@ class Heretic:
 
         self.money = 0
         self.actual_money = 0
+
+        self.manager = manager
 
     def hit(self, entities: list = None, conts: list = None) -> list:
         blood_list = []
@@ -114,22 +117,22 @@ class Heretic:
             self.vector.y = 1
 
         if self.cur_rect.colliderect(left_border):
-            c_a_s.curr_room -= 1
+            self.manager.curr_room -= 1
             self.cur_rect.left = display_width - 100
             self.cur_rect.topleft = (self.cur_rect.left, self.cur_rect.top)
 
         elif self.cur_rect.colliderect(right_border):
-            c_a_s.curr_room += 1
+            self.manager.curr_room += 1
             self.cur_rect.left = 50
             self.cur_rect.topleft = (self.cur_rect.left, self.cur_rect.top)
 
         elif self.cur_rect.colliderect(upper_border):
-            c_a_s.curr_room -= dung_length
+            self.manager.curr_room -= dung_length
             self.cur_rect.top = display_height - 125
             self.cur_rect.topleft = (self.cur_rect.left, self.cur_rect.top)
 
         elif self.cur_rect.colliderect(lower_border):
-            c_a_s.curr_room += dung_length
+            self.manager.curr_room += dung_length
             self.cur_rect.top = 25
             self.cur_rect.topleft = (self.cur_rect.left, self.cur_rect.top)
 

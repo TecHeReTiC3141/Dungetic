@@ -10,7 +10,7 @@ class GameManager:
                        'inventory_skills',
                        'inventory_stats']
 
-    def __init__(self, res: tuple, state='main_menu',):
+    def __init__(self, res: tuple, dungeon, cur_room, state='main_menu', ):
         if state not in self.possible_states:
             raise RuntimeError('State is not supported')
         self.state = state
@@ -18,6 +18,9 @@ class GameManager:
         self.res = res
         self.full = False
         self.display = pygame.display.set_mode(self.res)
+
+        self.dungeon = dungeon
+        self.curr_room = cur_room
 
     def update(self, res: tuple, blood=True, full=False):
         self.res = res

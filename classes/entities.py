@@ -7,7 +7,7 @@ class NPC(Heretic):
 
     def __init__(self, x, y, width, height, health, direction, speed,
                  target=None, weapon=Fist(), loot=None, location=None, size=1.):
-        super().__init__(x, y, width, height, health, direction,
+        super().__init__(x, y, width, height, health, direction, None,
                          speed, target, weapon, location, size)
         self.path = deque()
         self.loot = [] if loot is None else loot

@@ -3,14 +3,19 @@ from scripts.algorithms_of_generation import generate_dungeons
 from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter
 from scripts.game_manager import GameManager
 
-heretic = Heretic(100, 100, 75, 100, 100, random.choice(directions))
-game_manager = GameManager((display_width, display_height))
+
+
 
 polygon = generate_dungeons()
 
 tick = 0
 draw_grid = False
 cur_inter = None
+
+game_manager = GameManager((display_width, display_height),
+                           polygon, c_a_s.curr_room)
+heretic = Heretic(100, 100, 75, 100, 100, random.choice(directions), game_manager)
+
 Map = MapInter(polygon)
 Inventory = InventoryInter(heretic, game_manager)
 Menu = MainMenu(game_manager)
@@ -26,15 +31,16 @@ pygame.time.set_timer(show_paths, 150)
 clock = pygame.time.Clock()
 
 while game_cycle:
+    cur_room = game_manager.dungeon[game_manager.curr_room]
     for event in pygame.event.get():
         if event.type == wipe:
-            polygon[c_a_s.curr_room].clear()
+            cur_room.clear()
             # print(heretic.collised_walls, heretic.speed_directions)
         elif event.type == pygame.QUIT:
             pygame.quit()
 
         elif event.type == show_paths:
-            polygon[c_a_s.curr_room].make_paths(heretic)
+            cur_room.make_paths(heretic)
 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_m:
@@ -51,8 +57,8 @@ while game_cycle:
                     Inventory.open()
 
             elif event.key == pygame.K_e:
-                polygon[c_a_s.curr_room].decors.extend(heretic.hit(polygon[c_a_s.curr_room].entities_list,
-                            polygon[c_a_s.curr_room].containers))
+                cur_room.decors.extend(heretic.hit(cur_room.entities_list,
+                            cur_room.containers))
 
             elif event.key == pygame.K_g:
                 draw_grid = ~draw_grid
@@ -74,21 +80,21 @@ while game_cycle:
         print('set')
 
     elif game_manager.state == 'main_game':
-        polygon[c_a_s.curr_room].draw_object(game_manager.display, tick, draw_grid)
+        cur_room.draw_object(game_manager.display, tick, draw_grid)
         heretic.draw_object(game_manager.display)
 
-        game_manager.display.blit(text_font.render(f'{c_a_s.curr_room}', True, WHITE), (25, 25))
+        game_manager.display.blit(text_font.render(f'{game_manager.curr_room}', True, WHITE), (25, 25))
         game_manager.display.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
         if isinstance(cur_inter, Interface):
             cur_inter.draw_object(game_manager.display)
         else:
             heretic.move()
-            heretic.update(tick, polygon[c_a_s.curr_room].is_safe)
-            polygon[c_a_s.curr_room].life(tick)
-            polygon[c_a_s.curr_room].physics(heretic)
+            heretic.update(tick, cur_room.is_safe)
+            cur_room.life(tick)
+            cur_room.physics(heretic)
 
     pygame.display.update()
 
     clock.tick(60)
     tick += 1
-    polygon[c_a_s.curr_room].visited = True
+    cur_room.visited = True

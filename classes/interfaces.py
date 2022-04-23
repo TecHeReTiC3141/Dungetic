@@ -70,7 +70,6 @@ class ChangeState(Button):
                 self.manager.state = 'main_menu'
 
 
-
 class SimpleButton(Button):
 
     def __init__(self, x, y, width, height, text, color, action):
@@ -80,16 +79,6 @@ class SimpleButton(Button):
     def update(self, mouse, ):
         if self.rect.collidepoint(mouse):
             self.action()
-
-
-class Switcher(UI):
-
-    def __init__(self, x, y, text, state, atr: str):
-        self.x = x
-        self.y = y
-        self.rect = pygame.Rect(x, y, 80, 45)
-        self.label = button_font.render(text, True, BLACK)
-        self.images = {True: '', False: ''}
 
 
 class InterContainer(Button):
