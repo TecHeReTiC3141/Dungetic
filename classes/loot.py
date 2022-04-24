@@ -114,4 +114,24 @@ class Potion(Consumable):
 
     sprite = pygame.image.load('../images/Comsubles/live_potion.png')
 
-# TODO create more types and objects for game loot
+
+class Armor(Loot):
+
+    persist = 0.
+    max_durab = 100
+    section = 'body'
+
+    def __init__(self):
+        self.durab = Armor.max_durab
+
+
+class Helmet(Armor):
+
+    section = 'head'
+
+# TODO implement basic armor logic and create some subclasses
+
+
+
+
+
