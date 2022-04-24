@@ -14,7 +14,8 @@ class Settings:
             ])],
             [sg.HorizontalSeparator()],
             [sg.Frame('Graphics', [
-                [sg.Text('Resolution'), sg.Spin(['900x600', '1080x720', '1440x900'], key='-RES-'),
+                [sg.Text('Resolution'), sg.Spin(['900x600', '1080x720', '1440x900'],
+                                                initial_value='1440x900', key='-RES-'),
                  sg.Checkbox('Fullscreen', key='-FULLSCREEN-')]
             ],)],
             [sg.Push(), sg.Button('Reset', button_color='red'), sg.Button('Apply', button_color='green')]
