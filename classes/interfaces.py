@@ -3,6 +3,7 @@ from classes.Heretic import Heretic
 from classes.loot import *
 from scripts.game_manager import GameManager
 from classes.decors import *
+from classes.guis import *
 
 
 class Interface(pygame.Surface):
@@ -63,6 +64,10 @@ class ChangeState(Button):
     def update(self, mouse):
         if self.rect.collidepoint(mouse):
             self.manager.state = self.state
+            if self.state == 'settings':
+                settings = Settings(self.manager)
+                settings.run()
+                self.manager.state = 'main_menu'
 
 
 class SimpleButton(Button):
@@ -74,16 +79,6 @@ class SimpleButton(Button):
     def update(self, mouse, ):
         if self.rect.collidepoint(mouse):
             self.action()
-
-
-class Switcher(UI):
-
-    def __init__(self, x, y, text, state, atr: str):
-        self.x = x
-        self.y = y
-        self.rect = pygame.Rect(x, y, 80, 45)
-        self.label = button_font.render(text, True, BLACK)
-        self.images = {True: '', False: ''}
 
 
 class InterContainer(Button):
@@ -191,14 +186,17 @@ class InventoryInter(Interface):
 
     def draw_object(self, display: pygame.Surface, ):
         self.blit(inventory_image, (0, 0))
-        self.entity.draw_object(self, x=820, y=110)
+        self.entity.draw_object(self, x=820, y=110, in_game=False)
         self.blit(inventory_font.render(f'{self.entity.money}', True, '#f8b800'),
                   (95 + 15 * len(str(self.entity.money)), 100))
+        # TODO put heretic's weapon in container
+        self.entity.weapon.draw_object(self, x=1040, y=310, direct='right')
+
         if isinstance(self.cur_effect, Banner):
             print(self.cur_effect.surf)
             self.cur_effect.draw_object(self)
             if self.cur_effect.life_time <= 0:
-                self.cur_effect.life_time = None
+                self.cur_effect = None
 
         for button in self.button_list:
             button.draw_object(self)
@@ -208,14 +206,19 @@ class InventoryInter(Interface):
 
         if isinstance(self.selected_item, Loot):
             self.selected_item.draw_object(self, x=785, y=430)
+            for line in range(len(self.selected_item.descr)):
+                self.blit(active_font.render(self.selected_item.descr[line],
+                                                True, BLACK), (890, 470 + line * 50))
 
         display.blit(self, (0, 0))
 
     def open(self):
+        self.selected_item = None
         for i in range(len(self.containers)):
             self.containers[i].content = None
         for i in range(len(self.entity.inventory)):
             self.containers[i].content = self.entity.inventory[i]
+
 
     def process(self, action_type, mouse):
         for container in self.containers:
@@ -243,8 +246,9 @@ class InventoryInter(Interface):
 
 class MapInter(Interface):
 
-    def __init__(self, rooms: dict):
+    def __init__(self, rooms: dict, game_manager: GameManager):
         super().__init__()
+        self.manager = game_manager
         self.rooms = rooms
 
     def draw_object(self, display):
@@ -254,7 +258,10 @@ class MapInter(Interface):
             for i in range(90, 90 + dung_length * 80, 80):
                 r_ind = (i - 90) // 80 + (j - 90) // 80 * dung_length + 1
                 if rooms[r_ind].visited:
-                    pygame.draw.rect(display, (240, 240, 240), (i, j, 45, 35))
+                    if rooms[r_ind].type == 'common':
+                        pygame.draw.rect(display, (240, 240, 240), (i, j, 45, 35))
+                    elif rooms[r_ind].type == 'storage':
+                        pygame.draw.rect(display, '#8d6712', (i, j, 45, 35))
                     if 'up' in rooms[r_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (i + 12, j - 25, 20, 25))
                     if 'down' in rooms[r_ind].entrances:
@@ -263,7 +270,7 @@ class MapInter(Interface):
                         pygame.draw.rect(display, (200, 200, 200), (i + 45, j + 7, 20, 20))
                     if 'left' in rooms[r_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (i - 15, j + 7, 15, 20))
-                    if r_ind == c_a_s.curr_room:
+                    if r_ind == self.manager.curr_room:
                         pygame.draw.rect(display, BLACK, (i + 5, j + 7, 15, 20))
                 else:
                     pygame.draw.rect(display, (10, 10, 10), (i, j, 45, 35))
