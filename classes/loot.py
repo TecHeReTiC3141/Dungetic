@@ -1,4 +1,6 @@
 import pygame
+from scripts.constants_and_sources import *
+pygame.mixer.init()
 
 
 class Loot:
@@ -60,6 +62,7 @@ class Knife(Weapon):
     sprite = {'right': pygame.image.load('../images/weapons/knife/iron_knife.png'),
               'left': pygame.transform.flip(pygame.image.load('../images/weapons/knife/iron_knife.png'),
                                             flip_x=True, flip_y=False)}
+    descr = ['Острый железный клинок']
     damage = 8
     knockback = 35
     capability = 50
@@ -96,7 +99,11 @@ class Consumable(Loot):
 
 class Potion(Consumable):
 
-    effect = ('+ 15', 'red')
+    descr = ['Неизвестно, что хуже - ',
+             "Попробовать эту дрянь или",
+             "умереть от ран"]
+
+    effect = ('+ 15', '#FF0000')
 
 
     def interact(self, entity):

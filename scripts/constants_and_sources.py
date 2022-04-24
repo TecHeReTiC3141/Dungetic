@@ -5,6 +5,7 @@ from pathfinding.finder.a_star import AStarFinder
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from collections import *
 from scripts.Maths import *
+import PySimpleGUI as sg
 
 pygame.init()
 pygame.mixer.init()
@@ -22,7 +23,7 @@ dung_length, dung_width = map(int, input('Введите длину и шири�
 curr_room = random.randint(1, dung_width * dung_length)
 rooms = {}
 
-display_width, display_height = (1440, 800)
+display_width, display_height = (1440, 900)
 display = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Dungetic')
 
