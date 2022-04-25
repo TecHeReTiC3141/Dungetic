@@ -3,7 +3,6 @@ from scripts.algorithms_of_generation import generate_dungeons
 from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter
 from scripts.game_manager import GameManager
 
-
 polygon = generate_dungeons()
 
 tick = 0

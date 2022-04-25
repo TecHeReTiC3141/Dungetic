@@ -5,10 +5,10 @@ class Settings:
 
     def __init__(self, manager: GameManager):
         self.manager = manager
-
         sg.theme('DarkAmber')
         sg.set_options(font='Frank 12')
-        self.layout = [
+
+        graphics_tab = sg.Tab('Graphics', [
             [sg.Frame('Game', [
                 [sg.Checkbox('Blood', default=True, text_color='red', key='-BLOOD-')]
             ])],
@@ -17,7 +17,20 @@ class Settings:
                 [sg.Text('Resolution'), sg.Spin(['900x600', '1080x720', '1440x900'],
                                                 initial_value='1440x900', key='-RES-'),
                  sg.Checkbox('Fullscreen', key='-FULLSCREEN-')]
-            ],)],
+            ],)]], expand_y=True, expand_x=True)
+
+        sound_tab = sg.Tab('Sounds', [
+            [sg.Frame('Sounds', [
+                [sg.Slider((1, 10), key='-SOUNDVOL', orientation='h')]
+            ])]
+        ], expand_y=True, expand_x=True)
+
+
+        self.layout = [
+            [sg.TabGroup([
+                [graphics_tab, sound_tab],
+            ])],
+            [sg.HorizontalSeparator()],
             [sg.Push(), sg.Button('Reset', button_color='red'), sg.Button('Apply', button_color='green')]
         ]
         self.window = sg.Window('Settings', layout=self.layout, element_justification='left')
