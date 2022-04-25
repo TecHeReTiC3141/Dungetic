@@ -120,16 +120,27 @@ class Armor(Loot):
     persist = 0.
     max_durab = 100
     section = 'body'
+    height = 10
+    width = 2
 
     def __init__(self):
         self.durab = Armor.max_durab
+
+    def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left'):
+        display.blit(self.sprite[direct], (x, y))
+
+    def interact(self, entity):
+        if hasattr(entity, 'body_armor'):
+            entity.body_armor = self
+
+# TODO implement armor functionality
 
 
 class Helmet(Armor):
 
     section = 'head'
+    sprite = {i: pygame.image.load(f'../images/armor/leather_helmet/leather_helmet_{i}.png').convert_alpha() for i in directions}
 
-# TODO implement basic armor logic and create some subclasses
 
 
 

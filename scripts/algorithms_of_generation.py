@@ -67,7 +67,7 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
     if room_type == 'storage':
         cont += [Crate(x := random.randrange(100, 905, 5), y := random.randrange(100, 705, 5),
                       width=random.randint(45, 80), height=random.randint(45, 80), movable=True, health=10,
-                      container=generate_random_loot([Knife, GoldCoin, SilverCoin], x, y, n=random.randint(2, 3)))
+                      container=generate_random_loot([Knife, GoldCoin, SilverCoin, Helmet], x, y, n=random.randint(2, 3)))
                  for j in range(random.randint(3, 5))]
 
     if not enters:

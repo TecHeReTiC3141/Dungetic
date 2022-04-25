@@ -21,6 +21,7 @@ class Settings:
             [sg.Push(), sg.Button('Reset', button_color='red'), sg.Button('Apply', button_color='green')]
         ]
         self.window = sg.Window('Settings', layout=self.layout, element_justification='left')
+        # TODO create a frame for sounds and music
 
     def run(self):
 
@@ -39,7 +40,7 @@ class Settings:
                 self.close()
                 break
 
-
     def close(self):
         self.window.close()
         print('closed')
+
