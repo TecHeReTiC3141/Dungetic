@@ -235,6 +235,7 @@ class InventoryInter(Interface):
             if self.selected_item is not None:
                 break
 
+        # TODO fix bug connected with player inventory and inventory inter
         for i in range(len(self.entity.inventory)):
             if self.containers[i].content is None or \
                     isinstance(self.containers[i], Loot) \

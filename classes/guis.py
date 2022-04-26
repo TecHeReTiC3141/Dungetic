@@ -21,9 +21,13 @@ class Settings:
 
         sound_tab = sg.Tab('Sounds', [
             [sg.Frame('Sounds', [
-                [sg.Slider((1, 10), key='-SOUNDVOL', orientation='h')]
-            ])]
-        ], expand_y=True, expand_x=True)
+                [sg.Slider((1, 10), key='-SOUNDVOL', orientation='h', default_value=5)]
+            ],expand_y=True, expand_x=True)],
+
+            [sg.Frame('Music', [
+                [sg.Slider((1, 10), key='-MUSICVOL', orientation='h', default_value=5)]
+            ], expand_y=True, expand_x=True)]
+            ])
 
 
         self.layout = [
@@ -34,7 +38,7 @@ class Settings:
             [sg.Push(), sg.Button('Reset', button_color='red'), sg.Button('Apply', button_color='green')]
         ]
         self.window = sg.Window('Settings', layout=self.layout, element_justification='left')
-        # TODO create a frame for sounds and music
+
 
     def run(self):
 

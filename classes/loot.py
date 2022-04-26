@@ -127,19 +127,30 @@ class Armor(Loot):
         self.durab = Armor.max_durab
 
     def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left'):
-        display.blit(self.sprite[direct], (x, y))
+        display.blit(self.sprite[direct], (x - self.width, y - self.height))
 
     def interact(self, entity):
         if hasattr(entity, 'body_armor'):
             entity.body_armor = self
+            self.deletion = True
 
 # TODO implement armor functionality
 
 
 class Helmet(Armor):
 
+    width = 0
+
+    descr = ['Простой кожаный шлем,',
+             "пробитый несколько раз"]
+
     section = 'head'
     sprite = {i: pygame.image.load(f'../images/armor/leather_helmet/leather_helmet_{i}.png').convert_alpha() for i in directions}
+
+    def interact(self, entity):
+        if hasattr(entity, 'head_armor'):
+            entity.head_armor = self
+            self.deletion = True
 
 
 

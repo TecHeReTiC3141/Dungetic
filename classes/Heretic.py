@@ -37,6 +37,11 @@ class Heretic:
                                        self.weapon.hit_range, self.height // 5 * 3)
         self.attack_surf = pygame.Surface((50, 50))
         self.attack_surf.set_colorkey(BLACK)
+
+        self.body_armor = None
+        self.head_armor = None
+        self.defense = 0.
+
         self.collised_walls = dict.fromkeys(directions)
         self.speed_directions = dict.fromkeys(directions, 5)
 
@@ -232,6 +237,11 @@ class Heretic:
                              (x + self.cur_rect.width // 2 - self.weapon.capability // 2 + 2,
                               y - 44, self.attack_time - 4, 12))
         pygame.draw.rect(display, (0, 0, 0), (x - 15, y - 30, 110, 25), border_radius=8)
+
+        if isinstance(self.head_armor, Helmet):
+            self.head_armor.draw_object(display, self.cur_rect.left,
+                                        self.cur_rect.top, self.direction)
+
         if self.health >= self.actual_health:
             pygame.draw.rect(display, pygame.Color('Yellow'), (x - 10, y - 28,
                                                                int(100.0 * float(self.health) / 100.0), 21),
