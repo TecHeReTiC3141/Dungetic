@@ -11,6 +11,7 @@ class GameManager:
                        'inventory_stats']
 
     def __init__(self, res: tuple, dungeon, cur_room, state='main_menu', ):
+
         if state not in self.possible_states:
             raise RuntimeError('State is not supported')
         self.state = state
@@ -21,6 +22,8 @@ class GameManager:
 
         self.dungeon = dungeon
         self.curr_room = cur_room
+        self.sound_vol = .5
+        self.music_vol = .5
 
     def update(self, res: tuple, blood=True, full=False):
         self.res = res

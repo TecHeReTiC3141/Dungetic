@@ -208,7 +208,7 @@ class InventoryInter(Interface):
             self.selected_item.draw_object(self, x=785, y=430)
             for line in range(len(self.selected_item.descr)):
                 self.blit(active_font.render(self.selected_item.descr[line],
-                                                True, BLACK), (890, 470 + line * 50))
+                                             True, BLACK), (890, 470 + line * 50))
 
         display.blit(self, (0, 0))
 
@@ -218,7 +218,6 @@ class InventoryInter(Interface):
             self.containers[i].content = None
         for i in range(len(self.entity.inventory)):
             self.containers[i].content = self.entity.inventory[i]
-
 
     def process(self, action_type, mouse):
         for container in self.containers:
