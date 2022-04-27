@@ -84,6 +84,7 @@ while game_cycle:
         game_manager.display.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
         if isinstance(cur_inter, Interface):
             cur_inter.draw_object(game_manager.display)
+
         else:
             heretic.move()
             heretic.update(tick, cur_room.is_safe)
