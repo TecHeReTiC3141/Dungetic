@@ -1,6 +1,24 @@
 import PySimpleGUI as sg
 from scripts.game_manager import GameManager
 
+class GUI:
+
+    def __init__(self, manager: GameManager):
+        self.manager = manager
+        self.layout = [
+            []
+        ]
+        self.window = sg.Window('Gui', manager)
+
+    def run(self):
+        pass
+
+
+    def close(self):
+        self.window.close()
+        print('closed')
+
+
 class Settings:
 
     def __init__(self, manager: GameManager):
@@ -60,4 +78,7 @@ class Settings:
     def close(self):
         self.window.close()
         print('closed')
+
+class ConsoleGui():
+    pass
 
