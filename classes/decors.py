@@ -106,3 +106,4 @@ class Banner(Decor):
         display.blit(self.surf, self.rect if x == y == 0 else (x, y))
         self.life_time -= 1
 
+# TODO add particles which show hit damage

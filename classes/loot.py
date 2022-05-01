@@ -42,6 +42,7 @@ class Weapon(Loot):
     def interact(self, entity):
         if not isinstance(entity.weapon, Fist):
             entity.inventory.append(entity.weapon)
+            print(entity.inventory)
             entity.weapon.deletion = False
 
         entity.weapon = self
@@ -139,7 +140,7 @@ class Armor(Loot):
 
 class Helmet(Armor):
 
-    width = 0
+    width = 3
 
     descr = ['Простой кожаный шлем,',
              "пробитый несколько раз"]

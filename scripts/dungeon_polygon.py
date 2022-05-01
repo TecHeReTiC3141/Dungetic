@@ -49,6 +49,8 @@ while game_cycle:
             elif event.key == pygame.K_i:
                 if isinstance(cur_inter, InventoryInter):
                     cur_inter = None
+                    Inventory.close()
+                    print(heretic.inventory)
                 else:
                     cur_inter = Inventory
                     Inventory.open()

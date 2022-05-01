@@ -234,12 +234,21 @@ class InventoryInter(Interface):
             if self.selected_item is not None:
                 break
 
+        ma_filled = max([i for i in range(len(self.containers))
+                         if isinstance(self.containers[i].content, Loot)
+                         and not self.containers[i].content.deletion])
+        for el, i in enumerate(self.entity.inventory, start=ma_filled + 1):
+            if isinstance(el, Loot) and not el.deletion:
+                self.containers[i].content = el
+
         # TODO fix bug connected with player inventory and inventory inter
         for i in range(len(self.entity.inventory)):
             if self.containers[i].content is None or \
                     isinstance(self.containers[i], Loot) \
                     and self.containers[i].content.deletion:
                 self.entity.inventory[i] = None
+
+    def close(self):
         self.entity.inventory = list(filter(lambda i: i is not None,
                                             self.entity.inventory))
 
