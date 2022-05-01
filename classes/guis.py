@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
-from scripts.game_manager import GameManager
+from scripts.game_manager import *
+
 
 class GUI:
 
@@ -13,13 +14,12 @@ class GUI:
     def run(self):
         pass
 
-
     def close(self):
         self.window.close()
         print('closed')
 
 
-class Settings:
+class Settings(GUI):
 
     def __init__(self, manager: GameManager):
         self.manager = manager
@@ -35,18 +35,17 @@ class Settings:
                 [sg.Text('Resolution'), sg.Spin(['900x600', '1080x720', '1440x900'],
                                                 initial_value='1440x900', key='-RES-'),
                  sg.Checkbox('Fullscreen', key='-FULLSCREEN-')]
-            ],)]], expand_y=True, expand_x=True)
+            ], )]], expand_y=True, expand_x=True)
 
         sound_tab = sg.Tab('Sounds', [
             [sg.Frame('Sounds', [
                 [sg.Slider((1, 10), key='-SOUNDVOL', orientation='h', default_value=5)]
-            ],expand_y=True, expand_x=True)],
+            ], expand_y=True, expand_x=True)],
 
             [sg.Frame('Music', [
                 [sg.Slider((1, 10), key='-MUSICVOL', orientation='h', default_value=5)]
             ], expand_y=True, expand_x=True)]
-            ])
-
+        ])
 
         self.layout = [
             [sg.TabGroup([
@@ -56,7 +55,6 @@ class Settings:
             [sg.Push(), sg.Button('Reset', button_color='red'), sg.Button('Apply', button_color='green')]
         ]
         self.window = sg.Window('Settings', layout=self.layout, element_justification='left')
-
 
     def run(self):
 
@@ -75,10 +73,34 @@ class Settings:
                 self.close()
                 break
 
-    def close(self):
-        self.window.close()
-        print('closed')
 
-class ConsoleGui():
-    pass
+class ConsoleGui(GUI):
+
+    def __init__(self, manager: GameManager, console: Console):
+        self.manager = manager
+        self.console = console
+
+        sg.theme('DarkAmber')
+        sg.set_options(font='Frank 12')
+
+        self.layout = [
+            [sg.Text('Please insert command:')],
+            [sg.Input(key='Command')],
+            [sg.Button('Apply command'), sg.Button('List of commands')]
+        ]
+
+        self.window = sg.Window('DungeonConsole', layout=self.layout)
+
+    def run(self):
+
+        while True:
+
+            event, values = self.window.read()
+
+            if event == sg.WIN_CLOSED:
+                self.close()
+                break
+
+            elif event == 'Apply command':
+                pass
 

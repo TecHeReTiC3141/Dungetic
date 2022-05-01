@@ -1,5 +1,6 @@
 import pygame
 
+
 from scripts.constants_and_sources import display_width, display_height
 
 class GameManager:
@@ -37,3 +38,12 @@ class GameManager:
             self.display = pygame.display.set_mode(self.res, pygame.FULLSCREEN)
         else:
             self.display = pygame.display.set_mode(self.res)
+
+
+class Console:
+
+    commands = ['tp',
+                '']
+
+    def parse_command(self, command: str):
+        pass
