@@ -43,7 +43,13 @@ class GameManager:
 class Console:
 
     commands = ['tp',
-                '']
+                'add_item']
 
     def parse_command(self, command: str):
+        return command in self.commands
+
+    def tp(self):
+        pass
+
+    def add_item(self):
         pass

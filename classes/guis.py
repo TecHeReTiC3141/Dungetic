@@ -85,7 +85,7 @@ class ConsoleGui(GUI):
 
         self.layout = [
             [sg.Text('Please insert command:')],
-            [sg.Input(key='Command')],
+            [sg.Input(key='-COMMAND-')],
             [sg.Button('Apply command'), sg.Button('List of commands')]
         ]
 
@@ -102,5 +102,13 @@ class ConsoleGui(GUI):
                 break
 
             elif event == 'Apply command':
-                pass
+                if self.console.parse_command(values['-COMMAND-']):
+                    sg.Popup('In progress')
+                else:
+                    sg.Popup('Please insert correct command', title='Error')
 
+
+manager, console = GameManager((720, 480), [], 0), Console()
+
+gui = ConsoleGui(manager, console)
+gui.run()
