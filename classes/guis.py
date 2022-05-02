@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-from scripts.game_manager import *
+from scripts.Console import *
 
 
 class GUI:
@@ -76,8 +76,7 @@ class Settings(GUI):
 
 class ConsoleGui(GUI):
 
-    def __init__(self, manager: GameManager, console: Console):
-        self.manager = manager
+    def __init__(self, console: Console):
         self.console = console
 
         sg.theme('DarkAmber')
@@ -108,7 +107,10 @@ class ConsoleGui(GUI):
                     sg.Popup('Please insert correct command', title='Error')
 
 
-manager, console = GameManager((720, 480), [], 0), Console()
+manager = GameManager((720, 480), [], 0)
+heretic = Heretic(100, 100, 100, 100, 100, 'left', manager)
+player_manager = PlayerManager(heretic)
+console = Console(manager, player_manager)
 
-gui = ConsoleGui(manager, console)
+gui = ConsoleGui(console)
 gui.run()

@@ -254,3 +254,12 @@ class Heretic:
                              border_radius=8)
             pygame.draw.rect(display, RED, (x - 10, y - 28,
                                             int(100.0 * float(self.health) / 100.0), 21), border_radius=8)
+
+
+class PlayerManager(GameManager):
+
+    def __init__(self, player: Heretic):
+        self.player = player
+
+
+

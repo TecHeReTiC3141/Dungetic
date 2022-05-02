@@ -1,6 +1,5 @@
 import pygame
 
-
 from scripts.constants_and_sources import display_width, display_height
 
 class GameManager:
@@ -39,17 +38,3 @@ class GameManager:
         else:
             self.display = pygame.display.set_mode(self.res)
 
-
-class Console:
-
-    commands = ['tp',
-                'add_item']
-
-    def parse_command(self, command: str):
-        return command in self.commands
-
-    def tp(self):
-        pass
-
-    def add_item(self):
-        pass

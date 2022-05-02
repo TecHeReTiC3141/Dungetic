@@ -1,7 +1,7 @@
 from classes.surrounding import *
 from scripts.algorithms_of_generation import generate_dungeons
 from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter
-from scripts.game_manager import GameManager
+from scripts.Console import *
 
 polygon = generate_dungeons()
 
@@ -12,6 +12,8 @@ cur_inter = None
 game_manager = GameManager((display_width, display_height),
                            polygon, curr_room)
 heretic = Heretic(100, 100, 75, 100, 100, random.choice(directions), game_manager)
+
+player_manager = PlayerManager(heretic)
 
 Map = MapInter(polygon, game_manager)
 Inventory = InventoryInter(heretic, game_manager)
