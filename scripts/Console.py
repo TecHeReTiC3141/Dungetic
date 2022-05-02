@@ -28,7 +28,7 @@ class Console:
         print(self.game_manager.curr_room)
 
     def add_item(self, *args):
-        assert len(args) <= 2, 'Too many args'
+        assert 1 <= len(args) <= 2, 'Too many args'
         if len(args) == 1:
             itemclass = str(args[0])
             assert len(self.player_manager.player.inventory) < 20, 'Inventory is full'
@@ -38,3 +38,5 @@ class Console:
             assert len(self.player_manager.player.inventory) < 20, 'Inventory is full'
             for i in range(min(amount, 20 - len(self.player_manager.player.inventory))):
                 exec(f'self.player_manager.player.inventory.append({itemclass.capitalize()}())')
+
+# TODO make up and implment some commands

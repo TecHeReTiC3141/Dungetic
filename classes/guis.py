@@ -6,6 +6,7 @@ class GUI:
 
     def __init__(self, manager: GameManager):
         self.manager = manager
+        self.manager.is_paused = True
         self.layout = [
             []
         ]
@@ -16,6 +17,7 @@ class GUI:
 
     def close(self):
         self.window.close()
+        self.manager.is_paused = False
         print('closed')
 
 
@@ -23,6 +25,7 @@ class Settings(GUI):
 
     def __init__(self, manager: GameManager):
         self.manager = manager
+
         sg.theme('DarkAmber')
         sg.set_options(font='Frank 12')
 
@@ -109,7 +112,6 @@ class ConsoleGui(GUI):
                     sg.Popup(str(e), title='Error')
 
 
-
 manager = GameManager((720, 480), [], 0)
 heretic = Heretic(100, 100, 100, 100, 100, 'left', manager)
 player_manager = PlayerManager(heretic)
@@ -117,3 +119,4 @@ console = Console(manager, player_manager)
 
 gui = ConsoleGui(console)
 gui.run()
+# TODO introduce console in actual game

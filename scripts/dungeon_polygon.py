@@ -89,7 +89,7 @@ while game_cycle:
         if isinstance(cur_inter, Interface):
             cur_inter.draw_object(game_manager.display)
 
-        else:
+        elif not game_manager.is_paused:
             heretic.move()
             heretic.update(tick, cur_room.is_safe)
             cur_room.life(tick)

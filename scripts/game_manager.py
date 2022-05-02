@@ -22,7 +22,7 @@ class GameManager:
         self.display = pygame.display.set_mode(self.res)
         pygame.display.set_caption(caption)
 
-
+        self.is_paused = False
         self.dungeon = dungeon
         self.curr_room = cur_room
         self.sound_vol = .5
