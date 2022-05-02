@@ -37,4 +37,3 @@ class GameManager:
             self.display = pygame.display.set_mode(self.res, pygame.FULLSCREEN)
         else:
             self.display = pygame.display.set_mode(self.res)
-

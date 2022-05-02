@@ -101,10 +101,13 @@ class ConsoleGui(GUI):
                 break
 
             elif event == 'Apply command':
-                if self.console.parse_command(values['-COMMAND-']):
-                    sg.Popup('In progress')
-                else:
-                    sg.Popup('Please insert correct command', title='Error')
+                try:
+                    self.console.parse_command(values['-COMMAND-'])
+                    print(self.console.game_manager.curr_room,
+                          self.console.player_manager.player.inventory)
+                except Exception as e:
+                    sg.Popup(str(e), title='Error')
+
 
 
 manager = GameManager((720, 480), [], 0)
