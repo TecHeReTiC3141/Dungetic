@@ -239,10 +239,9 @@ class InventoryInter(Interface):
                          and not self.containers[i].content.deletion]
         if filled:
             ma_filled = max(filled)
-
-        for i, el in enumerate(self.entity.inventory[ma_filled + 1:], start=ma_filled + 1):
-            if isinstance(el, Loot) and not el.deletion:
-                self.containers[i].content = el
+            for i, el in enumerate(self.entity.inventory[ma_filled + 1:], start=ma_filled + 1):
+                if isinstance(el, Loot) and not el.deletion:
+                    self.containers[i].content = el
 
         # TODO fix bug connected with player inventory and inventory inter
         for i in range(len(self.entity.inventory)):

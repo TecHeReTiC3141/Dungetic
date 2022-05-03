@@ -1,6 +1,6 @@
 from classes.surrounding import *
 from scripts.algorithms_of_generation import generate_dungeons
-from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter
+from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, Settings, ConsoleGui
 from scripts.Console import *
 
 polygon = generate_dungeons()
@@ -14,6 +14,8 @@ game_manager = GameManager((display_width, display_height),
 heretic = Heretic(100, 100, 75, 100, 100, random.choice(directions), game_manager)
 
 player_manager = PlayerManager(heretic)
+
+console = Console(game_manager, player_manager)
 
 Map = MapInter(polygon, game_manager)
 Inventory = InventoryInter(heretic, game_manager)
@@ -66,6 +68,10 @@ while game_cycle:
 
             elif event.key == pygame.K_ESCAPE:
                 game_manager.state = 'main_menu'
+
+            elif event.key == pygame.K_SLASH:
+                cons = ConsoleGui(console)
+
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if isinstance(cur_inter, InventoryInter):
