@@ -1,0 +1,5 @@
+Hello, Heretic!
+Here is the list of all commands which you can use in game:
+1. tp ...;
+2. add_item ...;
+3. ...

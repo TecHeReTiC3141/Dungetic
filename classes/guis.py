@@ -83,8 +83,8 @@ class ConsoleGui(GUI):
     def __init__(self, console: Console):
         self.console = console
 
-        sg.theme('DarkAmber')
-        sg.set_options(font='Frank 12')
+        sg.theme('Dark')
+        sg.set_options(font='Ubuntu 12')
 
         self.layout = [
             [sg.Text('Please insert command:')],
@@ -112,6 +112,10 @@ class ConsoleGui(GUI):
                           self.console.player_manager.player.inventory)
                 except Exception as e:
                     sg.Popup(str(e), title='Error')
+
+            elif event == 'List of commands':
+                with open('../console_commands.txt') as comm:
+                    sg.popup(comm.read(), title='Hello!')
 
     def close(self):
         self.window.close()

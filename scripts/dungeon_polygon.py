@@ -70,8 +70,7 @@ while game_cycle:
                 game_manager.state = 'main_menu'
 
             elif event.key == pygame.K_SLASH:
-                cons = ConsoleGui(console)
-
+                ConsoleGui(console)
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if isinstance(cur_inter, InventoryInter):
