@@ -4,7 +4,8 @@ from scripts.constants_and_sources import dung_length, dung_width
 
 class Console:
     commands = ['tp',
-                'add_item']
+                'add_item',
+                'regen']
 
     def __init__(self, manager: GameManager, player_manager: PlayerManager):
         self.game_manager = manager
@@ -18,6 +19,8 @@ class Console:
             self.tp(*args)
         elif name == 'add_item':
             self.add_item(*args)
+        elif name == 'regen':
+            self.regen(*args)
 
     def tp(self, *args):
         assert len(args) == 1, 'Only one arg for room number is required'
@@ -38,5 +41,15 @@ class Console:
             assert len(self.player_manager.player.inventory) < 20, 'Inventory is full'
             for i in range(min(amount, 20 - len(self.player_manager.player.inventory))):
                 exec(f'self.player_manager.player.inventory.append({itemclass.capitalize()}())')
+
+    def regen(self, *args):
+        assert len(args) <= 1, 'Too many args'
+        if not args:
+            self.player_manager.player.actual_health = 100
+        else:
+            self.player_manager.player.actual_health = max(self.player_manager.player.actual_health + int(args[0]), 100)
+
+
+
 
 # TODO make up and implment some commands
