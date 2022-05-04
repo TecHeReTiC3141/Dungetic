@@ -1,8 +1,7 @@
 from classes.surrounding import *
 from scripts.algorithms_of_generation import generate_dungeons
-from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter
-from scripts.game_manager import GameManager
-
+from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, Settings, ConsoleGui
+from scripts.Console import *
 
 polygon = generate_dungeons()
 
@@ -13,6 +12,10 @@ cur_inter = None
 game_manager = GameManager((display_width, display_height),
                            polygon, curr_room)
 heretic = Heretic(100, 100, 75, 100, 100, random.choice(directions), game_manager)
+
+player_manager = PlayerManager(heretic)
+
+console = Console(game_manager, player_manager)
 
 Map = MapInter(polygon, game_manager)
 Inventory = InventoryInter(heretic, game_manager)
@@ -50,6 +53,8 @@ while game_cycle:
             elif event.key == pygame.K_i:
                 if isinstance(cur_inter, InventoryInter):
                     cur_inter = None
+                    Inventory.close()
+                    print(heretic.inventory)
                 else:
                     cur_inter = Inventory
                     Inventory.open()
@@ -63,6 +68,9 @@ while game_cycle:
 
             elif event.key == pygame.K_ESCAPE:
                 game_manager.state = 'main_menu'
+
+            elif event.key == pygame.K_SLASH:
+                ConsoleGui(console)
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if isinstance(cur_inter, InventoryInter):
@@ -85,7 +93,8 @@ while game_cycle:
         game_manager.display.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
         if isinstance(cur_inter, Interface):
             cur_inter.draw_object(game_manager.display)
-        else:
+
+        elif not game_manager.is_paused:
             heretic.move()
             heretic.update(tick, cur_room.is_safe)
             cur_room.life(tick)

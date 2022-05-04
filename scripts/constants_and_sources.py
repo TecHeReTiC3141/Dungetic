@@ -7,8 +7,9 @@ from collections import *
 from scripts.Maths import *
 import PySimpleGUI as sg
 
+pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()
-pygame.mixer.init()
+
 pygame.mixer.music.set_volume(60)
 
 PathFinder = AStarFinder(diagonal_movement=DiagonalMovement.always)

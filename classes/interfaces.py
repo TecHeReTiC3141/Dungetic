@@ -1,8 +1,3 @@
-import scripts.constants_and_sources as c_a_s
-from classes.Heretic import Heretic
-from classes.loot import *
-from scripts.game_manager import GameManager
-from classes.decors import *
 from classes.guis import *
 
 
@@ -208,7 +203,7 @@ class InventoryInter(Interface):
             self.selected_item.draw_object(self, x=785, y=430)
             for line in range(len(self.selected_item.descr)):
                 self.blit(active_font.render(self.selected_item.descr[line],
-                                                True, BLACK), (890, 470 + line * 50))
+                                             True, BLACK), (890, 470 + line * 50))
 
         display.blit(self, (0, 0))
 
@@ -218,7 +213,6 @@ class InventoryInter(Interface):
             self.containers[i].content = None
         for i in range(len(self.entity.inventory)):
             self.containers[i].content = self.entity.inventory[i]
-
 
     def process(self, action_type, mouse):
         for container in self.containers:
@@ -235,11 +229,23 @@ class InventoryInter(Interface):
             if self.selected_item is not None:
                 break
 
+        filled = [i for i in range(len(self.containers))
+                         if isinstance(self.containers[i].content, Loot)
+                         and not self.containers[i].content.deletion]
+        if filled:
+            ma_filled = max(filled)
+            for i, el in enumerate(self.entity.inventory[ma_filled + 1:], start=ma_filled + 1):
+                if isinstance(el, Loot) and not el.deletion:
+                    self.containers[i].content = el
+
+        # TODO fix bug connected with player inventory and inventory inter
         for i in range(len(self.entity.inventory)):
             if self.containers[i].content is None or \
                     isinstance(self.containers[i], Loot) \
                     and self.containers[i].content.deletion:
                 self.entity.inventory[i] = None
+
+    def close(self):
         self.entity.inventory = list(filter(lambda i: i is not None,
                                             self.entity.inventory))
 

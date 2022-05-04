@@ -192,6 +192,8 @@ class MyNode:
             if wall.outer_phys_rect.colliderect(self.rect):
                 self.status = 0
                 break
+        else:
+            self.status = 1
 
     def draw_object(self, display):
         pygame.draw.rect(display, [RED, BLUE][self.status], self.rect)
@@ -222,7 +224,7 @@ class Room:
             for i in range(ceil(display_height / grid_size))]
         for node_l in range(len(self.nodes)):
             for node in self.nodes[node_l]:
-                node.collide(self.obst_list)
+                node.collide(self.obst_list + self.containers)
         'grid for pathfinding'
         self.grid = Grid(matrix=[[self.nodes[i][j].status for j in range(ceil(display_width / grid_size))]
                                  for i in range(ceil(display_height / grid_size))])
@@ -265,6 +267,12 @@ class Room:
             wall.collide(self.entities_list + [heretic], 'vert', self.obst_list + self.containers)
         for drop in self.drops:
             drop.collide([heretic])
+
+        if not self.is_safe:
+
+            for node_l in range(len(self.nodes)):
+                for node in self.nodes[node_l]:
+                    node.collide(self.obst_list + self.containers)
 
     def make_paths(self, target: Heretic):
         target.node = self.grid.node(*target.get_center_coord(True))
