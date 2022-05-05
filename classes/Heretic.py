@@ -186,6 +186,9 @@ class Heretic:
         if self.money != self.actual_money and not tick % 6:
             self.money = self.money + 1 if self.money < self.actual_money else self.money - 1
 
+        if isinstance(self.head_armor, Helmet) and self.head_armor.durab <= 0:
+            self.head_armor = None
+
     def regenerate(self):
         if self.regeneration_delay == 0:
             self.actual_health = min(self.actual_health + 2, 100)

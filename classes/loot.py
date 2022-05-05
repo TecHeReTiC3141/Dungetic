@@ -1,5 +1,6 @@
 import pygame
 from scripts.constants_and_sources import *
+
 pygame.mixer.init()
 
 
@@ -93,30 +94,25 @@ class SilverCoin(Money):
 
 
 class Consumable(Loot):
-
     effect = ()
 
 
 class Potion(Consumable):
-
     descr = ['Неизвестно, что хуже - ',
              "Попробовать эту дрянь или",
              "умереть от ран"]
 
     effect = ('+ 15', '#FF0000')
 
-
     def interact(self, entity):
         entity.actual_health = min(entity.actual_health + 15, 100)
         self.deletion = True
         return self.effect
 
-
     sprite = pygame.image.load('../images/Comsubles/live_potion.png')
 
 
 class Armor(Loot):
-
     persist = 0.
     max_durab = 100
     section = 'body'
@@ -129,23 +125,27 @@ class Armor(Loot):
     def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left'):
         display.blit(self.sprite[direct], (x - self.width, y - self.height))
 
+
     def interact(self, entity):
         if hasattr(entity, 'body_armor'):
             entity.body_armor = self
             self.deletion = True
 
+
 # TODO implement armor functionality
 
 
 class Helmet(Armor):
-
     width = 3
 
     descr = ['Простой кожаный шлем,',
              "пробитый несколько раз"]
 
+    max_durab = 50
+
     section = 'head'
-    sprite = {i: pygame.image.load(f'../images/armor/leather_helmet/leather_helmet_{i}.png').convert_alpha() for i in directions}
+    sprite = {i: pygame.image.load(f'../images/armor/leather_helmet/leather_helmet_{i}.png').convert_alpha() for i in
+              directions}
 
     def interact(self, entity):
         if hasattr(entity, 'head_armor'):
@@ -155,9 +155,3 @@ class Helmet(Armor):
 
             entity.head_armor = self
             self.deletion = True
-
-
-
-
-
-

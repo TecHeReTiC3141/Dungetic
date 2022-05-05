@@ -75,6 +75,8 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
 
     for entity in entities:
         entity.loot = generate_random_loot([SilverCoin, GoldCoin, Potion], 0, 0, n=random.randint(1, 2))
+        if not isinstance(entity.weapon, Fist):
+            entity.loot.append(LyingItem(0, 0, type(entity.weapon)))
 
     return Room(walls, cont, entities, enters, floor=random.choice(['stone', 'wooden']), type=room_type)
 

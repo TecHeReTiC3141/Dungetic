@@ -132,14 +132,24 @@ class Hostile(NPC):
             for target in entities:
                 if self.active_zone.colliderect(target.active_zone):
                     self.attack_time = self.weapon.capability * 2
-                    target.actual_health = max(target.actual_health - self.weapon.damage, 0)
+
+                    damage = self.weapon.damage
+                    if isinstance(target.head_armor, Helmet):
+                        damage *= 1 - target.head_armor.persist
+
+                    target.actual_health = max(target.actual_health - damage, 0)
                     target.regeneration_delay = self.weapon.damage * 20
                     dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, target.cur_rect)
                                          * self.weapon.damage * 10)
                     target.cur_rect.move_ip(dist_x, dist_y)
                     target.active_zone.move_ip(dist_x, dist_y)
+
+                    if isinstance(target.head_armor, Helmet):
+                        target.head_armor.durab -= self.weapon.damage
+
                     if target.actual_health <= 0:
                         target.die()
+
 
     def draw_object(self, display: pygame.Surface, x=0, y=0):
         super().draw_object(display)
@@ -147,4 +157,5 @@ class Hostile(NPC):
     @staticmethod
     def produce_Hostiles(n, loot: list = None):
         return [Hostile(random.randint(300, 800), random.randint(200, 600), 75, 100, 15,
-                        random.choice(directions), speed=random.randint(3, 4), loot=loot) for i in range(n)]
+                        random.choice(directions), speed=random.randint(3, 4), loot=loot,
+                        weapon=random.choice([Knife(), Fist(), Fist()])) for i in range(n)]

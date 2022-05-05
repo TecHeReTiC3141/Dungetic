@@ -153,7 +153,6 @@ class Wall:
                                     wall.cur_rect.bottom = self.cur_rect.top
 
 
-
 class Vase(Wall, Breakable, Container):
 
     def __init__(self, x, y, width, height, collised=False, movable=False, health=120, container=None):
@@ -177,6 +176,7 @@ class Crate(Vase):
                          movable, health, container)
         self.sprite = pygame.transform.scale(pygame.image.load('../images/surroundings/crate.png'), (width, height))
         self.cur_rect.update(*self.cur_rect.topleft, width, height)
+
 
 class MyNode:
     '''
@@ -314,6 +314,7 @@ class Room:
                 for loot in entity.loot:
                     if isinstance(loot, Drop):
                         self.drops.append(loot)
+
             else:
                 alive.append(entity)
         self.entities_list = alive.copy()
