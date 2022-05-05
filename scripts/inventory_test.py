@@ -2,7 +2,7 @@ from scripts.algorithms_of_generation import *
 from classes.interfaces import *
 
 heretic = Heretic(75, 100, 75, 100, 100, 'right', [])
-game_manager = GameManager()
+game_manager = GameManager((1440, 1080), [], 0)
 inventory = InventoryInter(heretic, game_manager)
 
 

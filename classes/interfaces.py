@@ -186,6 +186,8 @@ class InventoryInter(Interface):
                   (95 + 15 * len(str(self.entity.money)), 100))
         # TODO put heretic's weapon in container
         self.entity.weapon.draw_object(self, x=1040, y=310, direct='right')
+        if isinstance(self.entity.head_armor, Helmet):
+            self.entity.head_armor.draw_object(self, x=1145, y=185, direct='right')
 
         if isinstance(self.cur_effect, Banner):
             print(self.cur_effect.surf)

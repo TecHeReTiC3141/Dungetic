@@ -42,7 +42,6 @@ class Weapon(Loot):
     def interact(self, entity):
         if not isinstance(entity.weapon, Fist):
             entity.inventory.append(entity.weapon)
-            print(entity.inventory)
             entity.weapon.deletion = False
 
         entity.weapon = self
@@ -150,6 +149,10 @@ class Helmet(Armor):
 
     def interact(self, entity):
         if hasattr(entity, 'head_armor'):
+            if isinstance(entity.head_armor, Helmet):
+                entity.inventory.append(entity.head_armor)
+                entity.head_armor.deletion = False
+
             entity.head_armor = self
             self.deletion = True
 
