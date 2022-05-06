@@ -142,6 +142,7 @@ class Helmet(Armor):
              "пробитый несколько раз"]
 
     max_durab = 50
+    persist = 0.25
 
     section = 'head'
     sprite = {i: pygame.image.load(f'../images/armor/leather_helmet/leather_helmet_{i}.png').convert_alpha() for i in

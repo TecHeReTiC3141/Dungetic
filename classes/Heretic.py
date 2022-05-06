@@ -63,8 +63,9 @@ class Heretic:
         if self.attack_time <= 0:
             for entity in entities:
                 if entity.cur_rect.colliderect(self.attack_rect):
+                    damage = random.randint(self.weapon.damage - 2, self.weapon.damage + 2)
                     entity.actual_health = max(entity.actual_health -
-                                               self.weapon.damage, 0)
+                                               damage, 0)
                     entity.regeneration_delay = -1
                     dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, entity.cur_rect)
                                          * self.weapon.knockback)
@@ -74,6 +75,10 @@ class Heretic:
                                              random.randint(10, 15), random.randint(10, 15), random.randint(50, 70),
                                              type=random.choice(['down', 'up']), speed=5) for i in
                                        range(self.weapon.damage // 4)])
+                    if self.manager.show_damage:
+                        blood_list.append(DamageInd(random.randint(entity.cur_rect.left, entity.cur_rect.right),
+                                             random.randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
+                                                    self.weapon.damage, random.randint(50, 70), text_font))
 
                     entity.cur_rect.move_ip(dist_x, dist_y)
                     entity.active_zone.move_ip(dist_x, dist_y)

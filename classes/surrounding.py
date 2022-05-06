@@ -46,7 +46,7 @@ class Wall:
     def draw_object(self, display: pygame.Surface):
 
         # pygame.draw.rect(display, ('#CCCCCC'), self.outer_phys_rect)
-        pygame.draw.rect(self.visible_zone, (70, 70, 70), (0, 0, self.width, self.height))
+        pygame.draw.rect(self.visible_zone, (70, 70, 70), (0, 0, self.width, self.height), border_radius=2)
 
         display.blit(self.visible_zone, self.cur_rect)
         # pygame.draw.rect(display, ('#AAAAAA'), self.inner_phys_rect)
@@ -288,7 +288,9 @@ class Room:
     def life(self, tick: int):
         for entity in self.entities_list:
             if isinstance(entity, Hostile):
-                entity.hostile_exist()
+                blood_list = entity.hostile_exist()
+                if blood_list:
+                    self.decors.extend(blood_list)
             else:
                 entity.passive_exist()
             entity.update(tick)

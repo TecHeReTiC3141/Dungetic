@@ -1,5 +1,4 @@
 import random
-from typing import overload
 from pathfinding.core.grid import Grid, Node
 from pathfinding.finder.a_star import AStarFinder
 from pathfinding.core.diagonal_movement import DiagonalMovement

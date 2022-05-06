@@ -118,7 +118,8 @@ class Hostile(NPC):
                                      round(self.dirs.y))
             if self.targetpoint.collidepoint(self.cur_rect.center):
                 self.nextpoint()
-            self.hit(entities=self.target)
+            blood_list = self.hit(entities=self.target)
+            return blood_list
 
     def nextpoint(self):
         self.path.popleft()
@@ -127,17 +128,30 @@ class Hostile(NPC):
         else:
             self.targetpoint = pygame.Rect((self.path[0][0] + 3, self.path[0][1] + 3), (6, 6))
 
-    def hit(self, entities: list[Heretic] = None, conts: list = None):
+    def hit(self, entities: list[Heretic] = None, conts: list = None) -> list:
+        blood_list = []
         if self.attack_time <= 0:
             for target in entities:
                 if self.active_zone.colliderect(target.active_zone):
                     self.attack_time = self.weapon.capability * 2
 
-                    damage = self.weapon.damage
+                    damage = random.randint(self.weapon.damage - 2, self.weapon.damage + 2)
                     if isinstance(target.head_armor, Helmet):
                         damage *= 1 - target.head_armor.persist
 
-                    target.actual_health = max(target.actual_health - damage, 0)
+                    if target.manager.show_damage:
+                        blood_list.append(DamageInd(random.randint(target.cur_rect.left, target.cur_rect.right),
+                                                    random.randint(target.cur_rect.top, target.cur_rect.midleft[1]),
+                                                    self.weapon.damage, random.randint(50, 70), text_font))
+
+                    if target.manager.blood:
+                        blood_list.extend([Blood(random.randint(target.cur_rect.left, target.cur_rect.right),
+                                             random.randint(target.cur_rect.top, target.cur_rect.midleft[1]),
+                                             random.randint(10, 15), random.randint(10, 15), random.randint(50, 70),
+                                             type=random.choice(['down', 'up']), speed=5) for i in
+                                       range(self.weapon.damage // 4)])
+
+                    target.actual_health = max(target.actual_health - round(damage), 0)
                     target.regeneration_delay = self.weapon.damage * 20
                     dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, target.cur_rect)
                                          * self.weapon.damage * 10)
@@ -149,6 +163,8 @@ class Hostile(NPC):
 
                     if target.actual_health <= 0:
                         target.die()
+
+        return blood_list
 
 
     def draw_object(self, display: pygame.Surface, x=0, y=0):
