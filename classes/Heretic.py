@@ -202,11 +202,6 @@ class Heretic:
         if self.regeneration_delay == 0:
             self.actual_health = min(self.actual_health + 2, 100)
 
-    @staticmethod
-    def tp(room):
-        global c_a_s
-        c_a_s.curr_room = room
-
     def die(self):
         pass
 

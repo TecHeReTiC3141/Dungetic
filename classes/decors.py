@@ -134,4 +134,3 @@ class DamageInd(Blood):
     def draw_object(self, display: pygame.Surface, x=0, y=0):
         Banner.draw_object(self, display, x, y)
 
-# TODO add particles which show hit damage

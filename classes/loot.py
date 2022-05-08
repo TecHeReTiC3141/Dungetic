@@ -50,7 +50,7 @@ class Weapon(Loot):
         if in_inventory:
             pygame.draw.rect(display, 'black', (x, y + self.sprite['left'].get_height(),
                                        self.sprite['left'].get_width(), 10), border_radius=5)
-            pygame.draw.rect(display, 'green', (x, y + self.sprite['left'].get_height(),
+            pygame.draw.rect(display, (255 * (1 - self.durab / self.max_durability), 255 * self.durab / self.max_durability, 0), (x, y + self.sprite['left'].get_height(),
                                                 round((self.durab / self.max_durability)
                                                       * self.sprite['left'].get_width()), 10), border_radius=5)
 
@@ -132,16 +132,23 @@ class Potion(Consumable):
 
 class Armor(Loot):
     persist = 0.
-    max_durab = 100
+    max_durability = 100
     section = 'body'
     height = 10
     width = 2
 
     def __init__(self):
-        self.durab = Armor.max_durab
+        self.durab = Armor.max_durability
 
     def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left', in_inventory=True):
         display.blit(self.sprite[direct], (x - self.width, y - self.height))
+        if in_inventory:
+            pygame.draw.rect(display, 'black', (x, y + self.sprite['left'].get_height(),
+                                       self.sprite['left'].get_width(), 10), border_radius=5)
+            pygame.draw.rect(display, (255 * (1 - self.durab / self.max_durability), 255 * self.durab / self.max_durability, 0), (x, y + self.sprite['left'].get_height(),
+                                                round((self.durab / self.max_durability)
+                                                      * self.sprite['left'].get_width()), 10), border_radius=5)
+
 
 
     def interact(self, entity):
@@ -159,7 +166,7 @@ class Helmet(Armor):
     descr = ['Простой кожаный шлем,',
              "пробитый несколько раз"]
 
-    max_durab = 50
+    max_durability = 50
     persist = 0.25
 
     section = 'head'

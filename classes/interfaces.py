@@ -184,7 +184,7 @@ class InventoryInter(Interface):
         self.entity.draw_object(self, x=820, y=110, in_game=False)
         self.blit(inventory_font.render(f'{self.entity.money}', True, '#f8b800'),
                   (95 + 15 * len(str(self.entity.money)), 100))
-        # TODO put heretic's weapon in container
+        # TODO !!! put all heretic's equipment in containers
         self.entity.weapon.draw_object(self, x=1040, y=310, direct='right')
         if isinstance(self.entity.head_armor, Helmet):
             self.entity.head_armor.draw_object(self, x=1145, y=185, direct='right')
@@ -240,7 +240,6 @@ class InventoryInter(Interface):
                 if isinstance(el, Loot) and not el.deletion:
                     self.containers[i].content = el
 
-        # TODO fix bug connected with player inventory and inventory inter
         for i in range(len(self.entity.inventory)):
             if self.containers[i].content is None or \
                     isinstance(self.containers[i], Loot) \
