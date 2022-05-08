@@ -142,7 +142,7 @@ class Hostile(NPC):
                     if target.manager.show_damage:
                         blood_list.append(DamageInd(random.randint(target.cur_rect.left, target.cur_rect.right),
                                                     random.randint(target.cur_rect.top, target.cur_rect.midleft[1]),
-                                                    self.weapon.damage, random.randint(50, 70), text_font))
+                                                    damage, random.randint(50, 70), text_font))
 
                     if target.manager.blood:
                         blood_list.extend([Blood(random.randint(target.cur_rect.left, target.cur_rect.right),

@@ -1,4 +1,7 @@
 from math import *
+
+import pygame
+
 from classes.drops import *
 from classes.decors import *
 
@@ -38,7 +41,7 @@ class Wall:
                                            max(width - 10, 10), max(height - 10, 10))
         self.outer_phys_rect = pygame.Rect(x - 10, y - 10, width + 20, height + 20)
         self.visible_zone = pygame.Surface((width, height))
-        self.visible_zone.set_colorkey('#FFFFFF')
+        self.visible_zone.set_colorkey('Black')
         self.collised = collised
         self.movable = movable
         super().__init__(*args)
@@ -46,7 +49,7 @@ class Wall:
     def draw_object(self, display: pygame.Surface):
 
         # pygame.draw.rect(display, ('#CCCCCC'), self.outer_phys_rect)
-        pygame.draw.rect(self.visible_zone, (70, 70, 70), (0, 0, self.width, self.height), border_radius=2)
+        pygame.draw.rect(self.visible_zone, (70, 70, 70), (0, 0, self.width, self.height), border_radius=8)
 
         display.blit(self.visible_zone, self.cur_rect)
         # pygame.draw.rect(display, ('#AAAAAA'), self.inner_phys_rect)
@@ -160,6 +163,7 @@ class Vase(Wall, Breakable, Container):
         self.sprite = pygame.image.load('../images/surroundings/Vase1.png').convert_alpha()
         self.cur_rect.update(*self.cur_rect.topleft, *self.sprite.get_size())
         self.sprite.set_colorkey('#FFFFFF')
+        self.visible_zone.set_colorkey('White')
 
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill('#FFFFFF')
@@ -228,6 +232,7 @@ class Room:
         'grid for pathfinding'
         self.grid = Grid(matrix=[[self.nodes[i][j].status for j in range(ceil(display_width / grid_size))]
                                  for i in range(ceil(display_height / grid_size))])
+
 
     def draw_object(self, surface: pygame.Surface, tick: int, show_grid: bool):
         surface.blit(self.floor, (0, 0))

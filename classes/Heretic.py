@@ -78,7 +78,7 @@ class Heretic:
                     if self.manager.show_damage:
                         blood_list.append(DamageInd(random.randint(entity.cur_rect.left, entity.cur_rect.right),
                                              random.randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
-                                                    self.weapon.damage, random.randint(50, 70), text_font))
+                                                    damage, random.randint(50, 70), text_font))
 
                     entity.cur_rect.move_ip(dist_x, dist_y)
                     entity.active_zone.move_ip(dist_x, dist_y)
