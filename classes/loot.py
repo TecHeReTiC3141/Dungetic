@@ -9,12 +9,13 @@ class Loot:
     descr = []
     deletion = False
 
-    def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left'):
+    def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left', in_inventory=False):
         try:
             if isinstance(self.sprite, dict):
                 display.blit(self.sprite[direct], (x, y))
             else:
                 display.blit(self.sprite, (x, y))
+
         except KeyError:
             print(f'Unknown direction for {self}')
 
@@ -32,6 +33,10 @@ class Weapon(Loot):
     hit_range = None
     knockback = None
     hit_sound = None
+    max_durability = None
+
+    def __init__(self):
+        self.durab = self.max_durability
 
     def picked_up(self, entity):
         if isinstance(entity.weapon, Fist):
@@ -39,6 +44,15 @@ class Weapon(Loot):
         else:
             if len(entity.inventory) < entity.max_capacity:
                 entity.inventory.append(self)
+
+    def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left', in_inventory=False):
+        super().draw_object(display, x, y, direct,)
+        if in_inventory:
+            pygame.draw.rect(display, 'black', (x, y + self.sprite['left'].get_height(),
+                                       self.sprite['left'].get_width(), 10), border_radius=5)
+            pygame.draw.rect(display, 'green', (x, y + self.sprite['left'].get_height(),
+                                                round((self.durab / self.max_durability)
+                                                      * self.sprite['left'].get_width()), 10), border_radius=5)
 
     def interact(self, entity):
         if not isinstance(entity.weapon, Fist):
@@ -56,6 +70,7 @@ class Fist(Weapon):
     knockback = 25
     capability = 45
     hit_range = 40
+    max_durability = -1
     hit_sound = pygame.mixer.Sound('../sounds/weapons/fist/punch.mp3')
 
 
@@ -63,11 +78,14 @@ class Knife(Weapon):
     sprite = {'right': pygame.image.load('../images/weapons/knife/iron_knife.png'),
               'left': pygame.transform.flip(pygame.image.load('../images/weapons/knife/iron_knife.png'),
                                             flip_x=True, flip_y=False)}
-    descr = ['Острый железный клинок']
+
     damage = 8
     knockback = 35
     capability = 50
     hit_range = 50
+    max_durability = 15
+    descr = ['Острый железный клинок',
+             f'Прочность: {max_durability}']
     hit_sound = pygame.mixer.Sound('../sounds/weapons/sword/swing.mp3')
 
 
@@ -122,7 +140,7 @@ class Armor(Loot):
     def __init__(self):
         self.durab = Armor.max_durab
 
-    def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left'):
+    def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left', in_inventory=True):
         display.blit(self.sprite[direct], (x - self.width, y - self.height))
 
 

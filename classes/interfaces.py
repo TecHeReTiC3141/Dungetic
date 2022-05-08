@@ -96,7 +96,7 @@ class InterContainer(Button):
         if isinstance(self.content, Loot):
             self.content.draw_object(self.image,
                                      self.rect.width // 6,
-                                     self.rect.height // 6)
+                                     self.rect.height // 6, in_inventory=True)
         display.blit(self.image, self.rect)
 
     def update(self, mouse: tuple, entity: Heretic = None, action_type: int = None):

@@ -164,6 +164,11 @@ class Hostile(NPC):
                     if target.actual_health <= 0:
                         target.die()
 
+                    self.weapon.hit_sound.play()
+                    self.weapon.durab -= 1
+                    if self.weapon.durab <= 0:
+                        self.weapon = Fist()
+
         return blood_list
 
 

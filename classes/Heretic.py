@@ -85,7 +85,11 @@ class Heretic:
                     entity.attack_rect.move_ip(dist_x, dist_y)
                     if entity.actual_health <= 0:
                         entity.die()
+
                     self.weapon.hit_sound.play()
+                    self.weapon.durab -= 1
+                    if self.weapon.durab <= 0:
+                        self.weapon = Fist()
 
             for obst in conts:
                 if obst.cur_rect.colliderect(self.attack_rect):
