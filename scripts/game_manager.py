@@ -10,7 +10,7 @@ class GameManager:
                        'inventory_skills',
                        'inventory_stats']
 
-    def __init__(self, res: tuple, dungeon, cur_room,
+    def __init__(self, res: tuple, dungeon: dict, cur_room,
                  state='main_menu', caption='Dungetic'):
 
         if state not in self.possible_states:

@@ -198,6 +198,9 @@ class Heretic:
         if isinstance(self.head_armor, Helmet) and self.head_armor.durab <= 0:
             self.head_armor = None
 
+        if self.actual_health <= 0:
+            self.die()
+
     def regenerate(self):
         if self.regeneration_delay == 0:
             self.actual_health = min(self.actual_health + 2, 100)
