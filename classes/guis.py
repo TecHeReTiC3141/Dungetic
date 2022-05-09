@@ -59,6 +59,7 @@ class Settings(GUI):
             [sg.Push(), sg.Button('Reset', button_color='red'), sg.Button('Apply', button_color='green')]
         ]
         self.window = sg.Window('Settings', layout=self.layout, element_justification='left')
+        self.run()
 
     def run(self):
 

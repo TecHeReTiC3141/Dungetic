@@ -60,8 +60,7 @@ class ChangeState(Button):
         if self.rect.collidepoint(mouse):
             self.manager.state = self.state
             if self.state == 'settings':
-                settings = Settings(self.manager)
-                settings.run()
+                Settings(self.manager)
                 self.manager.state = 'main_menu'
 
 
@@ -104,13 +103,30 @@ class InterContainer(Button):
         if isinstance(self.content, Loot) and self.active and self.rect.collidepoint(mouse):
             if action_type == 1:
                 return self.content
+
+
             elif action_type == 3:
-                effect = self.content.interact(entity)
-                if self.content.deletion:
+                if type(self.ind) == int:
+                    effect = self.content.interact(entity)
+                    if self.content.deletion:
+                        self.content = None
+                    print(effect)
+                    if effect is not None:
+                        return effect
+                else:
+                    if isinstance(self.content, Fist):
+                        return
+
+                    self.content.deletion = False
+                    entity.inventory.append(self.content)
+
                     self.content = None
-                print(effect)
-                if effect is not None:
-                    return effect
+                    if self.ind == 'weapon':
+                        entity.weapon = Fist()
+                    elif self.ind == 'helmet':
+                        entity.head_armor = None
+                    elif self.ind == 'armor':
+                        entity.body_armor = None
 
 
 class InventoryInter(Interface):
@@ -128,6 +144,10 @@ class InventoryInter(Interface):
                            for i in range(50, 550, 120)]
         self.selected_item = None
         self.cur_effect = None
+        self.weapon_cont = InterContainer(1015, 275, 120, 120, ind='weapon')
+        self.helmet_cont = InterContainer(1135, 138, 120, 120, ind='helmet')
+        self.armor_cont = InterContainer(1137, 278, 120, 120, ind='armor')
+
 
     def alt_draw_object(self, display):
         self.fill((184, 173, 118))
@@ -201,6 +221,10 @@ class InventoryInter(Interface):
         for container in self.containers:
             container.draw_object(self)
 
+        self.armor_cont.draw_object(self)
+        self.weapon_cont.draw_object(self)
+        self.helmet_cont.draw_object(self)
+
         if isinstance(self.selected_item, Loot):
             self.selected_item.draw_object(self, x=785, y=430)
             for line in range(len(self.selected_item.descr)):
@@ -216,8 +240,14 @@ class InventoryInter(Interface):
         for i in range(len(self.entity.inventory)):
             self.containers[i].content = self.entity.inventory[i]
 
+        self.weapon_cont.content = self.entity.weapon
+        self.helmet_cont.content = self.entity.head_armor
+        self.armor_cont.content = self.entity.body_armor
+
+
     def process(self, action_type, mouse):
-        for container in self.containers:
+        for container in self.containers + \
+                         [self.armor_cont, self.weapon_cont, self.helmet_cont]:
             if action_type == 1:
                 self.selected_item = container.update(mouse, self.entity, action_type)
             elif action_type == 3:

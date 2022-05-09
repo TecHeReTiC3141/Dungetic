@@ -9,7 +9,7 @@ class Loot:
     descr = []
     deletion = False
 
-    def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left', in_inventory=False):
+    def draw_object(self, display: pygame.Surface, x=0, y=0, direct='right', in_inventory=False):
         try:
             if isinstance(self.sprite, dict):
                 display.blit(self.sprite[direct], (x, y))
@@ -24,6 +24,9 @@ class Loot:
             entity.inventory.append(self)
 
     def interact(self, entity):
+        pass
+
+    def __copy__(self):
         pass
 
 
@@ -45,14 +48,14 @@ class Weapon(Loot):
             if len(entity.inventory) < entity.max_capacity:
                 entity.inventory.append(self)
 
-    def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left', in_inventory=False):
+    def draw_object(self, display: pygame.Surface, x=0, y=0, direct='right', in_inventory=False):
         super().draw_object(display, x, y, direct,)
         if in_inventory:
-            pygame.draw.rect(display, 'black', (x, y + self.sprite['left'].get_height(),
-                                       self.sprite['left'].get_width(), 10), border_radius=5)
+            pygame.draw.rect(display, 'black', (x, y + self.sprite['right'].get_height(),
+                                       self.sprite['right'].get_width(), 10), border_radius=5)
             pygame.draw.rect(display, (255 * (1 - self.durab / self.max_durability), 255 * self.durab / self.max_durability, 0), (x, y + self.sprite['left'].get_height(),
                                                 round((self.durab / self.max_durability)
-                                                      * self.sprite['left'].get_width()), 10), border_radius=5)
+                                                      * self.sprite['right'].get_width()), 10), border_radius=5)
 
     def interact(self, entity):
         if not isinstance(entity.weapon, Fist):
@@ -138,16 +141,16 @@ class Armor(Loot):
     width = 2
 
     def __init__(self):
-        self.durab = Armor.max_durability
+        self.durab = self.max_durability
 
-    def draw_object(self, display: pygame.Surface, x=0, y=0, direct='left', in_inventory=True):
+    def draw_object(self, display: pygame.Surface, x=0, y=0, direct='right', in_inventory=False):
         display.blit(self.sprite[direct], (x - self.width, y - self.height))
         if in_inventory:
-            pygame.draw.rect(display, 'black', (x, y + self.sprite['left'].get_height(),
-                                       self.sprite['left'].get_width(), 10), border_radius=5)
+            pygame.draw.rect(display, 'black', (x, y + self.sprite['right'].get_height(),
+                                       self.sprite['right'].get_width(), 10), border_radius=5)
             pygame.draw.rect(display, (255 * (1 - self.durab / self.max_durability), 255 * self.durab / self.max_durability, 0), (x, y + self.sprite['left'].get_height(),
                                                 round((self.durab / self.max_durability)
-                                                      * self.sprite['left'].get_width()), 10), border_radius=5)
+                                                      * self.sprite['right'].get_width()), 10), border_radius=5)
 
 
 
