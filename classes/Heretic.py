@@ -4,6 +4,10 @@ from scripts.game_manager import GameManager
 
 
 class Heretic:
+
+    sprites = {i: pygame.image.load(f'../images/entities/heretic/heretic_sprite_{i}.png')
+               for i in directions}
+
     # TODO try to transform entities into pygame.sprites
     def __init__(self, x, y, width, height, health, direction, manager: GameManager,
                  speed=6, target=None, weapon=Fist(), location=None, size=1.):
@@ -227,7 +231,7 @@ class Heretic:
         #     if self.direction == 'left':
         #         display.blit(self.weapon, (self.cur_rect.left - 5, self.))
         # pygame.draw.rect(display, RED, self.attack_rect)
-        self.visible_zone.blit(heretic_images[self.direction], (0, 0))
+        self.visible_zone.blit(self.sprites[self.direction], (0, 0))
         display.blit(self.visible_zone, (x, y))
         if self.direction in self.weapon.sprite:
             if in_game:

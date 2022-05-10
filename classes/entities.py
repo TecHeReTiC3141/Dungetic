@@ -84,6 +84,8 @@ class NPC(Heretic):
 
 
 class Hostile(NPC):
+    sprites = {i: pygame.image.load(f'../images/entities/goblins/goblin_sprite_{i}.png')
+               for i in directions}
 
     def __init__(self, x, y, width, height, health, direction, speed,
                  target=None, weapon=Fist(), location=None, loot=None, size=1.):
