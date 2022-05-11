@@ -77,6 +77,9 @@ class NPC(Heretic):
         print([i.picked for i in self.loot])
         return self.loot
 
+    def exist(self):
+        self.passive_exist()
+
     @staticmethod
     def produce_NPC(n, loot: list = None):
         return [NPC(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
@@ -91,6 +94,7 @@ class Hostile(NPC):
                  target=None, weapon=Fist(), location=None, loot=None, size=1.):
         super().__init__(x, y, width, height, health, direction,
                          speed, target, weapon, loot, location, size)
+        self.state = 'neutral'
         self.target = []
         self.targetpoint = pygame.Rect(self.cur_rect.center, (5, 5))
         self.cur_point = pygame.math.Vector2(self.get_center_coord(False))
@@ -122,6 +126,17 @@ class Hostile(NPC):
                 self.nextpoint()
             blood_list = self.hit(entities=self.target)
             return blood_list
+
+    def exist(self):
+        if self.state == 'neutral':
+            self.passive_exist()
+        else:
+            self.hostile_exist()
+
+        if len(self.path) > 15:
+            self.state = 'neutral'
+        else:
+            self.state = 'hostile'
 
     def nextpoint(self):
         self.path.popleft()

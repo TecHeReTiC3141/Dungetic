@@ -292,12 +292,10 @@ class Room:
 
     def life(self, tick: int):
         for entity in self.entities_list:
-            if isinstance(entity, Hostile):
-                blood_list = entity.hostile_exist()
-                if blood_list:
-                    self.decors.extend(blood_list)
-            else:
-                entity.passive_exist()
+            blood_list = entity.exist()
+            if blood_list:
+                self.decors.extend(blood_list)
+
             entity.update(tick)
 
     def clear(self):
