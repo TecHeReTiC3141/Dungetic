@@ -341,3 +341,5 @@ class Room:
 
         self.drops = list(filter(lambda i: not i.picked,
                                  self.drops))
+
+        logging.info(f'The room {self} was cleared')

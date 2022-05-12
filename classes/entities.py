@@ -60,7 +60,7 @@ class NPC(Heretic):
                 self.stop = False
             else:
                 self.stop = True
-            self.delay = random.randint(250, 450)
+            self.delay = random.randint(150, 300)
         if (self.cur_rect.left <= 10 and self.direction == 'left') or (
                 self.cur_rect.left >= 920 and self.direction == 'right') \
                 or (self.cur_rect.top <= 0 and self.direction == 'up') or (

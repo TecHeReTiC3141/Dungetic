@@ -204,7 +204,7 @@ class InventoryInter(Interface):
         self.entity.draw_object(self, x=820, y=110, in_game=False)
         self.blit(inventory_font.render(f'{self.entity.money}', True, '#f8b800'),
                   (95 + 15 * len(str(self.entity.money)), 100))
-        # TODO !!! put all heretic's equipment in containers
+
         self.entity.weapon.draw_object(self, x=1040, y=310, direct='right')
         if isinstance(self.entity.head_armor, Helmet):
             self.entity.head_armor.draw_object(self, x=1145, y=185, direct='right')
