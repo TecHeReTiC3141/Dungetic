@@ -30,6 +30,7 @@ show_paths = pygame.USEREVENT + 2
 pygame.time.set_timer(wipe, 10)
 pygame.time.set_timer(show_paths, 150)
 clock = pygame.time.Clock()
+logging.info('The game cycle has begun')
 
 while game_cycle:
     cur_room = game_manager.dungeon[game_manager.curr_room]

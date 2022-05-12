@@ -1,11 +1,11 @@
 import random
-from typing import overload
 from pathfinding.core.grid import Grid, Node
 from pathfinding.finder.a_star import AStarFinder
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from collections import *
-from scripts.Maths import *
 import PySimpleGUI as sg
+from scripts.Maths import *
+from log_sets import logging
 
 pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()
@@ -51,7 +51,6 @@ inventory_image = pygame.image.load('../images/interfaces/inventory.png').conver
 stone_floor = pygame.transform.scale(pygame.image.load('../images/stone_floor.jpg'), (display_width, display_height))
 wooden_floor = pygame.transform.scale(pygame.image.load('../images/wooden_floor.jpg'), (display_width, display_height))
 
-heretic_images = {i: pygame.image.load(f'../images/heretic/heretic_sprite_{i}.png') for i in directions}
 bloor = pygame.Surface((display_width, display_height))
 bloor.set_alpha(15)
 current_interface = None

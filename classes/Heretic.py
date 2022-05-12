@@ -4,6 +4,10 @@ from scripts.game_manager import GameManager
 
 
 class Heretic:
+
+    sprites = {i: pygame.image.load(f'../images/entities/heretic/heretic_sprite_{i}.png')
+               for i in directions}
+
     # TODO try to transform entities into pygame.sprites
     def __init__(self, x, y, width, height, health, direction, manager: GameManager,
                  speed=6, target=None, weapon=Fist(), location=None, size=1.):
@@ -63,8 +67,9 @@ class Heretic:
         if self.attack_time <= 0:
             for entity in entities:
                 if entity.cur_rect.colliderect(self.attack_rect):
+                    damage = random.randint(self.weapon.damage - 2, self.weapon.damage + 2)
                     entity.actual_health = max(entity.actual_health -
-                                               self.weapon.damage, 0)
+                                               damage, 0)
                     entity.regeneration_delay = -1
                     dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, entity.cur_rect)
                                          * self.weapon.knockback)
@@ -74,13 +79,21 @@ class Heretic:
                                              random.randint(10, 15), random.randint(10, 15), random.randint(50, 70),
                                              type=random.choice(['down', 'up']), speed=5) for i in
                                        range(self.weapon.damage // 4)])
+                    if self.manager.show_damage:
+                        blood_list.append(DamageInd(random.randint(entity.cur_rect.left, entity.cur_rect.right),
+                                             random.randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
+                                                    damage, random.randint(50, 70), text_font))
 
                     entity.cur_rect.move_ip(dist_x, dist_y)
                     entity.active_zone.move_ip(dist_x, dist_y)
                     entity.attack_rect.move_ip(dist_x, dist_y)
                     if entity.actual_health <= 0:
                         entity.die()
+
                     self.weapon.hit_sound.play()
+                    self.weapon.durab -= 1
+                    if self.weapon.durab <= 0:
+                        self.weapon = Fist()
 
             for obst in conts:
                 if obst.cur_rect.colliderect(self.attack_rect):
@@ -186,14 +199,15 @@ class Heretic:
         if self.money != self.actual_money and not tick % 6:
             self.money = self.money + 1 if self.money < self.actual_money else self.money - 1
 
+        if isinstance(self.head_armor, Helmet) and self.head_armor.durab <= 0:
+            self.head_armor = None
+
+        if self.actual_health <= 0:
+            self.die()
+
     def regenerate(self):
         if self.regeneration_delay == 0:
             self.actual_health = min(self.actual_health + 2, 100)
-
-    @staticmethod
-    def tp(room):
-        global c_a_s
-        c_a_s.curr_room = room
 
     def die(self):
         pass
@@ -217,7 +231,7 @@ class Heretic:
         #     if self.direction == 'left':
         #         display.blit(self.weapon, (self.cur_rect.left - 5, self.))
         # pygame.draw.rect(display, RED, self.attack_rect)
-        self.visible_zone.blit(heretic_images[self.direction], (0, 0))
+        self.visible_zone.blit(self.sprites[self.direction], (0, 0))
         display.blit(self.visible_zone, (x, y))
         if self.direction in self.weapon.sprite:
             if in_game:

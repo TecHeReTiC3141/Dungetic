@@ -38,7 +38,7 @@ class Settings(GUI):
             [sg.Frame('Graphics', [
                 [sg.Text('Resolution'), sg.Spin(['900x600', '1080x720', '1440x900'],
                                                 initial_value='1440x900', key='-RES-'),
-                 sg.Checkbox('Fullscreen', key='-FULLSCREEN-')]
+                 sg.Checkbox('Fullscreen', key='-FULLSCREEN-'), sg.Checkbox('Show damage', key='-DAMAGEIND-')]
             ], )]], expand_y=True, expand_x=True)
 
         sound_tab = sg.Tab('Sounds', [
@@ -59,6 +59,7 @@ class Settings(GUI):
             [sg.Push(), sg.Button('Reset', button_color='red'), sg.Button('Apply', button_color='green')]
         ]
         self.window = sg.Window('Settings', layout=self.layout, element_justification='left')
+        self.run()
 
     def run(self):
 
@@ -70,10 +71,10 @@ class Settings(GUI):
                 break
 
             elif event == 'Apply':
-                blood, res, full = values['-BLOOD-'], \
+                blood, res, full, show_damage = values['-BLOOD-'], \
                                    tuple(map(int, values['-RES-'].split('x'))), \
-                                   values['-FULLSCREEN-']
-                self.manager.update(res, blood, full)
+                                   values['-FULLSCREEN-'], values['-DAMAGEIND-']
+                self.manager.update(res, blood, full, show_damage)
                 self.close()
                 break
 
@@ -130,4 +131,3 @@ class ConsoleGui(GUI):
 #
 # gui = ConsoleGui(console)
 # gui.run()
-# TODO introduce console in actual game

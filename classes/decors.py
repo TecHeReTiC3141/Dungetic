@@ -94,8 +94,8 @@ class SplatBlood(Blood):
 
 class Banner(Decor):
 
-    def __init__(self, x, y, text, life_time: int, color='Black'):
-        self.text = active_font.render(text, True, 'Black')
+    def __init__(self, x, y, text, life_time: int, color='Black', font=active_font):
+        self.text = font.render(text, True, 'Black')
         self.surf = pygame.Surface(self.text.get_size())
         self.rect = self.surf.get_rect(topleft=(x, y))
         self.surf.fill('White')
@@ -106,4 +106,31 @@ class Banner(Decor):
         display.blit(self.surf, self.rect if x == y == 0 else (x, y))
         self.life_time -= 1
 
-# TODO add particles which show hit damage
+
+class DamageInd(Blood):
+
+    def __init__(self, x, y, value, life_time, font: pygame.font.Font, color='Red', speed=3):
+        self.text = font.render(f'-{value}', True, color)
+        self.surf = pygame.Surface(self.text.get_size())
+        self.surf.set_colorkey('Black')
+        self.rect = self.surf.get_rect(topleft=(x, y))
+
+        self.directions = pygame.math.Vector2(random.uniform(-4, 4),
+                                              random.uniform(-4, -2))
+        self.surf.fill('White')
+        self.surf.blit(self.text, (0, 0))
+        self.type = 'ind'
+        self.life_time = life_time
+        self.speed = speed
+
+    def move(self, tick=0):
+        if self.directions.length():
+            norm_dir = self.directions.normalize() * self.speed
+            self.rect.move_ip(round(norm_dir.x), round(norm_dir.y))
+        self.directions.y += phys_eps
+        self.directions.x = self.directions.x - phys_eps if self.directions.x > 0 else  self.directions.x + phys_eps
+        self.life_time -= 1
+
+    def draw_object(self, display: pygame.Surface, x=0, y=0):
+        Banner.draw_object(self, display, x, y)
+

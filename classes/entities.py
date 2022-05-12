@@ -60,7 +60,7 @@ class NPC(Heretic):
                 self.stop = False
             else:
                 self.stop = True
-            self.delay = random.randint(250, 450)
+            self.delay = random.randint(150, 300)
         if (self.cur_rect.left <= 10 and self.direction == 'left') or (
                 self.cur_rect.left >= 920 and self.direction == 'right') \
                 or (self.cur_rect.top <= 0 and self.direction == 'up') or (
@@ -77,6 +77,9 @@ class NPC(Heretic):
         print([i.picked for i in self.loot])
         return self.loot
 
+    def exist(self):
+        self.passive_exist()
+
     @staticmethod
     def produce_NPC(n, loot: list = None):
         return [NPC(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
@@ -84,11 +87,14 @@ class NPC(Heretic):
 
 
 class Hostile(NPC):
+    sprites = {i: pygame.image.load(f'../images/entities/goblins/goblin_sprite_{i}.png')
+               for i in directions}
 
     def __init__(self, x, y, width, height, health, direction, speed,
                  target=None, weapon=Fist(), location=None, loot=None, size=1.):
         super().__init__(x, y, width, height, health, direction,
                          speed, target, weapon, loot, location, size)
+        self.state = 'neutral'
         self.target = []
         self.targetpoint = pygame.Rect(self.cur_rect.center, (5, 5))
         self.cur_point = pygame.math.Vector2(self.get_center_coord(False))
@@ -118,7 +124,19 @@ class Hostile(NPC):
                                      round(self.dirs.y))
             if self.targetpoint.collidepoint(self.cur_rect.center):
                 self.nextpoint()
-            self.hit(entities=self.target)
+            blood_list = self.hit(entities=self.target)
+            return blood_list
+
+    def exist(self):
+        if self.state == 'neutral':
+            self.passive_exist()
+        else:
+            self.hostile_exist()
+
+        if len(self.path) > 15:
+            self.state = 'neutral'
+        else:
+            self.state = 'hostile'
 
     def nextpoint(self):
         self.path.popleft()
@@ -127,19 +145,49 @@ class Hostile(NPC):
         else:
             self.targetpoint = pygame.Rect((self.path[0][0] + 3, self.path[0][1] + 3), (6, 6))
 
-    def hit(self, entities: list[Heretic] = None, conts: list = None):
+    def hit(self, entities: list[Heretic] = None, conts: list = None) -> list:
+        blood_list = []
         if self.attack_time <= 0:
             for target in entities:
                 if self.active_zone.colliderect(target.active_zone):
                     self.attack_time = self.weapon.capability * 2
-                    target.actual_health = max(target.actual_health - self.weapon.damage, 0)
+
+                    damage = random.randint(self.weapon.damage - 2, self.weapon.damage + 2)
+                    if isinstance(target.head_armor, Helmet):
+                        damage *= 1 - target.head_armor.persist
+
+                    if target.manager.show_damage:
+                        blood_list.append(DamageInd(random.randint(target.cur_rect.left, target.cur_rect.right),
+                                                    random.randint(target.cur_rect.top, target.cur_rect.midleft[1]),
+                                                    damage, random.randint(50, 70), text_font))
+
+                    if target.manager.blood:
+                        blood_list.extend([Blood(random.randint(target.cur_rect.left, target.cur_rect.right),
+                                             random.randint(target.cur_rect.top, target.cur_rect.midleft[1]),
+                                             random.randint(10, 15), random.randint(10, 15), random.randint(50, 70),
+                                             type=random.choice(['down', 'up']), speed=5) for i in
+                                       range(self.weapon.damage // 4)])
+
+                    target.actual_health = max(target.actual_health - round(damage), 0)
                     target.regeneration_delay = self.weapon.damage * 20
                     dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, target.cur_rect)
                                          * self.weapon.damage * 10)
                     target.cur_rect.move_ip(dist_x, dist_y)
                     target.active_zone.move_ip(dist_x, dist_y)
+
+                    if isinstance(target.head_armor, Helmet):
+                        target.head_armor.durab -= self.weapon.damage
+
                     if target.actual_health <= 0:
                         target.die()
+
+                    self.weapon.hit_sound.play()
+                    self.weapon.durab -= 1
+                    if self.weapon.durab <= 0:
+                        self.weapon = Fist()
+
+        return blood_list
+
 
     def draw_object(self, display: pygame.Surface, x=0, y=0):
         super().draw_object(display)
@@ -147,4 +195,5 @@ class Hostile(NPC):
     @staticmethod
     def produce_Hostiles(n, loot: list = None):
         return [Hostile(random.randint(300, 800), random.randint(200, 600), 75, 100, 15,
-                        random.choice(directions), speed=random.randint(3, 4), loot=loot) for i in range(n)]
+                        random.choice(directions), speed=random.randint(3, 4), loot=loot,
+                        weapon=random.choice([Knife(), Fist(), Fist()])) for i in range(n)]
