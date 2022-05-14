@@ -212,17 +212,20 @@ class MyNode:
 class Room:
 
     def __init__(self, obst_list: list[Wall], containers: list[Wall],
-                 entities_list: list[NPC], entrances, floor: str, type: str = 'common'):
+                 entities_list: list[NPC], projectiles: list[Projectile], entrances, floor: str, type: str = 'common'):
         self.obst_list = obst_list
         self.containers = containers
         self.drops = []
         self.decors = []
         self.entities_list = entities_list
+        self.projectiles = projectiles
+
         self.entrances = entrances
         self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
         self.floor = stone_floor if floor == 'stone' else wooden_floor
         self.visited = True
         self.type = type
+
         self.nodes = [
             [MyNode(j * grid_size, i * grid_size, grid_size, grid_size) for j in range(ceil(display_width / grid_size))]
             for i in range(ceil(display_height / grid_size))]
@@ -274,10 +277,10 @@ class Room:
             drop.collide([heretic])
 
         if not self.is_safe:
-
             for node_l in range(len(self.nodes)):
                 for node in self.nodes[node_l]:
                     node.collide(self.obst_list + self.containers)
+
 
     def make_paths(self, target: Heretic):
         target.node = self.grid.node(*target.get_center_coord(True))
@@ -341,5 +344,7 @@ class Room:
 
         self.drops = list(filter(lambda i: not i.picked,
                                  self.drops))
+
+        logging.info(f'The room {self} was cleared')
 
         logging.info(f'The room {self} was cleared')

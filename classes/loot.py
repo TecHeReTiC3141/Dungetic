@@ -29,6 +29,33 @@ class Loot:
     def __copy__(self):
         pass
 
+class Projectile:
+
+    damage = 5
+    speed = 3
+    physics = False
+    sprite = pygame.Surface((25, 25))
+    sprite.set_colorkey('black')
+
+    def __init__(self, x, y, vector: pygame.math.Vector2):
+        self.x, self.y = x, y
+        self.vector = vector
+
+    def draw_object(self, display: pygame.Surface):
+        self.sprite.fill('black')
+        pygame.draw.circle(self.sprite, '#00CA00',
+                           (self.sprite.get_width() // 2, self.sprite.get_height() // 2),
+                           self.sprite.get_width() // 2)
+        display.blit(self.sprite, (self.x, self.y))
+
+    def move(self):
+        self.x += self.vector.x
+        self.y += self.vector.y
+
+    def collide(self, obstacles: list):
+
+
+
 
 class Weapon(Loot):
     damage = None
@@ -64,6 +91,7 @@ class Weapon(Loot):
 
         entity.weapon = self
         self.deletion = True
+
 
 
 class Fist(Weapon):
