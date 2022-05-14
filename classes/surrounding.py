@@ -256,6 +256,10 @@ class Room:
 
         for entity in self.entities_list:
             entity.draw_object(surface)
+
+        for proj in self.projectiles:
+            proj.draw_object(display)
+
         for decor in self.decors:
             if isinstance(decor, Decor):
                 if isinstance(decor, Banner):
@@ -263,6 +267,7 @@ class Room:
                 elif isinstance(decor, Particle) and decor.type != 'background':
                     decor.draw_object(surface)
                     decor.move(tick)
+
 
     def draw_grid(self, surface):
         for node_l in self.nodes:
@@ -273,13 +278,19 @@ class Room:
         for wall in self.obst_list + self.containers:
             wall.collide(self.entities_list + [heretic], 'hor', self.obst_list + self.containers)
             wall.collide(self.entities_list + [heretic], 'vert', self.obst_list + self.containers)
+
         for drop in self.drops:
             drop.collide([heretic])
+
+        for proj in self.projectiles:
+            proj.move()
+            proj.collide(self.obst_list + self.entities_list)
 
         if not self.is_safe:
             for node_l in range(len(self.nodes)):
                 for node in self.nodes[node_l]:
                     node.collide(self.obst_list + self.containers)
+
 
 
     def make_paths(self, target: Heretic):

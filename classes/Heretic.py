@@ -9,7 +9,7 @@ class Heretic:
                for i in directions}
 
     # TODO try to transform entities into pygame.sprites
-    def __init__(self, x, y, width, height, health, direction, manager: GameManager,
+    def __init__(self, x, y, width, height, health, direction, manager: GameManager=None,
                  speed=6, target=None, weapon=Fist(), location=None, size=1.):
         self.width = width
         self.height = height
@@ -109,6 +109,19 @@ class Heretic:
 
             self.attack_time = self.weapon.capability
         return blood_list
+
+    def throw_ball(self) -> Projectile:
+        if self.vector.length():
+            vector = self.vector
+        elif self.direction == 'left':
+            vector = pygame.math.Vector2(-1, 0)
+        elif self.direction == 'right':
+            vector = pygame.math.Vector2(1, 0)
+        elif self.direction == 'up':
+            vector = pygame.math.Vector2(0, -1)
+        else:
+            vector = pygame.math.Vector2(0, 1)
+        return Projectile(*self.get_center_coord(False), vector)
 
     def get_center_coord(self, ind):
         return (self.cur_rect.centerx // grid_size, self.cur_rect.centery // grid_size) if ind \

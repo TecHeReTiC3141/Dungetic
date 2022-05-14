@@ -49,10 +49,13 @@ class Projectile:
         display.blit(self.sprite, (self.x, self.y))
 
     def move(self):
-        self.x += self.vector.x
-        self.y += self.vector.y
+        if self.vector.length():
+            norm = self.vector.normalize()
+            self.x += norm.x * self.speed
+            self.y += norm.y * self.speed
 
     def collide(self, obstacles: list):
+        pass
 
 
 
@@ -179,8 +182,6 @@ class Armor(Loot):
             pygame.draw.rect(display, (255 * (1 - self.durab / self.max_durability), 255 * self.durab / self.max_durability, 0), (x, y + self.sprite['left'].get_height(),
                                                 round((self.durab / self.max_durability)
                                                       * self.sprite['right'].get_width()), 10), border_radius=5)
-
-
 
     def interact(self, entity):
         if hasattr(entity, 'body_armor'):

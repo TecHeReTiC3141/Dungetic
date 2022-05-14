@@ -78,7 +78,7 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
         if not isinstance(entity.weapon, Fist):
             entity.loot.append(LyingItem(0, 0, type(entity.weapon)))
 
-    return Room(walls, cont, entities, enters, floor=random.choice(['stone', 'wooden']), type=room_type)
+    return Room(walls, cont, entities, [], enters, floor=random.choice(['stone', 'wooden']), type=room_type)
 
 
 def generate_dungeons() -> dict[int, Room]:

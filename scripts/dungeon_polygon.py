@@ -64,6 +64,9 @@ while game_cycle:
                 cur_room.decors.extend(heretic.hit(cur_room.entities_list,
                             cur_room.containers))
 
+            elif event.key == pygame.K_r:
+                cur_room.projectiles.append(heretic.throw_ball())
+
             elif event.key == pygame.K_g:
                 draw_grid = ~draw_grid
 
