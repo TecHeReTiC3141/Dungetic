@@ -284,7 +284,20 @@ class Room:
 
         for proj in self.projectiles:
             proj.move()
-            proj.collide(self.obst_list + self.entities_list)
+            for obst in self.obst_list + self.containers:
+                if proj.rect.colliderect(obst.cur_rect):
+                    if obst.movable:
+                        obst.cur_rect.move_ip(proj.vector * proj.damage)
+                        obst.health -= proj.damage
+                    proj.collided = True
+                    break
+            for ent in self.entities_list:
+                if proj.rect.colliderect(ent.cur_rect):
+                    ent.cur_rect.move_ip(proj.vector * proj.damage)
+                    ent.actual_health -= proj.damage
+                    proj.collided = True
+                    break
+
 
         if not self.is_safe:
             for node_l in range(len(self.nodes)):
@@ -355,6 +368,9 @@ class Room:
 
         self.drops = list(filter(lambda i: not i.picked,
                                  self.drops))
+
+        self.projectiles = list(filter(lambda i: not i.collided,
+                                 self.projectiles))
 
         logging.info(f'The room {self} was cleared')
 

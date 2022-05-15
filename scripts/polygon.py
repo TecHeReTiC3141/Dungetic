@@ -1,2 +1,3 @@
-f = lambda: 'na'
-print(type(f))
+a = [2]
+b, = a
+print(a, b)

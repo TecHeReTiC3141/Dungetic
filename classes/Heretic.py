@@ -111,9 +111,7 @@ class Heretic:
         return blood_list
 
     def throw_ball(self) -> Projectile:
-        if self.vector.length():
-            vector = self.vector
-        elif self.direction == 'left':
+        if self.direction == 'left':
             vector = pygame.math.Vector2(-1, 0)
         elif self.direction == 'right':
             vector = pygame.math.Vector2(1, 0)
