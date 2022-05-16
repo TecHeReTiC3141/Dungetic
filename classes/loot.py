@@ -96,6 +96,14 @@ class Weapon(Loot):
         self.deletion = True
 
 
+class LongRange(Weapon):
+
+    missile = Projectile
+
+    def shoot(self, x, y, vector: pygame.math.Vector2) -> Projectile:
+        return self.missile(x, y, vector)
+
+
 
 class Fist(Weapon):
     sprite = {'left': pygame.image.load('../images/weapons/fist/fist_left.png'),
