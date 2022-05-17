@@ -257,6 +257,9 @@ class Room:
         for entity in self.entities_list:
             entity.draw_object(surface)
 
+        if self.projectiles.count(None):
+            logging.warning(f'{self.projectiles}')
+
         for proj in self.projectiles:
             proj.draw_object(display)
 
@@ -373,6 +376,3 @@ class Room:
         self.projectiles = list(filter(lambda i: not i.collided,
                                  self.projectiles))
 
-        logging.info(f'The room {self} was cleared')
-
-        logging.info(f'The room {self} was cleared')

@@ -65,8 +65,9 @@ while game_cycle:
                     cur_room.decors.extend(heretic.hit(cur_room.entities_list,
                             cur_room.containers))
                 elif isinstance(heretic.weapon, LongRange):
-
-                    cur_room.projectiles.append(heretic.shoot())
+                    proj = heretic.shoot()
+                    if proj is not None:
+                        cur_room.projectiles.append(proj)
 
             elif event.key == pygame.K_g:
                 draw_grid = ~draw_grid

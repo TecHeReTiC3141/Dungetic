@@ -194,8 +194,19 @@ class Heretic:
                 self.attack_rect.update(self.cur_rect.left + self.width // 5,
                                         self.cur_rect.top + self.height,
                                         self.width // 5 * 3, self.weapon.hit_range)
-            if self.weapon.durab <= 0:
-                self.weapon = Fist()
+        elif isinstance(self.weapon, LongRange):
+            if self.direction == 'left':
+                self.attack_rect.update(self.cur_rect.left - self.weapon.sprite[self.direction].get_width() - max(self.attack_time // 4, 0),
+                                        self.cur_rect.top + self.height // 5,
+                                        self.weapon.sprite[self.direction].get_width(), self.height // 5 * 3)
+
+            elif self.direction == 'right':
+                self.attack_rect.update(self.cur_rect.right + max(self.attack_time // 4, 0),
+                                        self.cur_rect.top + self.height // 5,
+                                        self.weapon.sprite[self.direction].get_width(), self.height // 5 * 3)
+
+        if self.weapon.durab <= 0:
+            self.weapon = Fist()
 
         if not tick % 10 and is_safe:
             self.regenerate()
