@@ -29,8 +29,8 @@ class Loot:
     def __copy__(self):
         pass
 
-class Projectile:
 
+class Projectile:
     damage = 5
     speed = 7
     physics = False
@@ -58,8 +58,6 @@ class Projectile:
         pass
 
 
-
-
 class Weapon(Loot):
     damage = None
     capability = None
@@ -79,13 +77,15 @@ class Weapon(Loot):
                 entity.inventory.append(self)
 
     def draw_object(self, display: pygame.Surface, x=0, y=0, direct='right', in_inventory=False):
-        super().draw_object(display, x, y, direct,)
+        super().draw_object(display, x, y, direct, )
         if in_inventory:
             pygame.draw.rect(display, 'black', (x, y + self.sprite['right'].get_height(),
-                                       self.sprite['right'].get_width(), 10), border_radius=5)
-            pygame.draw.rect(display, (255 * (1 - self.durab / self.max_durability), 255 * self.durab / self.max_durability, 0), (x, y + self.sprite['left'].get_height(),
-                                                round((self.durab / self.max_durability)
-                                                      * self.sprite['right'].get_width()), 10), border_radius=5)
+                                                self.sprite['right'].get_width(), 10), border_radius=5)
+            pygame.draw.rect(display,
+                             (255 * (1 - self.durab / self.max_durability), 255 * self.durab / self.max_durability, 0),
+                             (x, y + self.sprite['left'].get_height(),
+                              round((self.durab / self.max_durability)
+                                    * self.sprite['right'].get_width()), 10), border_radius=5)
 
     def interact(self, entity):
         if not isinstance(entity.weapon, Fist):
@@ -96,16 +96,30 @@ class Weapon(Loot):
         self.deletion = True
 
 
-class LongRange(Weapon):
+class Melee(Weapon):
+    pass
 
+
+class LongRange(Weapon):
     missile = Projectile
 
     def shoot(self, x, y, vector: pygame.math.Vector2) -> Projectile:
+        self.durab -= 1
         return self.missile(x, y, vector)
 
 
+class MagicBall(LongRange):
 
-class Fist(Weapon):
+    missile = Projectile
+    max_durability = 15
+    sprite = {'right': pygame.image.load('../images/weapons/magic_ball/magic_ball.png'),
+              'left': pygame.transform.flip(pygame.image.load('../images/weapons/magic_ball/magic_ball.png'),
+                                            flip_x=True, flip_y=False)}
+    capability = 40
+
+
+
+class Fist(Melee):
     sprite = {'left': pygame.image.load('../images/weapons/fist/fist_left.png'),
               'right': pygame.image.load('../images/weapons/fist/fist_right.png')}
     damage = 5
@@ -116,7 +130,7 @@ class Fist(Weapon):
     hit_sound = pygame.mixer.Sound('../sounds/weapons/fist/punch.mp3')
 
 
-class Knife(Weapon):
+class Knife(Melee):
     sprite = {'right': pygame.image.load('../images/weapons/knife/iron_knife.png'),
               'left': pygame.transform.flip(pygame.image.load('../images/weapons/knife/iron_knife.png'),
                                             flip_x=True, flip_y=False)}
@@ -186,10 +200,12 @@ class Armor(Loot):
         display.blit(self.sprite[direct], (x - self.width, y - self.height))
         if in_inventory:
             pygame.draw.rect(display, 'black', (x, y + self.sprite['right'].get_height(),
-                                       self.sprite['right'].get_width(), 10), border_radius=5)
-            pygame.draw.rect(display, (255 * (1 - self.durab / self.max_durability), 255 * self.durab / self.max_durability, 0), (x, y + self.sprite['left'].get_height(),
-                                                round((self.durab / self.max_durability)
-                                                      * self.sprite['right'].get_width()), 10), border_radius=5)
+                                                self.sprite['right'].get_width(), 10), border_radius=5)
+            pygame.draw.rect(display,
+                             (255 * (1 - self.durab / self.max_durability), 255 * self.durab / self.max_durability, 0),
+                             (x, y + self.sprite['left'].get_height(),
+                              round((self.durab / self.max_durability)
+                                    * self.sprite['right'].get_width()), 10), border_radius=5)
 
     def interact(self, entity):
         if hasattr(entity, 'body_armor'):

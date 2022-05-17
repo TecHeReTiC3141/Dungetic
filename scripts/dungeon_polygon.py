@@ -61,11 +61,12 @@ while game_cycle:
                     Inventory.open()
 
             elif event.key == pygame.K_e:
-                cur_room.decors.extend(heretic.hit(cur_room.entities_list,
+                if isinstance(heretic.weapon, Melee):
+                    cur_room.decors.extend(heretic.hit(cur_room.entities_list,
                             cur_room.containers))
+                elif isinstance(heretic.weapon, LongRange):
 
-            elif event.key == pygame.K_r:
-                cur_room.projectiles.append(heretic.throw_ball())
+                    cur_room.projectiles.append(heretic.shoot())
 
             elif event.key == pygame.K_g:
                 draw_grid = ~draw_grid

@@ -282,6 +282,7 @@ class Room:
         for drop in self.drops:
             drop.collide([heretic])
 
+# Fix bug connected with projectiles
         for proj in self.projectiles:
             proj.move()
             for obst in self.obst_list + self.containers:
