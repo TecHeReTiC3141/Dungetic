@@ -272,6 +272,10 @@ class Room:
             for node in node_l:
                 node.draw_object(surface)
 
+    def check_drops(self, mouse: tuple, entities: list[Heretic]):
+        for drop in self.drops:
+            drop.collide(entities, mouse)
+
     def physics(self, heretic: Heretic):
         for wall in self.obst_list + self.containers:
             wall.collide(self.entities_list + [heretic], 'hor', self.obst_list + self.containers)

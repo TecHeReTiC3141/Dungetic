@@ -22,7 +22,7 @@ class GameManager:
         self.full = False
         self.gamma = 1.
         self.display = pygame.display.set_mode(res)
-        self.surd = pygame.Surface(res)
+        self.surf = pygame.Surface(res)
         pygame.display.set_caption(caption)
 
         self.is_paused = False

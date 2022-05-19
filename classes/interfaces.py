@@ -100,7 +100,8 @@ class InterContainer(Button):
 
     def update(self, mouse: tuple, entity: Heretic = None, action_type: int = None):
 
-        if isinstance(self.content, Loot) and self.active and self.rect.collidepoint(mouse):
+        if isinstance(self.content, Loot) and self.active \
+            and self.rect.collidepoint(mouse):
             if action_type == 1:
                 return self.content
 
@@ -138,6 +139,7 @@ class InventoryInter(Interface):
                              GREEN, manager, 'inventory_skills')
         stats = ChangeState(display_width // 4, display_height // 6 + 90, 250, 80, 'Stats',
                             RED, manager, 'inventory_stats')
+        self.manager = manager
         self.button_list = [skills, stats]
         self.containers = [InterContainer(i, j, 110, 110, ind=i + j * 5)
                            for j in range(320, 750, 120)
@@ -249,9 +251,9 @@ class InventoryInter(Interface):
         for container in self.containers + \
                          [self.armor_cont, self.weapon_cont, self.helmet_cont]:
             if action_type == 1:
-                self.selected_item = container.update(mouse, self.entity, action_type)
+                self.selected_item = container.update(tuple(mouse), self.entity, action_type)
             elif action_type == 3:
-                self.cur_effect = container.update(mouse, self.entity, action_type)
+                self.cur_effect = container.update(tuple(mouse), self.entity, action_type)
                 if self.cur_effect:
                     text, color = self.cur_effect
 
