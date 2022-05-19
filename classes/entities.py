@@ -3,7 +3,7 @@ from classes.Heretic import *
 
 class NPC(Heretic):
     stop = False
-    delay = random.randint(250, 450)
+    delay = randint(250, 450)
 
     def __init__(self, x, y, width, height, health, direction, speed,
                  target=None, weapon=Fist(), loot=None, location=None, size=1.):
@@ -54,13 +54,13 @@ class NPC(Heretic):
 
         self.walk()
         if not self.delay:
-            next_direction = random.choice(directions + [None, None])
+            next_direction = choice(directions + [None, None])
             if next_direction is not None:
                 self.direction = next_direction
                 self.stop = False
             else:
                 self.stop = True
-            self.delay = random.randint(150, 300)
+            self.delay = randint(150, 300)
         if (self.cur_rect.left <= 10 and self.direction == 'left') or (
                 self.cur_rect.left >= 920 and self.direction == 'right') \
                 or (self.cur_rect.top <= 0 and self.direction == 'up') or (
@@ -82,8 +82,8 @@ class NPC(Heretic):
 
     @staticmethod
     def produce_NPC(n, loot: list = None):
-        return [NPC(random.randint(300, 800), random.randint(200, 600), 75, 100, 100,
-                    random.choice(directions), speed=random.randint(3, 4), loot=loot) for i in range(n)]
+        return [NPC(randint(300, 800), randint(200, 600), 75, 100, 100,
+                    choice(directions), speed=randint(3, 4), loot=loot) for i in range(n)]
 
 
 class Hostile(NPC):
@@ -152,20 +152,20 @@ class Hostile(NPC):
                 if self.active_zone.colliderect(target.active_zone):
                     self.attack_time = self.weapon.capability * 2
 
-                    damage = random.randint(self.weapon.damage - 2, self.weapon.damage + 2)
+                    damage = randint(self.weapon.damage - 2, self.weapon.damage + 2)
                     if isinstance(target.head_armor, Helmet):
                         damage *= 1 - target.head_armor.persist
 
                     if target.manager.show_damage:
-                        blood_list.append(DamageInd(random.randint(target.cur_rect.left, target.cur_rect.right),
-                                                    random.randint(target.cur_rect.top, target.cur_rect.midleft[1]),
-                                                    damage, random.randint(50, 70), text_font))
+                        blood_list.append(DamageInd(randint(target.cur_rect.left, target.cur_rect.right),
+                                                    randint(target.cur_rect.top, target.cur_rect.midleft[1]),
+                                                    damage, randint(50, 70), text_font))
 
                     if target.manager.blood:
-                        blood_list.extend([Blood(random.randint(target.cur_rect.left, target.cur_rect.right),
-                                             random.randint(target.cur_rect.top, target.cur_rect.midleft[1]),
-                                             random.randint(10, 15), random.randint(10, 15), random.randint(50, 70),
-                                             type=random.choice(['down', 'up']), speed=5) for i in
+                        blood_list.extend([Blood(randint(target.cur_rect.left, target.cur_rect.right),
+                                             randint(target.cur_rect.top, target.cur_rect.midleft[1]),
+                                             randint(10, 15), randint(10, 15), randint(50, 70),
+                                             type=choice(['down', 'up']), speed=5) for i in
                                        range(self.weapon.damage // 4)])
 
                     target.actual_health = max(target.actual_health - round(damage), 0)
@@ -194,6 +194,6 @@ class Hostile(NPC):
 
     @staticmethod
     def produce_Hostiles(n, loot: list = None):
-        return [Hostile(random.randint(300, 800), random.randint(200, 600), 75, 100, 15,
-                        random.choice(directions), speed=random.randint(3, 4), loot=loot,
-                        weapon=random.choice([Knife(), Fist(), Fist()])) for i in range(n)]
+        return [Hostile(randint(300, 800), randint(200, 600), 75, 100, 15,
+                        choice(directions), speed=randint(3, 4), loot=loot,
+                        weapon=choice([Knife(), Fist(), Fist()])) for i in range(n)]

@@ -57,5 +57,4 @@ class Console:
             if isinstance(entity, Hostile):
                 entity.actual_health = 0
 
-
 # TODO make up and implment some commands

@@ -1,4 +1,4 @@
-import random
+from random import *
 from pathfinding.core.grid import Grid, Node
 from pathfinding.finder.a_star import AStarFinder
 from pathfinding.core.diagonal_movement import DiagonalMovement
@@ -21,7 +21,7 @@ game_cycle = True
 
 dung_length, dung_width = map(int, input('Введите длину и ширину подземелья: ').split())
 
-curr_room = random.randint(1, dung_width * dung_length)
+curr_room = randint(1, dung_width * dung_length)
 rooms = {}
 
 display_width, display_height = (1440, 900)

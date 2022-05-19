@@ -1,6 +1,6 @@
 from classes.surrounding import *
 from scripts.algorithms_of_generation import generate_dungeons
-from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, Settings, ConsoleGui
+from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, ConsoleGui
 from scripts.Console import *
 
 polygon = generate_dungeons()
@@ -11,7 +11,7 @@ cur_inter = None
 
 game_manager = GameManager((display_width, display_height),
                            polygon, curr_room)
-heretic = Heretic(100, 100, 75, 100, 100, random.choice(directions), game_manager)
+heretic = Heretic(100, 100, 75, 100, 100, choice(directions), game_manager)
 
 player_manager = PlayerManager(heretic)
 
@@ -37,7 +37,7 @@ while game_cycle:
     for event in pygame.event.get():
         if event.type == wipe:
             cur_room.clear()
-            # print(heretic.collised_walls, heretic.speed_directions)
+            # print(heretic.collided_walls, heretic.speed_directions)
         elif event.type == pygame.QUIT:
             pygame.quit()
 

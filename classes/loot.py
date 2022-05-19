@@ -32,15 +32,18 @@ class Loot:
 
 class Projectile:
     damage = 5
-    speed = 7
+    def_speed = 7
     physics = False
     collided = False
     sprite = pygame.Surface((25, 25))
+    eps = 1e-3
     sprite.set_colorkey('black')
 
-    def __init__(self, x, y, vector: pygame.math.Vector2):
+    def __init__(self, x, y, vector: pygame.math.Vector2, physics=False):
         self.rect = self.sprite.get_rect(topleft=(x, y))
         self.vector = vector
+        self.physics = physics
+        self.speed = randint(self.def_speed - 1, self.def_speed + 1)
 
     def draw_object(self, display: pygame.Surface):
         self.sprite.fill('black')
@@ -53,6 +56,11 @@ class Projectile:
         if self.vector.length():
             norm = self.vector.normalize()
             self.rect.move_ip(norm.x * self.speed, norm.y * self.speed)
+
+        if self.physics:
+            self.speed *= (1 - self.eps)
+            if self.speed < .5:
+                self.collided = True
 
     def collide(self, obstacles: list):
         pass

@@ -183,9 +183,6 @@ class Crate(Vase):
 
 
 class MyNode:
-    '''
-    A class for nodes for pathfinding grid
-    '''
 
     def __init__(self, x, y, width, height):
         self.rect = pygame.Rect(x, y, width, height)
@@ -236,7 +233,6 @@ class Room:
         self.grid = Grid(matrix=[[self.nodes[i][j].status for j in range(ceil(display_width / grid_size))]
                                  for i in range(ceil(display_height / grid_size))])
 
-
     def draw_object(self, surface: pygame.Surface, tick: int, show_grid: bool):
         surface.blit(self.floor, (0, 0))
         if show_grid:
@@ -271,7 +267,6 @@ class Room:
                     decor.draw_object(surface)
                     decor.move(tick)
 
-
     def draw_grid(self, surface):
         for node_l in self.nodes:
             for node in node_l:
@@ -285,7 +280,7 @@ class Room:
         for drop in self.drops:
             drop.collide([heretic])
 
-# Fix bug connected with projectiles
+        # Fix bug connected with projectiles
         for proj in self.projectiles:
             proj.move()
             for obst in self.obst_list + self.containers:
@@ -302,13 +297,10 @@ class Room:
                     proj.collided = True
                     break
 
-
         if not self.is_safe:
             for node_l in range(len(self.nodes)):
                 for node in self.nodes[node_l]:
                     node.collide(self.obst_list + self.containers)
-
-
 
     def make_paths(self, target: Heretic):
         target.node = self.grid.node(*target.get_center_coord(True))
@@ -333,7 +325,7 @@ class Room:
         sorted_conts = []
         for cont in self.containers:
             if isinstance(cont, Breakable):
-                if cont.is_broken:
+                if cont.health <= 0:
                     loot = cont.get_broken()
                     for loo in loot:
                         if isinstance(cont, Container):
@@ -374,5 +366,4 @@ class Room:
                                  self.drops))
 
         self.projectiles = list(filter(lambda i: not i.collided,
-                                 self.projectiles))
-
+                                       self.projectiles))

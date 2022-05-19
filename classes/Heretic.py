@@ -67,22 +67,22 @@ class Heretic:
         if self.attack_time <= 0:
             for entity in entities:
                 if entity.cur_rect.colliderect(self.attack_rect):
-                    damage = random.randint(self.weapon.damage - 2, self.weapon.damage + 2)
+                    damage = randint(self.weapon.damage - 2, self.weapon.damage + 2)
                     entity.actual_health = max(entity.actual_health -
                                                damage, 0)
                     entity.regeneration_delay = -1
                     dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, entity.cur_rect)
                                          * self.weapon.knockback)
                     if self.manager.blood:
-                        blood_list.extend([Blood(random.randint(entity.cur_rect.left, entity.cur_rect.right),
-                                             random.randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
-                                             random.randint(10, 15), random.randint(10, 15), random.randint(50, 70),
-                                             type=random.choice(['down', 'up']), speed=5) for i in
+                        blood_list.extend([Blood(randint(entity.cur_rect.left, entity.cur_rect.right),
+                                             randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
+                                             randint(10, 15), randint(10, 15), randint(50, 70),
+                                             type=choice(['down', 'up']), speed=5) for i in
                                        range(self.weapon.damage // 4)])
                     if self.manager.show_damage:
-                        blood_list.append(DamageInd(random.randint(entity.cur_rect.left, entity.cur_rect.right),
-                                             random.randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
-                                                    damage, random.randint(50, 70), text_font))
+                        blood_list.append(DamageInd(randint(entity.cur_rect.left, entity.cur_rect.right),
+                                             randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
+                                                    damage, randint(50, 70), text_font))
 
                     entity.cur_rect.move_ip(dist_x, dist_y)
                     entity.active_zone.move_ip(dist_x, dist_y)
@@ -111,13 +111,13 @@ class Heretic:
     def shoot(self) -> Projectile:
         if isinstance(self.weapon, LongRange) and self.attack_time <= 0:
             if self.direction == 'left':
-                vector = pygame.math.Vector2(-1, 0)
+                vector = pygame.math.Vector2(-1 + uniform(-.1, .1), 0)
             elif self.direction == 'right':
-                vector = pygame.math.Vector2(1, 0)
+                vector = pygame.math.Vector2(1 + uniform(-.1, .1), 0)
             elif self.direction == 'up':
-                vector = pygame.math.Vector2(0, -1)
+                vector = pygame.math.Vector2(0, -1 + uniform(-.1, .1))
             else:
-                vector = pygame.math.Vector2(0, 1)
+                vector = pygame.math.Vector2(0, 1 + uniform(-.1, .1))
 
             self.attack_time = self.weapon.capability
 

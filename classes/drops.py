@@ -8,7 +8,7 @@ class Drop:
         self.y = y
         self.sprite = pygame.transform.rotate(self.loot.sprite['left']
                                               if isinstance(self.loot.sprite, dict) else self.loot.sprite,
-                                              random.randint(0, 360))
+                                              randint(0, 360))
         self.sprite.set_colorkey('#FFFFFF')
         self.rect = self.sprite.get_rect(topleft=(x, y))
         self.active = False
