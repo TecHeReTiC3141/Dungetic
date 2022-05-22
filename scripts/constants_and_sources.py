@@ -48,8 +48,8 @@ cursor_for_battle = pygame.transform.scale(cursor_for_battle,
                                            (cursor_for_battle.get_width() // 5, cursor_for_battle.get_height() // 5))
 inventory_image = pygame.image.load('../images/interfaces/inventory.png').convert_alpha()
 
-stone_floor = pygame.transform.scale(pygame.image.load('../images/stone_floor.jpg'), (display_width, display_height))
-wooden_floor = pygame.transform.scale(pygame.image.load('../images/wooden_floor.jpg'), (display_width, display_height))
+stone_floor = pygame.transform.scale(pygame.image.load('../images/surroundings/stone_floor.jpg'), (display_width, display_height))
+wooden_floor = pygame.transform.scale(pygame.image.load('../images/surroundings/wooden_floor.jpg'), (display_width, display_height))
 
 bloor = pygame.Surface((display_width, display_height))
 bloor.set_alpha(15)
