@@ -257,7 +257,7 @@ class Room:
             logging.warning(f'{self.projectiles}')
 
         for proj in self.projectiles:
-            proj.draw_object(display)
+            proj.draw_object(surface)
 
         for decor in self.decors:
             if isinstance(decor, Decor):

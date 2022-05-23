@@ -111,13 +111,13 @@ class Heretic:
     def shoot(self) -> Projectile:
         if isinstance(self.weapon, LongRange) and self.attack_time <= 0:
             if self.direction == 'left':
-                vector = pygame.math.Vector2(-1 + uniform(-.1, .1), 0)
+                vector = pygame.math.Vector2(-1, uniform(-.3, .3))
             elif self.direction == 'right':
-                vector = pygame.math.Vector2(1 + uniform(-.1, .1), 0)
+                vector = pygame.math.Vector2(1 , + uniform(-.3, .3))
             elif self.direction == 'up':
-                vector = pygame.math.Vector2(0, -1 + uniform(-.1, .1))
+                vector = pygame.math.Vector2(uniform(-.3, .3), -1)
             else:
-                vector = pygame.math.Vector2(0, 1 + uniform(-.1, .1))
+                vector = pygame.math.Vector2(uniform(-.3, .3), 1)
 
             self.attack_time = self.weapon.capability
 

@@ -221,9 +221,6 @@ class Armor(Loot):
             self.deletion = True
 
 
-# TODO implement armor functionality
-
-
 class Helmet(Armor):
     width = 3
 
