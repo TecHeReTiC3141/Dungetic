@@ -19,7 +19,7 @@ phys_eps = .15
 
 game_cycle = True
 
-dung_length, dung_width = map(int, input('Введите длину и ширину подземелья: ').split())
+dung_length, dung_width = randint(5, 10), randint(5, 10)
 
 curr_room = randint(1, dung_width * dung_length)
 rooms = {}
