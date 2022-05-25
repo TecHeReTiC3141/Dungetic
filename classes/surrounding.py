@@ -41,7 +41,12 @@ class Wall:
                                            max(width - 10, 10), max(height - 10, 10))
         self.outer_phys_rect = pygame.Rect(x - 10, y - 10, width + 20, height + 20)
         self.visible_zone = pygame.Surface((width, height))
+        self.sprite = pygame.Surface((width, height))
         self.visible_zone.set_colorkey('Black')
+        self.sprite.set_colorkey('Black')
+        pygame.draw.rect(self.sprite, (70, 70, 70), (0, 0, self.width, self.height), border_radius=8)
+
+        self.mask = pygame.mask.from_surface(self.sprite)
         self.collised = collised
         self.movable = movable
         super().__init__(*args)
@@ -49,9 +54,9 @@ class Wall:
     def draw_object(self, display: pygame.Surface):
 
         # pygame.draw.rect(display, ('#CCCCCC'), self.outer_phys_rect)
-        pygame.draw.rect(self.visible_zone, (70, 70, 70), (0, 0, self.width, self.height), border_radius=8)
+        pygame.draw.rect(self.sprite, (70, 70, 70), (0, 0, self.width, self.height), border_radius=8)
 
-        display.blit(self.visible_zone, self.cur_rect)
+        display.blit(self.sprite, self.cur_rect)
         # pygame.draw.rect(display, ('#AAAAAA'), self.inner_phys_rect)
 
     def collide(self, entities: list[Heretic], direction: str, walls_list: list):
@@ -160,15 +165,19 @@ class Vase(Wall, Breakable, Container):
 
     def __init__(self, x, y, width, height, collised=False, movable=False, health=120, container=None):
         super().__init__(x, y, width, height, collised, movable, health, container)
+
         self.sprite = pygame.image.load('../images/surroundings/Vase1.png').convert_alpha()
+        self.visible_zone = pygame.Surface(self.sprite.get_size())
+
+        self.mask = pygame.mask.from_surface(self.sprite)
         self.cur_rect.update(*self.cur_rect.topleft, *self.sprite.get_size())
         self.sprite.set_colorkey('#FFFFFF')
         self.visible_zone.set_colorkey('White')
 
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill('#FFFFFF')
+        self.visible_zone.blit(self.sprite, (0, 0))
         display.blit(self.visible_zone, self.cur_rect)
-        display.blit(self.sprite, self.cur_rect)
         return self.visible_zone
 
 
@@ -179,6 +188,8 @@ class Crate(Vase):
         super().__init__(x, y, width, height, collised,
                          movable, health, container)
         self.sprite = pygame.transform.scale(pygame.image.load('../images/surroundings/crate.png'), (width, height))
+        self.visible_zone = pygame.Surface(self.sprite.get_size())
+        self.visible_zone.set_colorkey('White')
         self.cur_rect.update(*self.cur_rect.topleft, width, height)
 
 
@@ -257,7 +268,7 @@ class Room:
             logging.warning(f'{self.projectiles}')
 
         for proj in self.projectiles:
-            proj.draw_object(display)
+            proj.draw_object(surface)
 
         for decor in self.decors:
             if isinstance(decor, Decor):
@@ -289,11 +300,15 @@ class Room:
             proj.move()
             for obst in self.obst_list + self.containers:
                 if proj.rect.colliderect(obst.cur_rect):
-                    if obst.movable:
-                        obst.cur_rect.move_ip(proj.vector * proj.damage)
-                        obst.health -= proj.damage
-                    proj.collided = True
-                    break
+                    off_x = obst.cur_rect.x - proj.rect.x
+                    off_y = obst.cur_rect.y - proj.rect.y
+
+                    if proj.mask.overlap(obst.mask, (off_x, off_y)):
+                        if obst.movable:
+                            obst.cur_rect.move_ip(proj.vector * proj.damage)
+                            obst.health -= proj.damage
+                        proj.collided = True
+                        break
             for ent in self.entities_list:
                 if proj.rect.colliderect(ent.cur_rect):
                     ent.cur_rect.move_ip(proj.vector * proj.damage)

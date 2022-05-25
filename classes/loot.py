@@ -29,6 +29,11 @@ class Loot:
     def __copy__(self):
         pass
 
+class Note(Loot):
+
+    descr = ['Коричневый кусок пергамента', "На нем чтщто нацарапано"]
+    # TODO Implement notes with random text
+
 
 class Projectile:
     damage = 5
@@ -39,7 +44,12 @@ class Projectile:
     eps = 1e-3
     sprite.set_colorkey('black')
 
+
     def __init__(self, x, y, vector: pygame.math.Vector2, physics=False):
+        pygame.draw.circle(self.sprite, '#0000CA',
+                           (self.sprite.get_width() // 2, self.sprite.get_height() // 2),
+                           self.sprite.get_width() // 2)
+        self.mask = pygame.mask.from_surface(self.sprite)
         self.rect = self.sprite.get_rect(topleft=(x, y))
         self.vector = vector
         self.physics = physics
@@ -118,6 +128,7 @@ class LongRange(Weapon):
 
 class MagicBall(LongRange):
 
+    descr = ['Странный сферический предмет', "Излучает непонятную энергию"]
     missile = Projectile
     max_durability = 15
     sprite = {'right': pygame.image.load('../images/weapons/magic_ball/magic_ball.png'),
@@ -219,9 +230,6 @@ class Armor(Loot):
         if hasattr(entity, 'body_armor'):
             entity.body_armor = self
             self.deletion = True
-
-
-# TODO implement armor functionality
 
 
 class Helmet(Armor):

@@ -6,6 +6,8 @@ def generate_random_loot(classes: list[type], x, y, n=1):
 
 
 def generate_room(cur_ind, dung_width, dung_length) -> Room:
+
+    # TODO fix bug connected with enters in last room
     ways = sample(['down', 'right'], randint(1, 2))
     room_type = choice(['common', 'common', 'storage'])
     enters = []
@@ -71,7 +73,7 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
                  for j in range(randint(3, 5))]
 
     if not enters:
-        enters = [dir for dir in directions if dir not in ways]
+        enters = ['up', 'left']
 
     for entity in entities:
         entity.loot = generate_random_loot([SilverCoin, GoldCoin, Potion], 0, 0, n=randint(1, 2))

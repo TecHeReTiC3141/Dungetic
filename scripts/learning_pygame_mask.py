@@ -59,7 +59,7 @@ class Vase(Wall):
 class Point:
 
     def __init__(self, x, y):
-        self.surf = pygame.Surface((50, 50))
+        self.surf = pygame.Surface((40, 40))
 
         self.rect = self.surf.get_rect(topleft=(x, y))
         self.surf.set_colorkey('black')
@@ -67,7 +67,6 @@ class Point:
                                                self.surf.get_height() // 2), self.surf.get_height() // 2)
 
         self.mask = pygame.mask.from_surface(self.surf)
-
 
     def update(self):
         self.rect.center = pygame.mouse.get_pos()
@@ -88,46 +87,115 @@ class Point:
                 off_x = obst.x - self.rect.x
                 off_y = obst.y - self.rect.y
                 if self.mask.overlap(mask, (off_x, off_y)):
-
                     pygame.draw.circle(self.surf, 'green', (self.surf.get_width() // 2,
                                                             self.surf.get_height() // 2), self.surf.get_height() // 2)
                     break
 
 
+class Projectile(Point):
+
+    def __init__(self, x, y, dir, speed=7):
+        super().__init__(x, y)
+
+        if dir == 'left':
+            self.vector = pygame.math.Vector2(-1, uniform(-.3, .3))
+        elif dir == 'right':
+            self.vector = pygame.math.Vector2(1, uniform(-.3, .3))
+        elif dir == 'up':
+            self.vector = pygame.math.Vector2(uniform(-.3, .3), -1)
+        else:
+            self.vector = pygame.math.Vector2(uniform(-.3, .3), 1)
+        self.speed = speed
+
+    def update(self):
+        if self.vector.length():
+            norm = self.vector.normalize()
+            self.rect.move_ip(norm * self.speed)
+
+
+class Shooter:
+
+    def __init__(self, x, y):
+        self.surf = pygame.Surface((50, 50))
+        self.rect = self.surf.get_rect(topleft=(x, y))
+        self.dir = 'left'
+
+    def move(self):
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_a]:
+            self.dir = 'left'
+            self.rect.move_ip(-5, 0)
+        if keys[pygame.K_d]:
+            self.dir = 'right'
+            self.rect.move_ip(5, 0)
+
+        if keys[pygame.K_w]:
+            self.dir = 'up'
+            self.rect.move_ip(0, -5)
+
+        if keys[pygame.K_s]:
+            self.dir = 'down'
+            self.rect.move_ip(0, 5)
+
+    def draw(self, display: pygame.Surface):
+        pygame.draw.rect(self.surf, 'black', self.rect)
+        # if self.dir == 'up':
+        #     pygame.draw.rect()
+        display.blit(self.surf, self.rect)
+
+    def shoot(self) -> Projectile:
+        print('shot')
+        return Projectile(*self.rect.center, self.dir)
+
+
 walls = [Wall(randrange(100, 905, 5), randrange(100, 705, 5),
               width=randrange(50, 120, 5),
               height=randrange(50, 120, 5), movable=False) for
-        j in range(randint(5, 10))] + [Vase(x := randrange(100, 905, 5), y := randrange(100, 705, 5),
-              width=40, height=50, movable=True, ) for _ in range(randint(3, 5))]
+         j in range(randint(6, 10))] + [Vase(x := randrange(100, 905, 5), y := randrange(100, 705, 5),
+                                             width=40, height=50, movable=True, ) for _ in range(randint(5, 7))]
 
 
-alpha = pygame.transform.scale(pygame.image.load('../images/miscelanious/alpha.png'), (300, 300)).convert_alpha()
-alpha_pos = (100, 100)
-alpha_mask = pygame.mask.from_surface(alpha)
+# alpha = pygame.transform.scale(pygame.image.load('../images/miscellaneous/alpha.png'), (300, 300)).convert_alpha()
+# alpha_pos = (100, 100)
+# alpha_mask = pygame.mask.from_surface(alpha)
+
 
 clock = pygame.time.Clock()
-point = Point(randint(0, display_width), randint(0, display_height))
+# proj = Point(randint(0, display_width), randint(0, display_height))
+
+shooter = Shooter(randint(0, display_width), randint(0, display_height))
+
+projectiles = []
 
 while True:
 
     for event in pygame.event.get():
-        if event == pygame.QUIT:
+        if event.type == pygame.QUIT:
             pygame.quit()
+
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_e:
+                projectiles.append(shooter.shoot())
 
     display.fill('gray')
 
     for obst in walls:
         obst.draw_object(display)
 
-    off_x, off_y = alpha_pos[0] - point.rect.x, alpha_pos[1] - point.rect.y
-    if point.mask.overlap(alpha_mask, (off_x, off_y)):
-        pygame.draw.circle(point.surf, 'green', (point.surf.get_width() // 2,
-                                                point.surf.get_height() // 2), point.surf.get_height() // 2)
-    display.blit(alpha, alpha_pos)
-    point.draw(display)
+    # off_x, off_y = alpha_pos[0] - proj.rect.x, alpha_pos[1] - proj.rect.y
+    # if proj.mask.overlap(alpha_mask, (off_x, off_y)):
+    #     pygame.draw.circle(proj.surf, 'green', (proj.surf.get_width() // 2,
+    #                                              proj.surf.get_height() // 2), proj.surf.get_height() // 2)
+    # display.blit(alpha, alpha_pos)
+    for proj in projectiles:
+        proj.draw(display)
 
-    point.update()
-    point.collide(walls)
+        proj.update()
+        proj.collide(walls)
+
+    shooter.draw(display)
+    shooter.move()
 
     pygame.display.update()
     clock.tick(60)
