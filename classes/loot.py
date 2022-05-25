@@ -32,7 +32,7 @@ class Loot:
 class Note(Loot):
 
     descr = ['Коричневый кусок пергамента', "На нем чтщто нацарапано"]
-
+    # TODO Implement notes with random text
 
 
 class Projectile:
