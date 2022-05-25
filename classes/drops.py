@@ -13,7 +13,6 @@ class Drop:
         self.rect = self.sprite.get_rect(topleft=(x, y))
         self.active = False
         self.picked = False
-        self.autopicked = isinstance(self.loot, Money)
 
     def draw_object(self, display):
         pass
@@ -49,7 +48,7 @@ class LyingItem(Drop):
         for entity in entities:
             if self.rect.colliderect(entity.cur_rect):
                 self.active = True
-                if self.autopicked:
+                if self.loot.autopicked:
                     self.picked_up(entity)
                 elif mouse:
                     if self.rect.collidepoint(mouse):

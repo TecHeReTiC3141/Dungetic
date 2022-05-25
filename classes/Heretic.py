@@ -59,6 +59,7 @@ class Heretic:
 
         self.money = 0
         self.actual_money = 0
+        self.experience = 0
 
         self.manager = manager
 
