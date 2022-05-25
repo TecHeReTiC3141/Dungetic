@@ -9,7 +9,7 @@ class Heretic:
                for i in directions}
 
     # TODO try to transform entities into pygame.sprites
-    def __init__(self, x, y, width, height, health, direction, manager: GameManager,
+    def __init__(self, x, y, width, height, health, direction, manager: GameManager=None,
                  speed=6, target=None, weapon=Fist(), location=None, size=1.):
         self.width = width
         self.height = height
@@ -67,22 +67,22 @@ class Heretic:
         if self.attack_time <= 0:
             for entity in entities:
                 if entity.cur_rect.colliderect(self.attack_rect):
-                    damage = random.randint(self.weapon.damage - 2, self.weapon.damage + 2)
+                    damage = randint(self.weapon.damage - 2, self.weapon.damage + 2)
                     entity.actual_health = max(entity.actual_health -
                                                damage, 0)
                     entity.regeneration_delay = -1
                     dist_x, dist_y = map(round, get_rects_dir(self.cur_rect, entity.cur_rect)
                                          * self.weapon.knockback)
                     if self.manager.blood:
-                        blood_list.extend([Blood(random.randint(entity.cur_rect.left, entity.cur_rect.right),
-                                             random.randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
-                                             random.randint(10, 15), random.randint(10, 15), random.randint(50, 70),
-                                             type=random.choice(['down', 'up']), speed=5) for i in
+                        blood_list.extend([Blood(randint(entity.cur_rect.left, entity.cur_rect.right),
+                                             randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
+                                             randint(10, 15), randint(10, 15), randint(50, 70),
+                                             type=choice(['down', 'up']), speed=5) for i in
                                        range(self.weapon.damage // 4)])
                     if self.manager.show_damage:
-                        blood_list.append(DamageInd(random.randint(entity.cur_rect.left, entity.cur_rect.right),
-                                             random.randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
-                                                    damage, random.randint(50, 70), text_font))
+                        blood_list.append(DamageInd(randint(entity.cur_rect.left, entity.cur_rect.right),
+                                             randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
+                                                    damage, randint(50, 70), text_font))
 
                     entity.cur_rect.move_ip(dist_x, dist_y)
                     entity.active_zone.move_ip(dist_x, dist_y)
@@ -92,8 +92,6 @@ class Heretic:
 
                     self.weapon.hit_sound.play()
                     self.weapon.durab -= 1
-                    if self.weapon.durab <= 0:
-                        self.weapon = Fist()
 
             for obst in conts:
                 if obst.cur_rect.colliderect(self.attack_rect):
@@ -109,6 +107,21 @@ class Heretic:
 
             self.attack_time = self.weapon.capability
         return blood_list
+
+    def shoot(self) -> Projectile:
+        if isinstance(self.weapon, LongRange) and self.attack_time <= 0:
+            if self.direction == 'left':
+                vector = pygame.math.Vector2(-1, uniform(-.3, .3))
+            elif self.direction == 'right':
+                vector = pygame.math.Vector2(1 , + uniform(-.3, .3))
+            elif self.direction == 'up':
+                vector = pygame.math.Vector2(uniform(-.3, .3), -1)
+            else:
+                vector = pygame.math.Vector2(uniform(-.3, .3), 1)
+
+            self.attack_time = self.weapon.capability
+
+            return self.weapon.shoot(*self.get_center_coord(False), vector)
 
     def get_center_coord(self, ind):
         return (self.cur_rect.centerx // grid_size, self.cur_rect.centery // grid_size) if ind \
@@ -163,23 +176,37 @@ class Heretic:
         self.vector.x, self.vector.y = 0, 0
         self.active_zone.topleft = (self.cur_rect.left - self.width // 10,
                                     self.cur_rect.top + self.height // 10)
-        if self.direction == 'left':
-            self.attack_rect.update(self.cur_rect.left - self.weapon.hit_range - max(self.attack_time // 4, 0),
-                                    self.cur_rect.top + self.height // 5,
-                                    self.weapon.hit_range, self.height // 5 * 3)
+        if isinstance(self.weapon, Melee):
+            if self.direction == 'left':
+                self.attack_rect.update(self.cur_rect.left - self.weapon.hit_range - max(self.attack_time // 4, 0),
+                                        self.cur_rect.top + self.height // 5,
+                                        self.weapon.hit_range, self.height // 5 * 3)
 
-        elif self.direction == 'right':
-            self.attack_rect.update(self.cur_rect.right + max(self.attack_time // 4, 0),
-                                    self.cur_rect.top + self.height // 5,
-                                    self.weapon.hit_range, self.height // 5 * 3)
-        elif self.direction == 'up':
-            self.attack_rect.update(self.cur_rect.left + self.width // 5,
-                                    self.cur_rect.top - self.weapon.hit_range,
-                                    self.width // 5 * 3, self.weapon.hit_range)
-        elif self.direction == 'down':
-            self.attack_rect.update(self.cur_rect.left + self.width // 5,
-                                    self.cur_rect.top + self.height,
-                                    self.width // 5 * 3, self.weapon.hit_range)
+            elif self.direction == 'right':
+                self.attack_rect.update(self.cur_rect.right + max(self.attack_time // 4, 0),
+                                        self.cur_rect.top + self.height // 5,
+                                        self.weapon.hit_range, self.height // 5 * 3)
+            elif self.direction == 'up':
+                self.attack_rect.update(self.cur_rect.left + self.width // 5,
+                                        self.cur_rect.top - self.weapon.hit_range,
+                                        self.width // 5 * 3, self.weapon.hit_range)
+            elif self.direction == 'down':
+                self.attack_rect.update(self.cur_rect.left + self.width // 5,
+                                        self.cur_rect.top + self.height,
+                                        self.width // 5 * 3, self.weapon.hit_range)
+        elif isinstance(self.weapon, LongRange):
+            if self.direction == 'left':
+                self.attack_rect.update(self.cur_rect.left - self.weapon.sprite[self.direction].get_width() - max(self.attack_time // 4, 0),
+                                        self.cur_rect.top + self.height // 5,
+                                        self.weapon.sprite[self.direction].get_width(), self.height // 5 * 3)
+
+            elif self.direction == 'right':
+                self.attack_rect.update(self.cur_rect.right + max(self.attack_time // 4, 0),
+                                        self.cur_rect.top + self.height // 5,
+                                        self.weapon.sprite[self.direction].get_width(), self.height // 5 * 3)
+
+        if self.weapon.durab <= 0:
+            self.weapon = Fist()
 
         if not tick % 10 and is_safe:
             self.regenerate()

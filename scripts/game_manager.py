@@ -21,7 +21,8 @@ class GameManager:
         self.res = res
         self.full = False
         self.gamma = 1.
-        self.display = pygame.display.set_mode(self.res)
+        self.display = pygame.display.set_mode(res)
+        self.surf = pygame.Surface(res)
         pygame.display.set_caption(caption)
 
         self.is_paused = False
@@ -40,3 +41,5 @@ class GameManager:
             self.display = pygame.display.set_mode(self.res, pygame.FULLSCREEN)
         else:
             self.display = pygame.display.set_mode(self.res)
+
+        # TODO Think about correct screen resizing

@@ -41,7 +41,12 @@ class Wall:
                                            max(width - 10, 10), max(height - 10, 10))
         self.outer_phys_rect = pygame.Rect(x - 10, y - 10, width + 20, height + 20)
         self.visible_zone = pygame.Surface((width, height))
+        self.sprite = pygame.Surface((width, height))
         self.visible_zone.set_colorkey('Black')
+        self.sprite.set_colorkey('Black')
+        pygame.draw.rect(self.sprite, (70, 70, 70), (0, 0, self.width, self.height), border_radius=8)
+
+        self.mask = pygame.mask.from_surface(self.sprite)
         self.collised = collised
         self.movable = movable
         super().__init__(*args)
@@ -49,9 +54,9 @@ class Wall:
     def draw_object(self, display: pygame.Surface):
 
         # pygame.draw.rect(display, ('#CCCCCC'), self.outer_phys_rect)
-        pygame.draw.rect(self.visible_zone, (70, 70, 70), (0, 0, self.width, self.height), border_radius=8)
+        pygame.draw.rect(self.sprite, (70, 70, 70), (0, 0, self.width, self.height), border_radius=8)
 
-        display.blit(self.visible_zone, self.cur_rect)
+        display.blit(self.sprite, self.cur_rect)
         # pygame.draw.rect(display, ('#AAAAAA'), self.inner_phys_rect)
 
     def collide(self, entities: list[Heretic], direction: str, walls_list: list):
@@ -160,15 +165,19 @@ class Vase(Wall, Breakable, Container):
 
     def __init__(self, x, y, width, height, collised=False, movable=False, health=120, container=None):
         super().__init__(x, y, width, height, collised, movable, health, container)
+
         self.sprite = pygame.image.load('../images/surroundings/Vase1.png').convert_alpha()
+        self.visible_zone = pygame.Surface(self.sprite.get_size())
+
+        self.mask = pygame.mask.from_surface(self.sprite)
         self.cur_rect.update(*self.cur_rect.topleft, *self.sprite.get_size())
         self.sprite.set_colorkey('#FFFFFF')
         self.visible_zone.set_colorkey('White')
 
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill('#FFFFFF')
+        self.visible_zone.blit(self.sprite, (0, 0))
         display.blit(self.visible_zone, self.cur_rect)
-        display.blit(self.sprite, self.cur_rect)
         return self.visible_zone
 
 
@@ -179,13 +188,12 @@ class Crate(Vase):
         super().__init__(x, y, width, height, collised,
                          movable, health, container)
         self.sprite = pygame.transform.scale(pygame.image.load('../images/surroundings/crate.png'), (width, height))
+        self.visible_zone = pygame.Surface(self.sprite.get_size())
+        self.visible_zone.set_colorkey('White')
         self.cur_rect.update(*self.cur_rect.topleft, width, height)
 
 
 class MyNode:
-    '''
-    A class for nodes for pathfinding grid
-    '''
 
     def __init__(self, x, y, width, height):
         self.rect = pygame.Rect(x, y, width, height)
@@ -212,17 +220,20 @@ class MyNode:
 class Room:
 
     def __init__(self, obst_list: list[Wall], containers: list[Wall],
-                 entities_list: list[NPC], entrances, floor: str, type: str = 'common'):
+                 entities_list: list[NPC], projectiles: list[Projectile], entrances, floor: str, type: str = 'common'):
         self.obst_list = obst_list
         self.containers = containers
         self.drops = []
         self.decors = []
         self.entities_list = entities_list
+        self.projectiles = projectiles
+
         self.entrances = entrances
         self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
         self.floor = stone_floor if floor == 'stone' else wooden_floor
         self.visited = True
         self.type = type
+
         self.nodes = [
             [MyNode(j * grid_size, i * grid_size, grid_size, grid_size) for j in range(ceil(display_width / grid_size))]
             for i in range(ceil(display_height / grid_size))]
@@ -232,7 +243,6 @@ class Room:
         'grid for pathfinding'
         self.grid = Grid(matrix=[[self.nodes[i][j].status for j in range(ceil(display_width / grid_size))]
                                  for i in range(ceil(display_height / grid_size))])
-
 
     def draw_object(self, surface: pygame.Surface, tick: int, show_grid: bool):
         surface.blit(self.floor, (0, 0))
@@ -253,6 +263,13 @@ class Room:
 
         for entity in self.entities_list:
             entity.draw_object(surface)
+
+        if self.projectiles.count(None):
+            logging.warning(f'{self.projectiles}')
+
+        for proj in self.projectiles:
+            proj.draw_object(surface)
+
         for decor in self.decors:
             if isinstance(decor, Decor):
                 if isinstance(decor, Banner):
@@ -266,15 +283,40 @@ class Room:
             for node in node_l:
                 node.draw_object(surface)
 
+    def check_drops(self, mouse: tuple, entities: list[Heretic]):
+        for drop in self.drops:
+            drop.collide(entities, mouse)
+
     def physics(self, heretic: Heretic):
         for wall in self.obst_list + self.containers:
             wall.collide(self.entities_list + [heretic], 'hor', self.obst_list + self.containers)
             wall.collide(self.entities_list + [heretic], 'vert', self.obst_list + self.containers)
+
         for drop in self.drops:
             drop.collide([heretic])
 
-        if not self.is_safe:
+        # Fix bug connected with projectiles
+        for proj in self.projectiles:
+            proj.move()
+            for obst in self.obst_list + self.containers:
+                if proj.rect.colliderect(obst.cur_rect):
+                    off_x = obst.cur_rect.x - proj.rect.x
+                    off_y = obst.cur_rect.y - proj.rect.y
 
+                    if proj.mask.overlap(obst.mask, (off_x, off_y)):
+                        if obst.movable:
+                            obst.cur_rect.move_ip(proj.vector * proj.damage)
+                            obst.health -= proj.damage
+                        proj.collided = True
+                        break
+            for ent in self.entities_list:
+                if proj.rect.colliderect(ent.cur_rect):
+                    ent.cur_rect.move_ip(proj.vector * proj.damage)
+                    ent.actual_health -= proj.damage
+                    proj.collided = True
+                    break
+
+        if not self.is_safe:
             for node_l in range(len(self.nodes)):
                 for node in self.nodes[node_l]:
                     node.collide(self.obst_list + self.containers)
@@ -302,7 +344,7 @@ class Room:
         sorted_conts = []
         for cont in self.containers:
             if isinstance(cont, Breakable):
-                if cont.is_broken:
+                if cont.health <= 0:
                     loot = cont.get_broken()
                     for loo in loot:
                         if isinstance(cont, Container):
@@ -342,4 +384,5 @@ class Room:
         self.drops = list(filter(lambda i: not i.picked,
                                  self.drops))
 
-        logging.info(f'The room {self} was cleared')
+        self.projectiles = list(filter(lambda i: not i.collided,
+                                       self.projectiles))

@@ -1,6 +1,6 @@
 from classes.surrounding import *
 from scripts.algorithms_of_generation import generate_dungeons
-from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, Settings, ConsoleGui
+from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, ConsoleGui
 from scripts.Console import *
 
 polygon = generate_dungeons()
@@ -11,7 +11,7 @@ cur_inter = None
 
 game_manager = GameManager((display_width, display_height),
                            polygon, curr_room)
-heretic = Heretic(100, 100, 75, 100, 100, random.choice(directions), game_manager)
+heretic = Heretic(100, 100, 75, 100, 100, choice(directions), game_manager)
 
 player_manager = PlayerManager(heretic)
 
@@ -37,7 +37,7 @@ while game_cycle:
     for event in pygame.event.get():
         if event.type == wipe:
             cur_room.clear()
-            # print(heretic.collised_walls, heretic.speed_directions)
+            # print(heretic.collided_walls, heretic.speed_directions)
         elif event.type == pygame.QUIT:
             pygame.quit()
 
@@ -61,8 +61,13 @@ while game_cycle:
                     Inventory.open()
 
             elif event.key == pygame.K_e:
-                cur_room.decors.extend(heretic.hit(cur_room.entities_list,
+                if isinstance(heretic.weapon, Melee):
+                    cur_room.decors.extend(heretic.hit(cur_room.entities_list,
                             cur_room.containers))
+                elif isinstance(heretic.weapon, LongRange):
+                    proj = heretic.shoot()
+                    if proj is not None:
+                        cur_room.projectiles.append(proj)
 
             elif event.key == pygame.K_g:
                 draw_grid = ~draw_grid
@@ -74,26 +79,34 @@ while game_cycle:
                 ConsoleGui(console)
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse = list(pygame.mouse.get_pos())
+            print(mouse)
+            mouse[0] /= game_manager.res[0] / 1440
+            mouse[1] /= game_manager.res[1] / 900
+            mouse = tuple(mouse)
+            print(mouse)
             if isinstance(cur_inter, InventoryInter):
-                cur_inter.process(event.button, pygame.mouse.get_pos())
+                cur_inter.process(event.button, mouse)
             if event.button == 1:
                 if game_manager.state == 'main_menu':
-                    Menu.process(pygame.mouse.get_pos())
+                    Menu.process(mouse)
+                elif game_manager.state == 'main_game':
+                    cur_room.check_drops(mouse, [heretic])
 
     if game_manager.state == 'main_menu':
-        Menu.draw_object(game_manager.display)
+        Menu.draw_object(game_manager.surf)
 
     elif game_manager.state == 'settings':
         print('set')
 
     elif game_manager.state == 'main_game':
-        cur_room.draw_object(game_manager.display, tick, draw_grid)
-        heretic.draw_object(game_manager.display)
+        cur_room.draw_object(game_manager.surf, tick, draw_grid)
+        heretic.draw_object(game_manager.surf)
 
-        game_manager.display.blit(text_font.render(f'{game_manager.curr_room}', True, WHITE), (25, 25))
-        game_manager.display.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
+        game_manager.surf.blit(text_font.render(f'{game_manager.curr_room}', True, WHITE), (25, 25))
+        game_manager.surf.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
         if isinstance(cur_inter, Interface):
-            cur_inter.draw_object(game_manager.display)
+            cur_inter.draw_object(game_manager.surf)
 
         elif not game_manager.is_paused:
             heretic.move()
@@ -101,7 +114,10 @@ while game_cycle:
             cur_room.life(tick)
             cur_room.physics(heretic)
 
+    game_manager.display.blit(pygame.transform.scale(game_manager.surf, game_manager.res), (0, 0))
+
     pygame.display.update()
+
 
     clock.tick(60)
     tick += 1

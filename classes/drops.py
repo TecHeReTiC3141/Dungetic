@@ -8,7 +8,7 @@ class Drop:
         self.y = y
         self.sprite = pygame.transform.rotate(self.loot.sprite['left']
                                               if isinstance(self.loot.sprite, dict) else self.loot.sprite,
-                                              random.randint(0, 360))
+                                              randint(0, 360))
         self.sprite.set_colorkey('#FFFFFF')
         self.rect = self.sprite.get_rect(topleft=(x, y))
         self.active = False
@@ -44,14 +44,13 @@ class LyingItem(Drop):
         display.blit(self.sprite, self.rect)
         display.blit(self.background, self.rect.topleft)
 
-    def collide(self, entities: list[Heretic]):
+    def collide(self, entities: list[Heretic], mouse: tuple=None):
         self.active = False
         for entity in entities:
             if self.rect.colliderect(entity.cur_rect):
                 self.active = True
                 if self.autopicked:
                     self.picked_up(entity)
-                elif pygame.mouse.get_pressed()[0]:
-                    x, y = pygame.mouse.get_pos()
-                    if self.rect.collidepoint((x, y)):
+                elif mouse:
+                    if self.rect.collidepoint(mouse):
                         self.picked_up(entity)

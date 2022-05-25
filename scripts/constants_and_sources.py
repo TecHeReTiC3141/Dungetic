@@ -1,4 +1,4 @@
-import random
+from random import *
 from pathfinding.core.grid import Grid, Node
 from pathfinding.finder.a_star import AStarFinder
 from pathfinding.core.diagonal_movement import DiagonalMovement
@@ -19,9 +19,9 @@ phys_eps = .15
 
 game_cycle = True
 
-dung_length, dung_width = map(int, input('Введите длину и ширину подземелья: ').split())
+dung_length, dung_width = randint(5, 10), randint(5, 10)
 
-curr_room = random.randint(1, dung_width * dung_length)
+curr_room = randint(1, dung_width * dung_length)
 rooms = {}
 
 display_width, display_height = (1440, 900)
@@ -48,8 +48,8 @@ cursor_for_battle = pygame.transform.scale(cursor_for_battle,
                                            (cursor_for_battle.get_width() // 5, cursor_for_battle.get_height() // 5))
 inventory_image = pygame.image.load('../images/interfaces/inventory.png').convert_alpha()
 
-stone_floor = pygame.transform.scale(pygame.image.load('../images/stone_floor.jpg'), (display_width, display_height))
-wooden_floor = pygame.transform.scale(pygame.image.load('../images/wooden_floor.jpg'), (display_width, display_height))
+stone_floor = pygame.transform.scale(pygame.image.load('../images/surroundings/stone_floor.jpg'), (display_width, display_height))
+wooden_floor = pygame.transform.scale(pygame.image.load('../images/surroundings/wooden_floor.jpg'), (display_width, display_height))
 
 bloor = pygame.Surface((display_width, display_height))
 bloor.set_alpha(15)

@@ -37,12 +37,12 @@ class Console:
         if len(args) == 1:
             itemclass = str(args[0])
             assert len(self.player_manager.player.inventory) < 20, 'Inventory is full'
-            exec(f'self.player_manager.player.inventory.append({itemclass.capitalize()}())')
+            exec(f'self.player_manager.player.inventory.append({itemclass}())')
         elif len(args) == 2:
             itemclass, amount = str(args[0]), int(args[1])
             assert len(self.player_manager.player.inventory) < 20, 'Inventory is full'
             for i in range(min(amount, 20 - len(self.player_manager.player.inventory))):
-                exec(f'self.player_manager.player.inventory.append({itemclass.capitalize()}())')
+                exec(f'self.player_manager.player.inventory.append({itemclass}())')
 
     def regen(self, *args):
         assert len(args) <= 1, 'Too many args'
@@ -56,6 +56,5 @@ class Console:
         for entity in self.game_manager.dungeon[self.game_manager.curr_room].entities_list:
             if isinstance(entity, Hostile):
                 entity.actual_health = 0
-
 
 # TODO make up and implment some commands
