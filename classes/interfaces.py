@@ -74,6 +74,8 @@ class SimpleButton(Button):
         if self.rect.collidepoint(mouse):
             self.action()
 
+# TODO create a separate class for buttons which create gui
+
 
 class InterContainer(Button):
 

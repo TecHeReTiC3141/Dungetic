@@ -34,12 +34,12 @@ class Loot:
 class Note(Loot):
 
     descr = ['Коричневый кусок пергамента', "На нем чтщто нацарапано"]
-    # TODO Implement notes with random text
+    # TODO Implement notes with random text (loren ipsum)
 
 
 class Experience(Loot):
 
-    sprite = {'left': pygame.image.load('../images/Money/exp.png').convert_alpha()}
+    sprite = {'left': pygame.transform.scale2x(pygame.image.load('../images/Money/exp.png')).convert_alpha()}
     value = 5
     autopicked = True
 

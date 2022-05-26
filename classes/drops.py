@@ -1,5 +1,6 @@
 from classes.entities import *
 
+
 class Drop:
 
     def __init__(self, x, y, lootcls: type):
@@ -23,7 +24,6 @@ class Drop:
         self.picked = True
 
 
-
 class LyingItem(Drop):
 
     def __init__(self, x, y, lootcls: type):
@@ -32,18 +32,17 @@ class LyingItem(Drop):
         self.background.set_colorkey(BLACK)
         self.background.set_alpha(128)
 
-
     def draw_object(self, display):
         self.background.fill(BLACK)
         if self.active:
             # self.background.fill(WHITE)
             pygame.draw.circle(self.background, '#0d91b6',
-                           self.background.get_rect().center, self.rect.width // 2)
+                               self.background.get_rect().center, self.rect.width // 2)
 
         display.blit(self.sprite, self.rect)
         display.blit(self.background, self.rect.topleft)
 
-    def collide(self, entities: list[Heretic], mouse: tuple=None):
+    def collide(self, entities: list[Heretic], mouse: tuple = None):
         self.active = False
         for entity in entities:
             if self.rect.colliderect(entity.cur_rect):

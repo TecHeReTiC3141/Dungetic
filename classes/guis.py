@@ -123,6 +123,7 @@ class ConsoleGui(GUI):
         self.console.game_manager.is_paused = False
         print('closed')
 
+# TODO think about gui for players stats and skills improvement
 
 # manager = GameManager((720, 480), [], 0)
 # heretic = Heretic(100, 100, 100, 100, 100, 'left', manager)

@@ -348,7 +348,8 @@ class Room:
                     loot = cont.get_broken()
                     for loo in loot:
                         if isinstance(cont, Container):
-                            loo.rect.topleft = cont.cur_rect.topleft
+                            loo.rect.left = randint(cont.cur_rect.left, cont.cur_rect.centerx)
+                            loo.rect.top = randint(cont.cur_rect.top, cont.cur_rect.centery)
                             self.drops.append(loo)
                 else:
                     sorted_conts.append(cont)
@@ -359,6 +360,8 @@ class Room:
         for entity in self.entities_list:
             if entity.dead:
                 for loot in entity.loot:
+                    loot.rect.left = randint(entity.cur_rect.left, entity.cur_rect.right)
+                    loot.rect.top = randint(entity.cur_rect.top, entity.cur_rect.bottom)
                     if isinstance(loot, Drop):
                         self.drops.append(loot)
 
