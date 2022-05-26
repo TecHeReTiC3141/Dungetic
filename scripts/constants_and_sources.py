@@ -5,7 +5,7 @@ from pathfinding.core.diagonal_movement import DiagonalMovement
 from collections import *
 import PySimpleGUI as sg
 from scripts.Maths import *
-from log_sets import logging
+from scripts.log_sets import logging
 
 pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()

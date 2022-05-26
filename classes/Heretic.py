@@ -62,11 +62,11 @@ class Heretic:
 
         self.experience = 0
         self.level = 0
+        self.exp_points = 0
         self.skills = {
-            'speed': (0, 5),
-            'damage': (0, 1),
-            'resist': (0, 0.),
-
+            'speed': [0, 4],
+            'damage': [0, 1],
+            'resist': [0, 0.],
         }
 
         self.manager = manager
@@ -240,6 +240,11 @@ class Heretic:
 
         if self.actual_health <= 0:
             self.die()
+
+        if self.experience >= 20 * (self.level + 1):
+            self.level += 1
+            self.experience = 0
+            self.exp_points += max(self.level // 2, 1)
 
     def regenerate(self):
         if self.regeneration_delay == 0:

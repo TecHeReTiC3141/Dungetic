@@ -133,7 +133,7 @@ class Hostile(NPC):
         else:
             self.hostile_exist()
 
-        if len(self.path) > 15:
+        if len(self.path) > randint(15, 20):
             self.state = 'neutral'
         else:
             self.state = 'hostile'
