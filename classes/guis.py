@@ -123,6 +123,34 @@ class ConsoleGui(GUI):
         self.console.game_manager.is_paused = False
         print('closed')
 
+
+class SkillsGui(GUI):
+
+    def __init__(self, manager: GameManager, player: Heretic):
+        self.player = player
+        self.manager = manager
+
+        sg.theme('DarkAmber')
+        sg.set_options(font='Frank 12')
+
+        self.stats_table = [[k, v[0], v[1]] for k, v in player.skills]
+
+        self.layout = [
+            [sg.Text('Player stats and improvement', font='Frank 20')],
+            [sg.HorizontalSeparator()],
+            [sg.Table(values=self.stats_table, headings=['Skill', 'Level', 'Value'])],
+            [sg.Frame(f'Level {player.level}', layout=[
+                    [sg.ProgressBar(max_value=20 * (player.level + 1), orientation='h', key='progress'),]
+                ])
+             ]
+        ]
+
+        self.window = sg.Window('Stats', layout=self.layout, element_justification='left')
+        self.run()
+
+    def run(self):
+        pass
+
 # TODO think about gui for players stats and skills improvement
 
 # manager = GameManager((720, 480), [], 0)

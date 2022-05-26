@@ -56,12 +56,9 @@ class ChangeState(Button):
         self.manager = manager
         self.state = state
 
-    def update(self, mouse):
+    def update(self, mouse: tuple):
         if self.rect.collidepoint(mouse):
             self.manager.state = self.state
-            if self.state == 'settings':
-                Settings(self.manager)
-                self.manager.state = 'main_menu'
 
 
 class SimpleButton(Button):
@@ -70,9 +67,21 @@ class SimpleButton(Button):
         super().__init__(x, y, width, height, text, color)
         self.action = action
 
-    def update(self, mouse, ):
+    def update(self, mouse: tuple, ):
         if self.rect.collidepoint(mouse):
             self.action()
+
+
+class CreateWindow(ChangeState):
+
+    def __init__(self, x, y, width, height, text, color, manager: GameManager, window: type, state: str = None):
+        super().__init__(x, y, width, height, text, color, manager, state)
+        self.wind = window
+
+    def update(self, mouse: tuple):
+        if self.rect.collidepoint(mouse):
+            self.wind(self.manager)
+
 
 # TODO create a separate class for buttons which create gui
 
@@ -103,10 +112,9 @@ class InterContainer(Button):
     def update(self, mouse: tuple, entity: Heretic = None, action_type: int = None):
 
         if isinstance(self.content, Loot) and self.active \
-            and self.rect.collidepoint(mouse):
+                and self.rect.collidepoint(mouse):
             if action_type == 1:
                 return self.content
-
 
             elif action_type == 3:
                 if type(self.ind) == int:
@@ -151,7 +159,6 @@ class InventoryInter(Interface):
         self.weapon_cont = InterContainer(1015, 275, 120, 120, ind='weapon')
         self.helmet_cont = InterContainer(1135, 138, 120, 120, ind='helmet')
         self.armor_cont = InterContainer(1137, 278, 120, 120, ind='armor')
-
 
     def alt_draw_object(self, display):
         self.fill((184, 173, 118))
@@ -248,7 +255,6 @@ class InventoryInter(Interface):
         self.helmet_cont.content = self.entity.head_armor
         self.armor_cont.content = self.entity.body_armor
 
-
     def process(self, action_type, mouse):
         for container in self.containers + \
                          [self.armor_cont, self.weapon_cont, self.helmet_cont]:
@@ -266,8 +272,8 @@ class InventoryInter(Interface):
                 break
 
         filled = [i for i in range(len(self.containers))
-                         if isinstance(self.containers[i].content, Loot)
-                         and not self.containers[i].content.deletion]
+                  if isinstance(self.containers[i].content, Loot)
+                  and not self.containers[i].content.deletion]
         if filled:
             ma_filled = max(filled)
             for i, el in enumerate(self.entity.inventory[ma_filled + 1:], start=ma_filled + 1):
@@ -324,8 +330,8 @@ class MainMenu(Interface):
         self.manager = manager
         play = ChangeState(display_width // 3, display_height // 2, 250, 80, 'Start',
                            GREEN, manager, 'main_game')
-        settings = ChangeState(display_width // 3, display_height // 2 + 100, 250, 80, 'Settings',
-                               BLUE, manager, 'settings')
+        settings = CreateWindow(display_width // 3, display_height // 2 + 100, 250, 80, 'Settings',
+                               BLUE, manager, Settings)
         ex = SimpleButton(display_width // 3, display_height // 2 + 200, 250, 80, 'Exit',
                           RED, exit)
         self.button_list = [play, settings, ex]

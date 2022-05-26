@@ -59,7 +59,15 @@ class Heretic:
 
         self.money = 0
         self.actual_money = 0
+
         self.experience = 0
+        self.level = 0
+        self.skills = {
+            'speed': (0, 5),
+            'damage': (0, 1),
+            'resist': (0, 0.),
+
+        }
 
         self.manager = manager
 
@@ -302,6 +310,3 @@ class PlayerManager(GameManager):
 
     def __init__(self, player: Heretic):
         self.player = player
-
-
-
