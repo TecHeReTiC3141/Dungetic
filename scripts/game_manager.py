@@ -1,6 +1,6 @@
 import pygame
 
-from scripts.constants_and_sources import display_width, display_height
+from scripts.constants_and_sources import display_width, display_height, stone_floor
 
 class GameManager:
     possible_states = ['main_menu',
@@ -22,6 +22,7 @@ class GameManager:
         self.full = False
         self.gamma = 1.
         self.display = pygame.display.set_mode(res)
+        self.display.blit(stone_floor, (0, 0))
         self.surf = pygame.Surface(res)
         pygame.display.set_caption(caption)
 

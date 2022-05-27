@@ -74,13 +74,15 @@ class SimpleButton(Button):
 
 class CreateWindow(ChangeState):
 
-    def __init__(self, x, y, width, height, text, color, manager: GameManager, window: type, state: str = None):
+    def __init__(self, x, y, width, height, text, color, manager: GameManager,
+                 window: type, state: str = None, **kwargs):
         super().__init__(x, y, width, height, text, color, manager, state)
         self.wind = window
+        self.kwargs = kwargs
 
     def update(self, mouse: tuple):
         if self.rect.collidepoint(mouse):
-            self.wind(self.manager)
+            self.wind(self.manager, **self.kwargs)
 
 
 # TODO create a separate class for buttons which create gui
@@ -146,9 +148,9 @@ class InventoryInter(Interface):
         super().__init__()
         self.entity = entity
         skills = ChangeState(display_width // 4, display_height // 6, 250, 80, 'Skills',
-                             GREEN, manager, 'inventory_skills')
-        stats = ChangeState(display_width // 4, display_height // 6 + 90, 250, 80, 'Stats',
-                            RED, manager, 'inventory_stats')
+                             GREEN, manager, 'main_game')
+        stats = CreateWindow(display_width // 4, display_height // 6 + 90, 250, 80, 'Stats',
+                            RED, manager, SkillsGui, 'inventory_stats', player=entity)
         self.manager = manager
         self.button_list = [skills, stats]
         self.containers = [InterContainer(i, j, 110, 110, ind=i + j * 5)
@@ -285,6 +287,11 @@ class InventoryInter(Interface):
                     isinstance(self.containers[i], Loot) \
                     and self.containers[i].content.deletion:
                 self.entity.inventory[i] = None
+
+        for button in self.button_list:
+            button.update(mouse)
+
+        # TODO add functionality of buttons in the inventory
 
     def close(self):
         self.entity.inventory = list(filter(lambda i: i is not None,

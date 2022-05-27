@@ -126,6 +126,12 @@ class ConsoleGui(GUI):
 
 class SkillsGui(GUI):
 
+    descr = {
+        'speed': 'How fast can you run',
+        'damage': 'Increases player damage',
+        'resist': 'Adds natural armor'
+    }
+
     def __init__(self, manager: GameManager, player: Heretic):
         self.player = player
         self.manager = manager
@@ -147,10 +153,11 @@ class SkillsGui(GUI):
                 ],
                       ),
              sg.Frame('Improve yourself!', layout=[
-                [sg.Spin(list(self.player.skills.keys()), key='-SKILLS-'), sg.Button('Improve')]
+                [sg.Spin(list(self.player.skills.keys()), text_color='black', key='-SKILLS-', readonly=True, background_color='black'),
+                 sg.Button('Improve')],
+                [sg.Output(key='-SKILLDESCR-', expand_x=True)]
             ])
             ],
-
         ]
 
         self.window = sg.Window('Stats', layout=self.layout, element_justification='left', finalize=True)
@@ -160,37 +167,48 @@ class SkillsGui(GUI):
     def run(self):
 
         while True:
-            event, values = self.window.read()
+            event, values = self.window.read(timeout=15)
+            try:
 
-            if event == sg.WIN_CLOSED:
-                self.window.close()
-                break
+                if event == sg.WIN_CLOSED:
+                    self.window.close()
+                    break
 
-            elif event == 'Improve':
-                if self.player.exp_points > 0:
-                    self.player.exp_points -= 1
-                    self.window['-REMAIN-'].update(f'Points remaining: {self.player.exp_points}')
+                elif event == 'Improve':
+                    if self.player.exp_points > 0:
+                        self.player.exp_points -= 1
+                        self.window['-REMAIN-'].update(f'Points remaining: {self.player.exp_points}')
 
-                    skill = values['-SKILLS-']
-                    self.player.skills[skill][0] += 1
-                    if skill == 'damage':
-                        self.player.skills[skill][1] += .1 * (self.player.skills[skill][0] // 3 + 1)
-                    elif skill == 'speed':
-                        self.player.skills[skill][1] += .4 * (self.player.skills[skill][0] // 5 + 1)
-                    elif skill == 'resist':
-                        self.player.skills[skill][1] += .1 * (self.player.skills[skill][0] // 3 + 1)
+                        skill = values['-SKILLS-']
+                        self.player.skills[skill][0] += 1
+                        if skill == 'damage':
+                            self.player.skills[skill][1] += .1 * (self.player.skills[skill][0] // 3 + 1)
+                        elif skill == 'speed':
+                            self.player.skills[skill][1] += .4 * (self.player.skills[skill][0] // 5 + 1)
+                        elif skill == 'resist':
+                            self.player.skills[skill][1] += .1 * (self.player.skills[skill][0] // 3 + 1)
 
-                    self.stats_table = [[k, round(v[0], 2), round(v[1], 2)] for k, v in self.player.skills.items()]
+                        self.stats_table = [[k, round(v[0], 2), round(v[1], 2)] for k, v in self.player.skills.items()]
 
-                    self.window['-DATA-'].update(values=self.stats_table)
+                        self.window['-DATA-'].update(values=self.stats_table)
 
 
-                print(values)
+                    print(values)
+                self.window['-SKILLDESCR-'].update(self.descr[values['-SKILLS-']])
+            except Exception as e:
+                layout = [
+                    [sg.Text(f'It seems that an error happened: {e}')],
+                    [sg.OK('Kill up?'), sg.No('Or continue')]
+                ]
+                window = sg.Window('Error', layout)
+                ev, values = window.read()
+                window.close()
+                assert ev != 'Kill up?', str(e)
 
 
 
 # TODO think about gui for players stats and skills improvement
-#
+# #
 # manager = GameManager((720, 480), [], 0)
 # heretic = Heretic(100, 100, 100, 100, 100, 'left', manager)
 # heretic.exp_points = 10

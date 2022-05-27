@@ -154,7 +154,7 @@ class Hostile(NPC):
 
                     damage = randint(self.weapon.damage - 2, self.weapon.damage + 2)
                     if isinstance(target.head_armor, Helmet):
-                        damage *= 1 - target.head_armor.persist
+                        damage *= 1 - target.head_armor.persist - target.skills['resist'][1]
 
                     if target.manager.show_damage:
                         blood_list.append(DamageInd(randint(target.cur_rect.left, target.cur_rect.right),

@@ -96,9 +96,6 @@ while game_cycle:
     if game_manager.state == 'main_menu':
         Menu.draw_object(game_manager.surf)
 
-    elif game_manager.state == 'settings':
-        print('set')
-
     elif game_manager.state == 'main_game':
         cur_room.draw_object(game_manager.surf, tick, draw_grid)
         heretic.draw_object(game_manager.surf)

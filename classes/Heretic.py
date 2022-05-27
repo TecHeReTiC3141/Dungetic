@@ -76,7 +76,8 @@ class Heretic:
         if self.attack_time <= 0:
             for entity in entities:
                 if entity.cur_rect.colliderect(self.attack_rect):
-                    damage = randint(self.weapon.damage - 2, self.weapon.damage + 2)
+                    damage = randint(self.weapon.damage - 2, self.weapon.damage + 2) * \
+                             self.skills['damage'][1]
                     entity.actual_health = max(entity.actual_health -
                                                damage, 0)
                     entity.regeneration_delay = -1
@@ -179,7 +180,7 @@ class Heretic:
 
         self.prev_rect = self.cur_rect.copy()
         if self.vector.length():
-            norm_dir = self.vector.normalize() * self.speed
+            norm_dir = self.vector.normalize() * self.skills['speed'][1]
             self.cur_rect.move_ip(round(norm_dir.x), round(norm_dir.y))
             self.attack_rect.move_ip(round(norm_dir.x), round(norm_dir.y))
         self.vector.x, self.vector.y = 0, 0
