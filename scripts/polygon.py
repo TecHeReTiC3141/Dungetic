@@ -1,8 +1,8 @@
-import PySimpleGUI as sg
-import time
+from scripts.algorithms_of_generation import *
 
-mylist = [1,2,3,4,5,6,7,8]
+dung_length, dung_width = randint(3, 7), randint(3, 7)
+print(dung_width, dung_length)
+dung_map = create_dung_map(dung_width, dung_length)
 
-for i, item in enumerate(mylist):
-    sg.one_line_progress_meter('This is my progress meter!', i+1, len(mylist), '-key-')
-    time.sleep(1)
+for i in dung_map:
+    print(*[str(j.type).ljust(3) for j in i])

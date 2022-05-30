@@ -4,6 +4,24 @@ from classes.surrounding import *
 def generate_random_loot(classes: list[type], x, y, n=1):
     return [LyingItem(x, y, choice(classes)) for i in range(n)]
 
+class DungNode:
+
+    def __init__(self, type: int):
+        self.neighbours = []
+        self.comp = -1
+        self.type = type
+
+
+def create_dung_map(dung_width, dung_length) -> list[list[DungNode]]:
+
+    room_types = [0, 1, 1, 1, 2]
+    return [[DungNode(-1) for i in range(dung_length + 2)]] +\
+           [[DungNode(-1)] + [DungNode(choice(room_types)) for j in range(dung_length)
+                                                                   ] + [DungNode(-1)] for row in range(dung_width)] \
+        + [[DungNode(-1) for i in range(dung_length + 2)]]
+
+
+
 
 def generate_room(cur_ind, dung_width, dung_length) -> Room:
 
