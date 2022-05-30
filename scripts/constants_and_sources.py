@@ -5,7 +5,7 @@ from pathfinding.core.diagonal_movement import DiagonalMovement
 from collections import *
 import PySimpleGUI as sg
 from scripts.Maths import *
-from log_sets import logging
+from scripts.log_sets import logging
 
 pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()
@@ -21,7 +21,7 @@ game_cycle = True
 
 dung_length, dung_width = randint(5, 10), randint(5, 10)
 
-curr_room = randint(1, dung_width * dung_length)
+
 rooms = {}
 
 display_width, display_height = (1440, 900)

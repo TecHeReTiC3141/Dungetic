@@ -8,6 +8,7 @@ class Loot:
     sprite = {}
     descr = []
     deletion = False
+    autopicked = False
 
     def draw_object(self, display: pygame.Surface, x=0, y=0, direct='right', in_inventory=False):
         try:
@@ -29,10 +30,22 @@ class Loot:
     def __copy__(self):
         pass
 
+
 class Note(Loot):
 
     descr = ['Коричневый кусок пергамента', "На нем чтщто нацарапано"]
-    # TODO Implement notes with random text
+    # TODO Implement notes with random text (loren ipsum)
+
+
+class Experience(Loot):
+
+    sprite = {'left': pygame.transform.scale2x(pygame.image.load('../images/Money/exp.png')).convert_alpha()}
+    value = 5
+    autopicked = True
+
+    def picked_up(self, entity):
+        entity.experience += self.value
+        self.value = 0
 
 
 class Projectile:
@@ -167,6 +180,7 @@ class Knife(Melee):
 class Money(Loot):
     sprite = None
     value = None
+    autopicked = True
 
     def picked_up(self, entity):
         if hasattr(entity, 'loot'):

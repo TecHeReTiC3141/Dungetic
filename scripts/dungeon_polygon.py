@@ -4,6 +4,7 @@ from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, Co
 from scripts.Console import *
 
 polygon = generate_dungeons()
+curr_room = choice(list(polygon.keys()))
 
 tick = 0
 draw_grid = False
@@ -96,15 +97,13 @@ while game_cycle:
     if game_manager.state == 'main_menu':
         Menu.draw_object(game_manager.surf)
 
-    elif game_manager.state == 'settings':
-        print('set')
-
     elif game_manager.state == 'main_game':
         cur_room.draw_object(game_manager.surf, tick, draw_grid)
         heretic.draw_object(game_manager.surf)
 
         game_manager.surf.blit(text_font.render(f'{game_manager.curr_room}', True, WHITE), (25, 25))
         game_manager.surf.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
+        game_manager.surf.blit(text_font.render(f'{heretic.experience}', True, 'green'), (25, 85))
         if isinstance(cur_inter, Interface):
             cur_inter.draw_object(game_manager.surf)
 

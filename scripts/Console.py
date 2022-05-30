@@ -56,5 +56,3 @@ class Console:
         for entity in self.game_manager.dungeon[self.game_manager.curr_room].entities_list:
             if isinstance(entity, Hostile):
                 entity.actual_health = 0
-
-# TODO make up and implment some commands

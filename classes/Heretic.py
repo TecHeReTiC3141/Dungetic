@@ -60,6 +60,15 @@ class Heretic:
         self.money = 0
         self.actual_money = 0
 
+        self.experience = 0
+        self.level = 0
+        self.exp_points = 0
+        self.skills = {
+            'speed': [0, 4],
+            'damage': [0, 1],
+            'resist': [0, 0.],
+        }
+
         self.manager = manager
 
     def hit(self, entities: list = None, conts: list = None) -> list:
@@ -67,7 +76,8 @@ class Heretic:
         if self.attack_time <= 0:
             for entity in entities:
                 if entity.cur_rect.colliderect(self.attack_rect):
-                    damage = randint(self.weapon.damage - 2, self.weapon.damage + 2)
+                    damage = randint(self.weapon.damage - 2, self.weapon.damage + 2) * \
+                             self.skills['damage'][1]
                     entity.actual_health = max(entity.actual_health -
                                                damage, 0)
                     entity.regeneration_delay = -1
@@ -170,7 +180,7 @@ class Heretic:
 
         self.prev_rect = self.cur_rect.copy()
         if self.vector.length():
-            norm_dir = self.vector.normalize() * self.speed
+            norm_dir = self.vector.normalize() * self.skills['speed'][1]
             self.cur_rect.move_ip(round(norm_dir.x), round(norm_dir.y))
             self.attack_rect.move_ip(round(norm_dir.x), round(norm_dir.y))
         self.vector.x, self.vector.y = 0, 0
@@ -231,6 +241,11 @@ class Heretic:
 
         if self.actual_health <= 0:
             self.die()
+
+        if self.experience >= 20 * (self.level + 1):
+            self.level += 1
+            self.experience = 0
+            self.exp_points += max(self.level // 2, 1)
 
     def regenerate(self):
         if self.regeneration_delay == 0:
@@ -301,6 +316,3 @@ class PlayerManager(GameManager):
 
     def __init__(self, player: Heretic):
         self.player = player
-
-
-

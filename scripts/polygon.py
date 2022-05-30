@@ -1,8 +1,8 @@
-def to_base(n, base):
-    res = ''
-    while n:
-        res = str(n % base) + res
-        n //= base
-    return res
+import PySimpleGUI as sg
+import time
 
-print(to_base(3 ** 14 + 3 ** 8 - 5, 3))
+mylist = [1,2,3,4,5,6,7,8]
+
+for i, item in enumerate(mylist):
+    sg.one_line_progress_meter('This is my progress meter!', i+1, len(mylist), '-key-')
+    time.sleep(1)

@@ -124,10 +124,98 @@ class ConsoleGui(GUI):
         print('closed')
 
 
+class SkillsGui(GUI):
+
+    descr = {
+        'speed': 'How fast can you run',
+        'damage': 'Increases player damage',
+        'resist': 'Adds natural armor'
+    }
+
+    def __init__(self, manager: GameManager, player: Heretic):
+        self.player = player
+        self.manager = manager
+
+        sg.theme('DarkAmber')
+        sg.set_options(font='Frank 12')
+
+        self.stats_table = [[k, v[0], v[1]] for k, v in player.skills.items()]
+
+        self.layout = [
+            [sg.Text('Player stats and improvement', font='Frank 20')],
+            [sg.HorizontalSeparator()],
+            [sg.Table(values=self.stats_table, headings=['Skill', 'Level', 'Value'], key='-DATA-', expand_x=True)],
+            [sg.Frame(f'Level {player.level}', layout=[
+                    [sg.ProgressBar(max_value=20 * (player.level + 1),
+                                    orientation='h', key='-PROGRESS-', size=(10, 8)),
+                     sg.Text(f'{self.player.experience} / {20 * (player.level + 1)}')],
+                    [sg.Text(f'Points remaining: {self.player.exp_points}', key='-REMAIN-')]
+                ],
+                      tooltip=f'{20 * (player.level + 1) - self.player.experience} to the next level'),
+             sg.Frame('Improve yourself!', layout=[
+                [sg.Spin(list(self.player.skills.keys()), text_color='black', key='-SKILLS-',
+                         readonly=True, background_color='black', tooltip=self.descr['speed']),
+                 sg.Button('Improve')],
+                [sg.Output(key='-SKILLDESCR-', s=(25, 4))]
+            ])
+            ],
+        ]
+
+        self.window = sg.Window('Stats', layout=self.layout, element_justification='left', finalize=True)
+        self.window['-PROGRESS-'].update(self.player.experience)
+        self.run()
+
+    def run(self):
+
+        while True:
+            event, values = self.window.read(timeout=15)
+            try:
+
+                if event == sg.WIN_CLOSED:
+                    self.window.close()
+                    break
+
+                elif event == 'Improve':
+                    if self.player.exp_points > 0:
+                        self.player.exp_points -= 1
+                        self.window['-REMAIN-'].update(f'Points remaining: {self.player.exp_points}')
+
+                        skill = values['-SKILLS-']
+                        self.player.skills[skill][0] += 1
+                        if skill == 'damage':
+                            self.player.skills[skill][1] += .1 * (self.player.skills[skill][0] // 3 + 1)
+                        elif skill == 'speed':
+                            self.player.skills[skill][1] += .4 * (self.player.skills[skill][0] // 5 + 1)
+                        elif skill == 'resist':
+                            self.player.skills[skill][1] += .1 * (self.player.skills[skill][0] // 3 + 1)
+
+                        self.stats_table = [[k, round(v[0], 2), round(v[1], 2)] for k, v in self.player.skills.items()]
+
+                        self.window['-DATA-'].update(values=self.stats_table)
+
+
+                    print(values)
+                self.window['-SKILLS-'].set_tooltip(self.descr[values['-SKILLS-']], )
+                self.window['-SKILLDESCR-'].update(self.descr[values['-SKILLS-']])
+                self.window.refresh()
+            except Exception as e:
+                layout = [
+                    [sg.Text(f'It seems that an error happened: {e}')],
+                    [sg.OK('Kill up?'), sg.No('Or continue')]
+                ]
+                window = sg.Window('Error', layout)
+                ev, values = window.read()
+                window.close()
+                assert ev != 'Kill up?', str(e)
+
+
+
+# TODO think about gui for players stats and skills improvement
+# #
 # manager = GameManager((720, 480), [], 0)
 # heretic = Heretic(100, 100, 100, 100, 100, 'left', manager)
+# heretic.exp_points = 10
+# heretic.level = 5
+# heretic.experience = 75
 # player_manager = PlayerManager(heretic)
-# console = Console(manager, player_manager)
-#
-# gui = ConsoleGui(console)
-# gui.run()
+# stats = SkillsGui(manager, heretic)
