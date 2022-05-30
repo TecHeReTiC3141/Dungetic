@@ -4,6 +4,7 @@ from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, Co
 from scripts.Console import *
 
 polygon = generate_dungeons()
+curr_room = choice(list(polygon.keys()))
 
 tick = 0
 draw_grid = False

@@ -311,7 +311,7 @@ class MapInter(Interface):
         for j in range(90, 90 + dung_width * 80, 80):
             for i in range(90, 90 + dung_length * 80, 80):
                 r_ind = (i - 90) // 80 + (j - 90) // 80 * dung_length + 1
-                if rooms[r_ind].visited:
+                if rooms.get(r_ind) is not None and rooms[r_ind].visited:
                     if rooms[r_ind].type == 'common':
                         pygame.draw.rect(display, (240, 240, 240), (i, j, 45, 35))
                     elif rooms[r_ind].type == 'storage':

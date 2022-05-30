@@ -21,7 +21,7 @@ game_cycle = True
 
 dung_length, dung_width = randint(5, 10), randint(5, 10)
 
-curr_room = randint(1, dung_width * dung_length)
+
 rooms = {}
 
 display_width, display_height = (1440, 900)

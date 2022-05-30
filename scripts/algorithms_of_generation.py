@@ -15,7 +15,8 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
     cont = []
     entities = NPC.produce_NPC(randint(1, 3)) \
                + Hostile.produce_Hostiles(randint(2, 3))
-    if cur_ind > dung_length and 'down' in rooms[cur_ind - dung_length].entrances:
+    if isinstance(rooms.get(cur_ind - dung_length, None), Room) and cur_ind > dung_length\
+            and 'down' in rooms[cur_ind - dung_length].entrances:
         walls.append(Wall(0, 0, width=randint(display_width // 2 - 250, display_width // 2 - 100),
                           height=randint(50, 100)))
         walls.append(Wall(x := randint(display_width // 2 + 150, display_width // 2 + 220), y := 0,
@@ -24,7 +25,8 @@ def generate_room(cur_ind, dung_width, dung_length) -> Room:
     else:
         walls.append(Wall(0, 0, width := display_width, height := randint(50, 100)))
 
-    if cur_ind % dung_length != 1 and 'right' in rooms[cur_ind - 1].entrances:
+    if isinstance(rooms.get(cur_ind - 1, None), Room) and \
+            cur_ind % dung_length != 1 and 'right' in rooms[cur_ind - 1].entrances:
         walls.append(Wall(0, 0, width=randint(50, 100),
                           height=randint(display_height // 2 - 250, display_height // 2 - 100)))
         walls.append(Wall(0, y := randint(display_height // 2 + 150, display_height // 2 + 220),
@@ -90,5 +92,7 @@ def generate_dungeons() -> dict[int, Room]:
     for i in range(dung_width):
         for j in range(1, dung_length + 1):
             cur_ind = i * dung_length + j
-            rooms[cur_ind] = generate_room(cur_ind, dung_width, dung_length)
+            miss_room = randint(0, 5)
+            if miss_room:
+                rooms[cur_ind] = generate_room(cur_ind, dung_width, dung_length)
     return rooms

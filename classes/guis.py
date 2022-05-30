@@ -151,11 +151,12 @@ class SkillsGui(GUI):
                      sg.Text(f'{self.player.experience} / {20 * (player.level + 1)}')],
                     [sg.Text(f'Points remaining: {self.player.exp_points}', key='-REMAIN-')]
                 ],
-                      ),
+                      tooltip=f'{20 * (player.level + 1) - self.player.experience} to the next level'),
              sg.Frame('Improve yourself!', layout=[
-                [sg.Spin(list(self.player.skills.keys()), text_color='black', key='-SKILLS-', readonly=True, background_color='black'),
+                [sg.Spin(list(self.player.skills.keys()), text_color='black', key='-SKILLS-',
+                         readonly=True, background_color='black', tooltip=self.descr['speed']),
                  sg.Button('Improve')],
-                [sg.Output(key='-SKILLDESCR-', expand_x=True)]
+                [sg.Output(key='-SKILLDESCR-', s=(25, 4))]
             ])
             ],
         ]
@@ -194,7 +195,9 @@ class SkillsGui(GUI):
 
 
                     print(values)
+                self.window['-SKILLS-'].set_tooltip(self.descr[values['-SKILLS-']], )
                 self.window['-SKILLDESCR-'].update(self.descr[values['-SKILLS-']])
+                self.window.refresh()
             except Exception as e:
                 layout = [
                     [sg.Text(f'It seems that an error happened: {e}')],
