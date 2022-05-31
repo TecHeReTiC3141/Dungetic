@@ -1,4 +1,4 @@
-from scripts.constants_and_sources import *
+from scripts.constants import *
 
 class Turret:
 

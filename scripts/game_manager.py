@@ -1,6 +1,6 @@
 import pygame
 
-from scripts.constants_and_sources import display_width, display_height, stone_floor
+from scripts.constants import display_width, display_height, stone_floor
 
 class GameManager:
     possible_states = ['main_menu',

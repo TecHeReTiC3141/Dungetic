@@ -1,5 +1,5 @@
 from classes.entities import *
-from scripts.constants_and_sources import dung_length, dung_width
+from scripts.constants import dung_length, dung_width
 
 
 class Console:

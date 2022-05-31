@@ -1,4 +1,4 @@
-from scripts.algorithms_of_generation import *
+from scripts.generation import *
 from classes.interfaces import *
 
 heretic = Heretic(75, 100, 75, 100, 100, 'right', [])

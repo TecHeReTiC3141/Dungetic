@@ -1,5 +1,5 @@
 from classes.surrounding import *
-from scripts.algorithms_of_generation import generate_dungeons
+from scripts.generation import generate_dungeons
 from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, ConsoleGui
 from scripts.Console import *
 
