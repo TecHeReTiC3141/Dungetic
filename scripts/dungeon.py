@@ -1,7 +1,7 @@
-from classes.surrounding import *
 from scripts.generation import generate_dungeons
 from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, ConsoleGui
 from scripts.Console import *
+from classes.camera import *
 
 polygon = generate_dungeons(dung_width, dung_length)
 curr_room = choice(list(polygon.keys()))
@@ -13,6 +13,8 @@ cur_inter = None
 game_manager = GameManager((display_width, display_height),
                            polygon, curr_room)
 heretic = Heretic(100, 100, 75, 100, 100, choice(directions), game_manager)
+
+camera = Camera(game_manager.surf, heretic)
 
 player_manager = PlayerManager(heretic)
 
@@ -95,7 +97,7 @@ while game_cycle:
                     cur_room.check_drops(mouse, [heretic])
 
     if game_manager.state == 'main_menu':
-        Menu.draw_object(game_manager.surf)
+        Menu.draw_object(game_manager.display)
 
     elif game_manager.state == 'main_game':
         cur_room.draw_object(game_manager.surf, tick, draw_grid)
@@ -105,7 +107,7 @@ while game_cycle:
         game_manager.surf.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
         game_manager.surf.blit(text_font.render(f'{heretic.experience}', True, 'green'), (25, 85))
         if isinstance(cur_inter, Interface):
-            cur_inter.draw_object(game_manager.surf)
+            cur_inter.draw_object(game_manager.display)
 
         elif not game_manager.is_paused:
             heretic.move()
@@ -113,7 +115,11 @@ while game_cycle:
             cur_room.life(tick)
             cur_room.physics(heretic)
 
-    game_manager.display.blit(pygame.transform.scale(game_manager.surf, game_manager.res), (0, 0))
+            scrolling = camera.scroll()
+            if not tick % 15:
+                logging.info(f'{cur_room.width}, {cur_room.height}, {scrolling}')
+            game_manager.display.fill('black')
+            game_manager.display.blit(pygame.transform.scale(game_manager.surf, game_manager.res), (0, 0), scrolling)
 
     pygame.display.update()
 
@@ -121,21 +127,31 @@ while game_cycle:
     tick += 1
 
     if heretic.cur_rect.colliderect(left_border):
-        heretic.manager.curr_room -= 1
-        heretic.cur_rect.left = display_width - 100
+
+        heretic.manager.set_room(heretic.manager.curr_room - 1)
+        camera.set_surf(heretic.manager.surf)
+        heretic.cur_rect.left = cur_room.width - 100
         heretic.cur_rect.topleft = (heretic.cur_rect.left, heretic.cur_rect.top)
 
     elif heretic.cur_rect.colliderect(right_border):
-        heretic.manager.curr_room += 1
+        heretic.manager.set_room(heretic.manager.curr_room + 1)
+        camera.set_surf(heretic.manager.surf)
         heretic.cur_rect.left = 50
         heretic.cur_rect.topleft = (heretic.cur_rect.left, heretic.cur_rect.top)
 
     elif heretic.cur_rect.colliderect(upper_border):
-        heretic.manager.curr_room -= dung_length
-        heretic.cur_rect.top = display_height - 125
+        heretic.manager.set_room(heretic.manager.curr_room - dung_length)
+        camera.set_surf(heretic.manager.surf)
+        heretic.cur_rect.top = cur_room.height - 125
         heretic.cur_rect.topleft = (heretic.cur_rect.left, heretic.cur_rect.top)
 
     elif heretic.cur_rect.colliderect(lower_border):
-        heretic.manager.curr_room += dung_length
+        heretic.manager.set_room(heretic.manager.curr_room + dung_length)
+        camera.set_surf(heretic.manager.surf)
         heretic.cur_rect.top = 25
         heretic.cur_rect.topleft = (heretic.cur_rect.left, heretic.cur_rect.top)
+
+    left_border = pygame.Rect(5, 0, 5, cur_room.height)
+    right_border = pygame.Rect(cur_room.width - 15, 0, 5, cur_room.height)
+    upper_border = pygame.Rect(0, 5,  cur_room.width + 5, 5)
+    lower_border = pygame.Rect(0, cur_room.height - 15,  cur_room.width, 5)

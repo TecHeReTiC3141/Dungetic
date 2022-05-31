@@ -294,31 +294,6 @@ class Heretic:
                                             int(100.0 * float(self.health) / 100.0), 21), border_radius=8)
 
 
-class Camera:
-
-    def __init__(self, surface: pygame.Surface, player: Heretic):
-        self.surface = surface
-        self.MAX_W, self.MAX_H = self.surface.get_width(), self.surface.get_height()
-        self.player = player
-
-        self.DISP_W, self.DISP_H = display_width, display_height
-        self.offset_from_player = pygame.math.Vector2(-self.DISP_W // 2,
-                                                      -self.DISP_H // 2)
-        self.offset = pygame.math.Vector2()
-        self.offset.x = min(max(self.player.cur_rect.x - self.DISP_W // 2, 0), self.MAX_W - self.DISP_W)
-        self.offset.y = min(max(self.player.cur_rect.y - self.DISP_H // 2, 0), self.MAX_H - self.DISP_H)
-
-    def scroll(self) -> tuple[int, int, int, int]:
-        self.offset.x = min(max(self.player.cur_rect.x - self.DISP_W // 2, 0), self.MAX_W - self.DISP_W)
-        self.offset.y = min(max(self.player.cur_rect.y - self.DISP_H // 2, 0), self.MAX_H - self.DISP_H)
-        return (self.offset.x, self.offset.y, self.DISP_W, self.DISP_H)
-
-
-    def set_surf(self, surface: pygame.Surface):
-        self.surface = surface
-        self.MAX_W, self.MAX_H = self.surface.get_width(), self.surface.get_height()
-
-
 class PlayerManager(GameManager):
 
     def __init__(self, player: Heretic):

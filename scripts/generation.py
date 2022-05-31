@@ -35,7 +35,6 @@ def find_neigh(matr: list[list[DungNode]]) -> list[list[DungNode]]:
 
 
 def create_connected_dung(dung_width, dung_length) -> list[list[DungNode]]:
-
     def DFS(xv: int, yv: int, cur_comp):
         nonlocal dung_map
         dung_map[xv][yv].comp = cur_comp
@@ -70,7 +69,8 @@ room_types = ['node', 'common', 'storage']
 
 
 def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
-    # TODO fix bug connected with enters in last room
+    room_width, room_height = round(uniform(1, 1.5) * display_width), \
+                              round(uniform(1, 1.5) * display_height)
 
     enters = []
     walls = []
@@ -79,47 +79,47 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
                + Hostile.produce_Hostiles(randint(2, 3))
     cur_node = dung_matr[x][y]
     if (x - 1, y) in cur_node.neighbours:
-        walls.append(Wall(0, 0, width=randint(display_width // 2 - 250, display_width // 2 - 100),
+        walls.append(Wall(0, 0, width=randint(room_width // 2 - 250, room_width // 2 - 100),
                           height=randint(50, 100)))
-        walls.append(Wall(wall_x := randint(display_width // 2 + 150, display_width // 2 + 220), 0,
-                          display_width - wall_x, randint(50, 100)))
+        walls.append(Wall(wall_x := randint(room_width // 2 + 150, room_width // 2 + 220), 0,
+                          room_width - wall_x, randint(50, 100)))
         enters.append('up')
     else:
-        walls.append(Wall(0, 0, display_width, randint(50, 100)))
+        walls.append(Wall(0, 0, room_width, randint(50, 100)))
 
     if (x, y - 1) in cur_node.neighbours:
         walls.append(Wall(0, 0, width=randint(50, 100),
-                          height=randint(display_height // 2 - 250, display_height // 2 - 100)))
-        walls.append(Wall(0, wall_y := randint(display_height // 2 + 150, display_height // 2 + 220),
-                          randint(50, 100), display_height - wall_y))
+                          height=randint(room_height // 2 - 250, room_height // 2 - 100)))
+        walls.append(Wall(0, wall_y := randint(room_height // 2 + 150, room_height // 2 + 220),
+                          randint(50, 100), room_height - wall_y))
         enters.append('left')
     else:
         walls.append(Wall(0, 0, width=randint(50, 100), height=1000))
 
     if (x + 1, y) in cur_node.neighbours:
-        walls.append(Wall(0, wall_y := randint(display_height - 100, display_height - 50),
-                          randint(display_width // 2 - 250, display_width // 2 - 100),
-                          display_height - wall_y))
+        walls.append(Wall(0, wall_y := randint(room_height - 100, room_height - 50),
+                          randint(room_width // 2 - 250, room_width // 2 - 100),
+                          room_height - wall_y))
         walls.append(
-            Wall(wall_x := randint(display_width // 2 + 150, display_width // 2 + 220),
-                 wall_y := randint(display_height - 100, display_height - 50),
-                 width=display_width - wall_x, height=display_height - wall_y))
+            Wall(wall_x := randint(room_width // 2 + 150, room_width // 2 + 220),
+                 wall_y := randint(room_height - 100, room_height - 50),
+                 width=room_width - wall_x, height=room_height - wall_y))
         enters.append('down')
     else:
-        walls.append(Wall(0, wall_y := randint(display_height - 100, display_height - 50), display_width,
-                          display_height - wall_y))
+        walls.append(Wall(0, wall_y := randint(room_height - 100, room_height - 50), room_width,
+                          room_height - wall_y))
 
     if (x, y + 1) in cur_node.neighbours:
-        walls.append(Wall(randint(display_width - 100, display_width - 50), 0, width=display_width - x,
-                          height=randint(display_height // 2 - 250, display_height // 2 - 100)))
-        walls.append(Wall(wall_x := randint(display_width - 100, display_width - 50),
-                          wall_y := randint(display_height // 2 + 150, display_height // 2 + 220),
-                          width=display_width - wall_x, height=display_height - wall_y))
+        walls.append(Wall(randint(room_width - 100, room_width - 50), 0, width=room_width - x,
+                          height=randint(room_height // 2 - 250, room_height // 2 - 100)))
+        walls.append(Wall(wall_x := randint(room_width - 100, room_width - 50),
+                          wall_y := randint(room_height // 2 + 150, room_height // 2 + 220),
+                          width=room_width - wall_x, height=room_height - wall_y))
         enters.append('right')
     else:
         walls.append(
-            Wall(wall_x := randint(display_width - 100, display_width - 50), 0, display_width - wall_x,
-                 display_height))
+            Wall(wall_x := randint(room_width - 100, room_width - 50), 0, room_width - wall_x,
+                 room_height))
 
     walls += [Wall(randrange(100, 1205, 5), randrange(100, 865, 5),
                    width=randrange(50, 120, 5),
@@ -131,7 +131,7 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
                   container=generate_random_loot([Potion, GoldCoin, SilverCoin], wall_x, wall_y, n=randint(1, 3)))
              for _ in range(randint(3, 5))]
 
-    if cur_node.type == 'storage':
+    if room_types[cur_node.type] == 'storage':
         cont += [Crate(wall_x := randrange(100, 905, 5), wall_y := randrange(100, 705, 5),
                        width=randint(45, 80), height=randint(45, 80), movable=True, health=10,
                        container=generate_random_loot([Knife, GoldCoin, SilverCoin, Helmet], wall_x, wall_y,
@@ -144,7 +144,8 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
             entity.loot.append(LyingItem(0, 0, type(entity.weapon)))
         entity.loot += [LyingItem(0, 0, Experience) for _ in range(randint(2, 3))]
 
-    return Room(walls, cont, entities, [], enters, floor=choice(['stone', 'wooden']), type=room_types[cur_node.type])
+    return Room(walls, cont, entities, [], enters, choice(['stone', 'wooden']),
+                (room_width, room_height), type=room_types[cur_node.type])
 
 
 def generate_dungeons(dung_width, dung_length) -> dict[int, Room]:

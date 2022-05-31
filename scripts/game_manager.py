@@ -23,12 +23,14 @@ class GameManager:
         self.gamma = 1.
         self.display = pygame.display.set_mode(res)
         self.display.blit(stone_floor, (0, 0))
-        self.surf = pygame.Surface(res)
+
         pygame.display.set_caption(caption)
 
         self.is_paused = False
         self.dungeon = dungeon
         self.curr_room = cur_room
+        self.surf = pygame.Surface((self.dungeon[cur_room].width,
+                                                       self.dungeon[cur_room].height))
         self.sound_vol = .5
         self.music_vol = .5
 
@@ -42,3 +44,8 @@ class GameManager:
             self.display = pygame.display.set_mode(self.res, pygame.FULLSCREEN)
         else:
             self.display = pygame.display.set_mode(self.res)
+
+    def set_room(self, cur_room):
+        self.curr_room = cur_room
+        self.surf = pygame.transform.scale(self.surf, (self.dungeon[cur_room].width,
+                                                       self.dungeon[cur_room].height))

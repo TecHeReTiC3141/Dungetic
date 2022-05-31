@@ -220,7 +220,7 @@ class MyNode:
 class Room:
 
     def __init__(self, obst_list: list[Wall], containers: list[Wall],
-                 entities_list: list[NPC], projectiles: list[Projectile], entrances, floor: str, type: str = 'common'):
+                 entities_list: list[NPC], projectiles: list[Projectile], entrances, floor: str, size: tuple,type: str = 'common'):
         self.obst_list = obst_list
         self.containers = containers
         self.drops = []
@@ -230,19 +230,20 @@ class Room:
 
         self.entrances = entrances
         self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
-        self.floor = stone_floor if floor == 'stone' else wooden_floor
+        self.floor = pygame.transform.scale(stone_floor if floor == 'stone' else wooden_floor, size)
         self.visited = True
         self.type = type
+        self.width, self.height = size
 
         self.nodes = [
-            [MyNode(j * grid_size, i * grid_size, grid_size, grid_size) for j in range(ceil(display_width / grid_size))]
-            for i in range(ceil(display_height / grid_size))]
+            [MyNode(j * grid_size, i * grid_size, grid_size, grid_size) for j in range(ceil(self.width / grid_size))]
+            for i in range(ceil(self.height / grid_size))]
         for node_l in range(len(self.nodes)):
             for node in self.nodes[node_l]:
                 node.collide(self.obst_list + self.containers)
         'grid for pathfinding'
-        self.grid = Grid(matrix=[[self.nodes[i][j].status for j in range(ceil(display_width / grid_size))]
-                                 for i in range(ceil(display_height / grid_size))])
+        self.grid = Grid(matrix=[[self.nodes[i][j].status for j in range(ceil(self.width / grid_size))]
+                                 for i in range(ceil(self.height / grid_size))])
 
     def draw_object(self, surface: pygame.Surface, tick: int, show_grid: bool):
         surface.blit(self.floor, (0, 0))
