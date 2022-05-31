@@ -117,9 +117,9 @@ while game_cycle:
 
             scrolling = camera.scroll()
             if not tick % 15:
-                logging.info(f'{cur_room.width}, {cur_room.height}, {scrolling}')
+                logging.info(f'{cur_room.width}, {cur_room.height}, {scrolling[:2]}, {heretic.cur_rect.center}')
             game_manager.display.fill('black')
-            game_manager.display.blit(pygame.transform.scale(game_manager.surf, game_manager.res), (0, 0), scrolling)
+            game_manager.display.blit(game_manager.surf, (0, 0), scrolling)
 
     pygame.display.update()
 

@@ -94,7 +94,7 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
                           randint(50, 100), room_height - wall_y))
         enters.append('left')
     else:
-        walls.append(Wall(0, 0, width=randint(50, 100), height=1000))
+        walls.append(Wall(0, 0, randint(50, 100), room_height))
 
     if (x + 1, y) in cur_node.neighbours:
         walls.append(Wall(0, wall_y := randint(room_height - 100, room_height - 50),
@@ -121,12 +121,12 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
             Wall(wall_x := randint(room_width - 100, room_width - 50), 0, room_width - wall_x,
                  room_height))
 
-    walls += [Wall(randrange(100, 1205, 5), randrange(100, 865, 5),
+    walls += [Wall(randrange(100, room_width - 100, 5), randrange(100, room_height - 100, 5),
                    width=randrange(50, 120, 5),
                    height=randrange(50, 100, 5), movable=False) for
               _ in range(randint(5, 10))]
 
-    cont += [Vase(wall_x := randrange(100, 905, 5), wall_y := randrange(100, 705, 5),
+    cont += [Vase(wall_x := randrange(100, room_width - 100, 5), wall_y := randrange(100, room_height - 100, 5),
                   width=40, height=45, movable=True, health=10,
                   container=generate_random_loot([Potion, GoldCoin, SilverCoin], wall_x, wall_y, n=randint(1, 3)))
              for _ in range(randint(3, 5))]
