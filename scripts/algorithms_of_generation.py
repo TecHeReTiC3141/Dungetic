@@ -22,8 +22,8 @@ def create_dung_matr(dung_width, dung_length) -> list[list[DungNode]]:
 
 
 def find_neigh(matr: list[list[DungNode]]) -> list[list[DungNode]]:
-    for i in range(1, len(matr) - 2):
-        for j in range(1, len(matr[0]) - 2):
+    for i in range(1, len(matr) - 1):
+        for j in range(1, len(matr[0]) - 1):
             if matr[i][j].type > 0:
                 for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                     create_entr = randint(0, 2)
@@ -35,6 +35,7 @@ def find_neigh(matr: list[list[DungNode]]) -> list[list[DungNode]]:
 
 
 def create_connected_dung(dung_width, dung_length) -> list[list[DungNode]]:
+
     def DFS(xv: int, yv: int, cur_comp):
         nonlocal dung_map
         dung_map[xv][yv].comp = cur_comp
@@ -51,8 +52,8 @@ def create_connected_dung(dung_width, dung_length) -> list[list[DungNode]]:
         dung_map = find_neigh(create_dung_matr(dung_width, dung_length))
         cur_comp = 1
 
-        for i in range(1, len(dung_map) - 2):
-            for j in range(1, len(dung_map[0]) - 2):
+        for i in range(1, len(dung_map) - 1):
+            for j in range(1, len(dung_map[0]) - 1):
                 if dung_map[i][j].type > 0 and dung_map[i][j].comp == 0:
                     DFS(i, j, cur_comp)
                     cur_comp += 1

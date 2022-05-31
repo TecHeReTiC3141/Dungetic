@@ -308,26 +308,26 @@ class MapInter(Interface):
     def draw_object(self, display):
         display.blit(bloor, (0, 0))
         display.blit(map_image, (40, 50))
-        for j in range(90, 90 + dung_width * 80, 80):
-            for i in range(90, 90 + dung_length * 80, 80):
-                r_ind = i // 80 + j // 80 * dung_length + 1
-                if rooms.get(r_ind) is not None and rooms[r_ind].visited:
-                    if rooms[r_ind].type == 'common':
-                        pygame.draw.rect(display, (240, 240, 240), (i, j, 45, 35))
-                    elif rooms[r_ind].type == 'storage':
-                        pygame.draw.rect(display, '#8d6712', (i, j, 45, 35))
-                    if 'up' in rooms[r_ind].entrances:
-                        pygame.draw.rect(display, (200, 200, 200), (i + 12, j - 25, 20, 25))
-                    if 'down' in rooms[r_ind].entrances:
-                        pygame.draw.rect(display, (200, 200, 200), (i + 12, j + 35, 20, 20))
-                    if 'right' in rooms[r_ind].entrances:
-                        pygame.draw.rect(display, (200, 200, 200), (i + 45, j + 7, 20, 20))
-                    if 'left' in rooms[r_ind].entrances:
-                        pygame.draw.rect(display, (200, 200, 200), (i - 15, j + 7, 15, 20))
-                    if r_ind == self.manager.curr_room:
-                        pygame.draw.rect(display, BLACK, (i + 5, j + 7, 15, 20))
-                else:
-                    pygame.draw.rect(display, (10, 10, 10), (i, j, 45, 35))
+        for i in range(1, dung_width + 1):
+            for j in range(1, dung_length + 1):
+                cur_ind = i * dung_length + j
+                room_x = 10 + j * 80
+                room_y = 10 + i * 80
+                if self.rooms.get(cur_ind) is not None and self.rooms[cur_ind].visited:
+                    if self.rooms[cur_ind].type == 'common':
+                        pygame.draw.rect(display, (240, 240, 240), (room_x, room_y, 45, 35))
+                    elif self.rooms[cur_ind].type == 'storage':
+                        pygame.draw.rect(display, '#8d6712', (room_x, room_y, 45, 35))
+                    if 'up' in self.rooms[cur_ind].entrances:
+                        pygame.draw.rect(display, (200, 200, 200), (room_x + 12, room_y - 25, 20, 25))
+                    if 'down' in self.rooms[cur_ind].entrances:
+                        pygame.draw.rect(display, (200, 200, 200), (room_x + 12, room_y + 35, 20, 20))
+                    if 'right' in self.rooms[cur_ind].entrances:
+                        pygame.draw.rect(display, (200, 200, 200), (room_x + 45, room_y + 7, 20, 20))
+                    if 'left' in self.rooms[cur_ind].entrances:
+                        pygame.draw.rect(display, (200, 200, 200), (room_x - 15, room_y + 7, 15, 20))
+                    if cur_ind == self.manager.curr_room:
+                        pygame.draw.rect(display, BLACK, (room_x + 5, room_y + 7, 15, 20))
 
 
 class MainMenu(Interface):

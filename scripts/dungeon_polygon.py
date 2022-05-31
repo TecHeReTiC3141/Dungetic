@@ -22,8 +22,8 @@ Map = MapInter(polygon, game_manager)
 Inventory = InventoryInter(heretic, game_manager)
 Menu = MainMenu(game_manager)
 
-print(*[''.join([str(i).rjust(3) for i in list(range(1 + dung_length * i,
-                                                     dung_length * (i + 1) + 1))]) for i in range(1, dung_width + 1)],
+print(*[''.join([str(j).rjust(3) for j in list(range(1 + dung_length * i,
+                                                     dung_length * i + 1))]) for i in range(1, dung_width + 1)],
       sep='\n')
 
 wipe = pygame.USEREVENT + 1
