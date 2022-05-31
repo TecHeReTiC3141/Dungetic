@@ -156,25 +156,6 @@ class Heretic:
             self.direction = 'down'
             self.vector.y = 1
 
-        if self.cur_rect.colliderect(left_border):
-            self.manager.curr_room -= 1
-            self.cur_rect.left = display_width - 100
-            self.cur_rect.topleft = (self.cur_rect.left, self.cur_rect.top)
-
-        elif self.cur_rect.colliderect(right_border):
-            self.manager.curr_room += 1
-            self.cur_rect.left = 50
-            self.cur_rect.topleft = (self.cur_rect.left, self.cur_rect.top)
-
-        elif self.cur_rect.colliderect(upper_border):
-            self.manager.curr_room -= dung_length
-            self.cur_rect.top = display_height - 125
-            self.cur_rect.topleft = (self.cur_rect.left, self.cur_rect.top)
-
-        elif self.cur_rect.colliderect(lower_border):
-            self.manager.curr_room += dung_length
-            self.cur_rect.top = 25
-            self.cur_rect.topleft = (self.cur_rect.left, self.cur_rect.top)
 
     def update(self, tick: int, is_safe: bool = None):
 

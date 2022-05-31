@@ -158,9 +158,4 @@ def generate_dungeons(dung_width, dung_length) -> dict[int, Room]:
             if dung_matr[i][j].type > 0:
                 rooms[cur_ind] = generate_room(i, j, dung_matr)
 
-    for i in range(1, dung_width + 1):
-        for j in range(1, dung_length + 1):
-            cur_ind = i * dung_length + j
-            if cur_ind in rooms:
-                print(i, j, cur_ind, rooms[cur_ind].type, rooms[cur_ind].entrances)
     return rooms

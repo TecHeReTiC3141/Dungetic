@@ -119,4 +119,23 @@ while game_cycle:
 
     clock.tick(60)
     tick += 1
-    cur_room.visited = True
+
+    if heretic.cur_rect.colliderect(left_border):
+        heretic.manager.curr_room -= 1
+        heretic.cur_rect.left = display_width - 100
+        heretic.cur_rect.topleft = (heretic.cur_rect.left, heretic.cur_rect.top)
+
+    elif heretic.cur_rect.colliderect(right_border):
+        heretic.manager.curr_room += 1
+        heretic.cur_rect.left = 50
+        heretic.cur_rect.topleft = (heretic.cur_rect.left, heretic.cur_rect.top)
+
+    elif heretic.cur_rect.colliderect(upper_border):
+        heretic.manager.curr_room -= dung_length
+        heretic.cur_rect.top = display_height - 125
+        heretic.cur_rect.topleft = (heretic.cur_rect.left, heretic.cur_rect.top)
+
+    elif heretic.cur_rect.colliderect(lower_border):
+        heretic.manager.curr_room += dung_length
+        heretic.cur_rect.top = 25
+        heretic.cur_rect.topleft = (heretic.cur_rect.left, heretic.cur_rect.top)
