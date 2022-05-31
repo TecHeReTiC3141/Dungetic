@@ -74,7 +74,7 @@ class NPC(Heretic):
         for loot in self.loot:
             loot.rect.topleft = self.cur_rect.topleft
             loot.picked = False
-        print([i.picked for i in self.loot])
+
         return self.loot
 
     def exist(self):
@@ -187,7 +187,6 @@ class Hostile(NPC):
                         self.weapon = Fist()
 
         return blood_list
-
 
     def draw_object(self, display: pygame.Surface, x=0, y=0):
         super().draw_object(display)

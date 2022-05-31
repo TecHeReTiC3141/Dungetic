@@ -310,7 +310,7 @@ class MapInter(Interface):
         display.blit(map_image, (40, 50))
         for j in range(90, 90 + dung_width * 80, 80):
             for i in range(90, 90 + dung_length * 80, 80):
-                r_ind = (i - 90) // 80 + (j - 90) // 80 * dung_length + 1
+                r_ind = i // 80 + j // 80 * dung_length + 1
                 if rooms.get(r_ind) is not None and rooms[r_ind].visited:
                     if rooms[r_ind].type == 'common':
                         pygame.draw.rect(display, (240, 240, 240), (i, j, 45, 35))

@@ -111,7 +111,7 @@ class Heretic:
 
                     obst.cur_rect.move_ip(dist_x, dist_y)
                     obst.active_zone.move_ip(dist_x, dist_y)
-                    print(obst.health)
+
                     if obst.health <= 0:
                         obst.get_broken()
 

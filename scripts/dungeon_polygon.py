@@ -3,7 +3,7 @@ from scripts.algorithms_of_generation import generate_dungeons
 from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, ConsoleGui
 from scripts.Console import *
 
-polygon = generate_dungeons()
+polygon = generate_dungeons(dung_width, dung_length)
 curr_room = choice(list(polygon.keys()))
 
 tick = 0
@@ -23,7 +23,7 @@ Inventory = InventoryInter(heretic, game_manager)
 Menu = MainMenu(game_manager)
 
 print(*[''.join([str(i).rjust(3) for i in list(range(1 + dung_length * i,
-                                                     dung_length * (i + 1) + 1))]) for i in range(dung_width)],
+                                                     dung_length * (i + 1) + 1))]) for i in range(1, dung_width + 1)],
       sep='\n')
 
 wipe = pygame.USEREVENT + 1
@@ -116,7 +116,6 @@ while game_cycle:
     game_manager.display.blit(pygame.transform.scale(game_manager.surf, game_manager.res), (0, 0))
 
     pygame.display.update()
-
 
     clock.tick(60)
     tick += 1
