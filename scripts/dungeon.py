@@ -28,6 +28,8 @@ print(*[''.join([str(j).rjust(3) for j in list(range(1 + dung_length * i,
                                                      dung_length * i + 1))]) for i in range(1, dung_width + 1)],
       sep='\n')
 
+scrolling = ()
+
 wipe = pygame.USEREVENT + 1
 show_paths = pygame.USEREVENT + 2
 pygame.time.set_timer(wipe, 10)
@@ -94,7 +96,7 @@ while game_cycle:
                 if game_manager.state == 'main_menu':
                     Menu.process(mouse)
                 elif game_manager.state == 'main_game':
-                    cur_room.check_drops(mouse, [heretic])
+                    cur_room.check_drops((mouse[0] + scrolling[0], mouse[1] + scrolling[1]), [heretic])
 
     if game_manager.state == 'main_menu':
         Menu.draw_object(game_manager.display)
@@ -127,29 +129,24 @@ while game_cycle:
     tick += 1
 
     if heretic.cur_rect.colliderect(left_border):
-
         heretic.manager.set_room(heretic.manager.curr_room - 1)
         camera.set_surf(heretic.manager.surf)
-        heretic.cur_rect.left = cur_room.width - 100
-        heretic.cur_rect.topleft = (heretic.cur_rect.left, heretic.cur_rect.top)
+        heretic.cur_rect.left = game_manager.dungeon[game_manager.curr_room].width - 100
 
     elif heretic.cur_rect.colliderect(right_border):
         heretic.manager.set_room(heretic.manager.curr_room + 1)
         camera.set_surf(heretic.manager.surf)
         heretic.cur_rect.left = 50
-        heretic.cur_rect.topleft = (heretic.cur_rect.left, heretic.cur_rect.top)
 
     elif heretic.cur_rect.colliderect(upper_border):
         heretic.manager.set_room(heretic.manager.curr_room - dung_length)
         camera.set_surf(heretic.manager.surf)
-        heretic.cur_rect.top = cur_room.height - 125
-        heretic.cur_rect.topleft = (heretic.cur_rect.left, heretic.cur_rect.top)
+        heretic.cur_rect.top = game_manager.dungeon[game_manager.curr_room].height - 125
 
     elif heretic.cur_rect.colliderect(lower_border):
         heretic.manager.set_room(heretic.manager.curr_room + dung_length)
         camera.set_surf(heretic.manager.surf)
         heretic.cur_rect.top = 25
-        heretic.cur_rect.topleft = (heretic.cur_rect.left, heretic.cur_rect.top)
 
     left_border = pygame.Rect(5, 0, 5, cur_room.height)
     right_border = pygame.Rect(cur_room.width - 15, 0, 5, cur_room.height)

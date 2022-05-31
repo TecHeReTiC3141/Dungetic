@@ -13,7 +13,7 @@ pygame.init()
 pygame.mixer.music.set_volume(60)
 
 PathFinder = AStarFinder(diagonal_movement=DiagonalMovement.always)
-grid_size = 32
+grid_size = 48
 
 phys_eps = .15
 
