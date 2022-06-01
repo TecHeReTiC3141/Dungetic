@@ -105,9 +105,6 @@ while game_cycle:
         cur_room.draw_object(game_manager.surf, tick, draw_grid)
         heretic.draw_object(game_manager.surf)
 
-        game_manager.surf.blit(text_font.render(f'{game_manager.curr_room}', True, WHITE), (25, 25))
-        game_manager.surf.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
-        game_manager.surf.blit(text_font.render(f'{heretic.experience}', True, 'green'), (25, 85))
         if isinstance(cur_inter, Interface):
             cur_inter.draw_object(game_manager.display)
 
@@ -122,6 +119,10 @@ while game_cycle:
                 logging.info(f'{cur_room.width}, {cur_room.height}, {scrolling[:2]}, {heretic.cur_rect.center}')
             game_manager.display.fill('black')
             game_manager.display.blit(game_manager.surf, (0, 0), scrolling)
+            game_manager.display.blit(text_font.render(f'{game_manager.curr_room}', True, WHITE), (25, 25))
+            game_manager.display.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
+            game_manager.display.blit(text_font.render(f'{heretic.experience}', True, 'green'), (25, 85))
+
 
     pygame.display.update()
 

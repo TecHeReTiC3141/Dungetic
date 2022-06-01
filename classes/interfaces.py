@@ -245,6 +245,7 @@ class InventoryInter(Interface):
                                              True, BLACK), (890, 470 + line * 50))
 
         display.blit(self, (0, 0))
+        pygame.draw.rect(display, (161, 96, 54), (0, display_height - 100, display_width, 800))
 
     def open(self):
         self.selected_item = None
@@ -307,7 +308,7 @@ class MapInter(Interface):
 
     def draw_object(self, display):
         display.blit(bloor, (0, 0))
-        display.blit(map_image, (40, 50))
+        display.blit(map_image, (40, 40))
         for i in range(1, dung_width + 1):
             for j in range(1, dung_length + 1):
                 cur_ind = i * dung_length + j
