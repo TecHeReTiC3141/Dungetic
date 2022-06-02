@@ -30,7 +30,7 @@ class GameManager:
         self.dungeon = dungeon
         self.curr_room = cur_room
         self.surf = pygame.Surface((self.dungeon[cur_room].width,
-                                                       self.dungeon[cur_room].height))
+                                                       self.dungeon[cur_room].height) if self.dungeon else (0, 0))
         self.sound_vol = .5
         self.music_vol = .5
 

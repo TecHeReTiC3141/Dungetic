@@ -293,6 +293,22 @@ class Heretic:
             pygame.draw.rect(display, RED, (x - 10, y - 28,
                                             int(100.0 * float(self.health) / 100.0), 21), border_radius=8)
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        pprint(state)
+        attack_surf, visible_zone = state.pop('attack_surf'), state.pop('visible_zone')
+        state['manager'] = None
+        state["attack_surf"] = (pygame.image.tostring(attack_surf, "RGB"),
+                                    attack_surf.get_size())
+        state["visible_zone"] = (pygame.image.tostring(visible_zone, "RGB"),
+                                visible_zone.get_size())
+        return state
+
+    def __setstate__(self, state):
+        state['attack_surf'] = pygame.image.fromstring(*state['attack_surf'], 'RGB')
+        state['visible_zone'] = pygame.image.fromstring(*state['visible_zone'], 'RGB')
+        self.__dict__.update(state)
+
 
 class PlayerManager(GameManager):
 
