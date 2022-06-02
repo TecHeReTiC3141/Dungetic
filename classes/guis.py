@@ -235,6 +235,19 @@ class Saving(GUI):
                 sg.popup_error(str(e))
 
 
+class Loading(GUI):
+
+    def __init__(self):
+
+        saving = Path('../saving')
+
+        saves = sorted(saving.glob('*.pcl'), key=lambda i: i.stat.st_ctime)
+
+    # TODO create gui for loading saves
+
+# TODO implement saving and loading (in the afternoon) !!
+
+
 manager = GameManager((720, 480), [], 0)
 heretic = Heretic(100, 100, 100, 100, 100, 'left', manager)
 heretic.exp_points = 10
