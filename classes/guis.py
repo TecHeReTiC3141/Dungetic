@@ -241,8 +241,42 @@ class Loading(GUI):
 
         saving = Path('../saving')
 
-        saves = sorted(saving.glob('*.pcl'), key=lambda i: i.stat.st_ctime)
+        self.saves = sorted(saving.glob('*.pcl'), key=lambda i: i.stat().st_ctime)
 
+        sg.theme('DarkAmber')
+        sg.set_options(font='Frank 12')
+        layout = [
+            [sg.T('Choose save')],
+            [sg.HSep()],
+            [sg.Table(values=[(i.name, strftime( '%m.%d.%y %H-%M-%S',
+                                                 localtime(i.stat().st_ctime)))
+                              for i in self.saves],
+                      headings=['name', 'created'], enable_events=True, key='-SAVES-')],
+            [sg.B('Load', disabled=True)]
+        ]
+
+        self.window = sg.Window('Loading', layout=layout)
+
+    def run(self) -> list:
+        save_active = -1
+        save_data = []
+        while True:
+            event, values = self.window.read()
+
+            if event == sg.WIN_CLOSED:
+                break
+
+            elif event  == '-SAVES-':
+                self.window['Load'].update(disabled=False)
+                save_active, = values[event]
+
+            elif event == 'Load':
+                save_name = self.saves[save_active].name
+                with open(Path('../saving') / save_name, 'rb') as save:
+                    save_data = [pickle.load(save) for i in '...']
+                break
+        self.window.close()
+        return save_data
     # TODO create gui for loading saves
 
 # TODO implement saving and loading (in the afternoon) !!
@@ -256,9 +290,6 @@ heretic.experience = 75
 player_manager = PlayerManager(heretic)
 Saving(manager, heretic)
 
-with open('../saving/test_save.pcl', 'rb') as save:
-    curr_room = pickle.load(save)
-    dungeon = pickle.load(save)
-    heretic = pickle.load(save)
+save_data = Loading().run()
 
-print(curr_room, dungeon, heretic)
+pprint(save_data)
