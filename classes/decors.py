@@ -2,7 +2,10 @@ import pygame
 from scripts.constants import *
 
 
-class Decor(pygame.Surface):
+class Decor():
+
+    def __init__(self, width, height):
+        self.surface = pygame.Surface((width, height))
 
     def draw_object(self, display, x=None, y=None):
         pass
@@ -13,12 +16,22 @@ class Decor(pygame.Surface):
     def delete(self):
         pass
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        surf = state.pop('surface')
+        state['surface'] = (pygame.image.tostring(surf, 'RGB'), surf.get_size())
+        return state
+
+    def __setstate__(self, state):
+        state['surface'] = pygame.image.fromstring(*state['surface'], 'RGB')
+        self.__dict__.update(state)
+
 
 class Particle(Decor):
 
     def __init__(self, x, y, width, height, life_time: int, type: str, speed=3):
-        super().__init__((width, height))
-        self.rect = self.get_rect(topleft=(x, y))
+        super().__init__(width, height)
+        self.rect = self.surface.get_rect(topleft=(x, y))
         self.life_time = life_time
         self.directions = pygame.math.Vector2()
         self.speed = speed
@@ -47,7 +60,7 @@ class Blood(Particle):
             self.life_time //= 3
 
     def draw_object(self, display, x=0, y=0):
-        self.fill(RED)  # e61624
+        self.surface.fill(RED)  # e61624
         display.blit(self, self.rect)
         self.life_time -= 1
 
@@ -72,8 +85,8 @@ class SplatBlood(Blood):
         self.rect.width = randint(12, 18)
         self.rect.height = randint(12, 18)
         self.half_life_time = self.life_time // 2
-        self.set_colorkey(BLACK)
-        self.set_alpha(255)
+        self.surface.set_colorkey(BLACK)
+        self.surface.set_alpha(255)
         self.directions = pygame.math.Vector2(-1, -1)
 
     def draw_object(self, display, x=0, y=0):
@@ -88,7 +101,7 @@ class SplatBlood(Blood):
             self.rect.width -= norm_dir.x * 1.5
             self.rect.height -= norm_dir.y * 1.5
         else:
-            self.set_alpha(round(255 * self.life_time / self.half_life_time))
+            self.surface.set_alpha(round(255 * self.life_time / self.half_life_time))
 
     def delete(self):
         pass

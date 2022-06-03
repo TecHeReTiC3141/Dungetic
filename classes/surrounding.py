@@ -161,6 +161,20 @@ class Wall:
                                     wall.cur_rect.bottom = self.cur_rect.top
 
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        vis_zone, sprite = state.pop('visible_zone'), state.pop('sprite')
+        state['visible_zone'] = (pygame.image.tostring(vis_zone, 'RGB'), vis_zone.get_size())
+        state['sprite'] = (pygame.image.tostring(sprite, 'RGB'), sprite.get_size())
+
+        return state
+
+    def __setstate__(self, state):
+        state['visible_zone'] = pygame.image.fromstring(*state['visible_zone'], 'RGB')
+        state['sprite'] = pygame.image.fromstring(*state['sprite'], 'RGB')
+        self.__dict__.update(state)
+
+
 class Vase(Wall, Breakable, Container):
 
     def __init__(self, x, y, width, height, collised=False, movable=False, health=120, container=None):
@@ -244,6 +258,8 @@ class Room:
         'grid for pathfinding'
         self.grid = Grid(matrix=[[self.nodes[i][j].status for j in range(ceil(self.width / grid_size))]
                                  for i in range(ceil(self.height / grid_size))])
+
+        # TODO make Room object serializable !!!
 
     def draw_object(self, surface: pygame.Surface, tick: int, show_grid: bool):
         surface.blit(self.floor, (0, 0))
@@ -390,3 +406,9 @@ class Room:
 
         self.projectiles = list(filter(lambda i: not i.collided,
                                        self.projectiles))
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        floor = state.pop('floor')
+        state['floor'] = (pygame.image.tostring(floor, 'RGB'), floor.get_size())
+        return state

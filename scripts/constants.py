@@ -57,7 +57,7 @@ bloor = pygame.Surface((display_width, display_height))
 bloor.set_alpha(15)
 current_interface = None
 
-# fonts
+# # # # # # # # fonts # # # # # # #
 text_font = pygame.font.Font(None, 40)
 active_font = pygame.font.Font(None, 50)
 inventory_font = pygame.font.SysFont('Cambria', 75)

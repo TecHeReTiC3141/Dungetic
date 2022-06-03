@@ -1,4 +1,3 @@
-import PySimpleGUI as sg
 from scripts.Console import *
 
 
@@ -225,19 +224,22 @@ class Saving(GUI):
         event, values = sg.Window('Saving', layout=layout, element_justification='center').read(close=True)
         if event == 'Save':
             # cur_time = strftime( '%m.%d.%y %H-%M-%S %a', gmtime(time()))
-            try:
-                with open(f'../saving/{values["-SAVENAME-"]}.pcl', 'wb') as save:
-                    pickle.dump(self.manager.curr_room, save)
-                    pickle.dump(self.manager.dungeon, save)
-                    pickle.dump(self.player, save)
-                sg.popup('Successfully saved!')
-            except Exception as e:
-                sg.popup_error(str(e))
+            with open(f'../saving/{values["-SAVENAME-"]}.pcl', 'wb') as save:
+                pickle.dump(self.manager.curr_room, save)
+                pickle.dump(self.manager.dungeon, save)
+                pickle.dump(self.player, save)
+            sg.popup('Successfully saved!')
+            # except Exception as e:
+            #     sg.popup_error(str(e.args) + ' ' + str(e))
+            #     del_save = Path(f'../saving/{values["-SAVENAME-"]}.pcl')
+            #     del_save.unlink()
 
 
 class Loading(GUI):
 
-    def __init__(self):
+    def __init__(self, manager: GameManager, player: Heretic):
+        self.player = player
+        self.manager = manager
 
         saving = Path('../saving')
 
@@ -248,7 +250,7 @@ class Loading(GUI):
         layout = [
             [sg.T('Choose save')],
             [sg.HSep()],
-            [sg.Table(values=[(i.name, strftime( '%m.%d.%y %H-%M-%S',
+            [sg.Table(values=[(i.name, strftime('%m.%d.%y %H-%M-%S',
                                                  localtime(i.stat().st_ctime)))
                               for i in self.saves],
                       headings=['name', 'created'], enable_events=True, key='-SAVES-')],
@@ -256,8 +258,9 @@ class Loading(GUI):
         ]
 
         self.window = sg.Window('Loading', layout=layout)
+        self.run()
 
-    def run(self) -> list:
+    def run(self):
         save_active = -1
         save_data = []
         while True:
@@ -266,30 +269,28 @@ class Loading(GUI):
             if event == sg.WIN_CLOSED:
                 break
 
-            elif event  == '-SAVES-':
+            elif event == '-SAVES-':
                 self.window['Load'].update(disabled=False)
                 save_active, = values[event]
 
             elif event == 'Load':
                 save_name = self.saves[save_active].name
                 with open(Path('../saving') / save_name, 'rb') as save:
-                    save_data = [pickle.load(save) for i in '...']
+                    cur_room, dungeon, player = [pickle.load(save) for i in '...']
+                    self.manager.dungeon = dungeon
+                    self.manager.set_room(cur_room)
                 break
         self.window.close()
-        return save_data
-    # TODO create gui for loading saves
-
 # TODO implement saving and loading (in the afternoon) !!
 
-
-manager = GameManager((720, 480), [], 0)
-heretic = Heretic(100, 100, 100, 100, 100, 'left', manager)
-heretic.exp_points = 10
-heretic.level = 5
-heretic.experience = 75
-player_manager = PlayerManager(heretic)
-Saving(manager, heretic)
-
-save_data = Loading().run()
-
-pprint(save_data)
+# manager = GameManager((720, 480), [], 0)
+# heretic = Heretic(100, 100, 100, 100, 100, 'left', manager)
+# heretic.exp_points = 10
+# heretic.level = 5
+# heretic.experience = 75
+# player_manager = PlayerManager(heretic)
+# Saving(manager, heretic)
+#
+# save_data = Loading().run()
+#
+# pprint(save_data)

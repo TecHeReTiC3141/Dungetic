@@ -41,7 +41,8 @@ class Button(UI):
         pygame.draw.rect(self.image, self.color,
                          (0, 0, self.rect.width, self.rect.height - 5), border_radius=15)
 
-        self.image.blit(self.label, (self.rect.width // 3, self.rect.height // 5))
+        self.image.blit(self.label, (self.rect.width // 2  - self.label.get_width() // 2,
+                                     self.rect.height // 2 - self.label.get_height() // 2))
         display.blit(self.image, self.rect)
 
     def update(self, mouse, ):
@@ -333,16 +334,20 @@ class MapInter(Interface):
 
 class MainMenu(Interface):
 
-    def __init__(self, manager: GameManager):
+    def __init__(self, manager: GameManager, player: Heretic):
         super().__init__()
         self.manager = manager
         play = ChangeState(display_width // 3, display_height // 2, 250, 80, 'Start',
                            GREEN, manager, 'main_game')
-        settings = CreateWindow(display_width // 3, display_height // 2 + 100, 250, 80, 'Settings',
+        save_game = CreateWindow(display_width // 3, display_height // 2 + 100, 120, 80, 'Save',
+                               BLUE, manager, Saving, player=player)
+        load_game = CreateWindow(display_width // 3 + 130, display_height // 2 + 100, 120, 80, 'Load',
+                                 BLUE, manager, Loading, player=player)
+        settings = CreateWindow(display_width // 3, display_height // 2 + 200, 250, 80, 'Settings',
                                BLUE, manager, Settings)
-        ex = SimpleButton(display_width // 3, display_height // 2 + 200, 250, 80, 'Exit',
+        ex = SimpleButton(display_width // 3, display_height // 2 + 300, 250, 80, 'Exit',
                           RED, exit)
-        self.button_list = [play, settings, ex]
+        self.button_list = [play, save_game, load_game, settings, ex]
 
     def draw_object(self, display: pygame.Surface, ):
         self.blit(stone_floor, (0, 0))

@@ -295,13 +295,14 @@ class Heretic:
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        pprint(state)
+
         attack_surf, visible_zone = state.pop('attack_surf'), state.pop('visible_zone')
         state['manager'] = None
         state["attack_surf"] = (pygame.image.tostring(attack_surf, "RGB"),
                                     attack_surf.get_size())
         state["visible_zone"] = (pygame.image.tostring(visible_zone, "RGB"),
                                 visible_zone.get_size())
+        pprint(state)
         return state
 
     def __setstate__(self, state):

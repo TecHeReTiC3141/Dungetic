@@ -22,7 +22,7 @@ console = Console(game_manager, player_manager)
 
 Map = MapInter(polygon, game_manager)
 Inventory = InventoryInter(heretic, game_manager)
-Menu = MainMenu(game_manager)
+Menu = MainMenu(game_manager, heretic)
 
 print(*[''.join([str(j).rjust(3) for j in list(range(1 + dung_length * i,
                                                      dung_length * i + 1))]) for i in range(1, dung_width + 1)],
@@ -89,7 +89,6 @@ while game_cycle:
             mouse[0] /= game_manager.res[0] / 1440
             mouse[1] /= game_manager.res[1] / 900
             mouse = tuple(mouse)
-            print(mouse)
             if isinstance(cur_inter, InventoryInter):
                 cur_inter.process(event.button, mouse)
             if event.button == 1:
@@ -153,3 +152,10 @@ while game_cycle:
     right_border = pygame.Rect(cur_room.width - 15, 0, 5, cur_room.height)
     upper_border = pygame.Rect(0, 5,  cur_room.width + 5, 5)
     lower_border = pygame.Rect(0, cur_room.height - 15,  cur_room.width, 5)
+
+    if not tick % 600:
+        # pprint(heretic.__getstate__())
+
+        pprint(heretic.weapon.__dict__)
+        heretic.__getstate__()
+
