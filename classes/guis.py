@@ -279,9 +279,13 @@ class Loading(GUI):
                     cur_room, dungeon, player = [pickle.load(save) for i in '...']
                     self.manager.dungeon = dungeon
                     self.manager.set_room(cur_room)
+
+                    self.player.set_player(player)
                 break
         self.window.close()
-# TODO implement saving and loading (in the afternoon) !!
+# TODO fix saving and loading (in the afternoon) !!
+# TODO think about progressbars of serialization and deseriali
+
 
 # manager = GameManager((720, 480), [], 0)
 # heretic = Heretic(100, 100, 100, 100, 100, 'left', manager)

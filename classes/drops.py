@@ -25,12 +25,14 @@ class Drop:
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        sprite = state.pop('sprite')
-        state['sprite'] = (pygame.image.tostring(sprite, 'RGB'), sprite.get_size())
+        state.pop('sprite')
+
         return state
 
     def __setstate__(self, state):
-        state['sprite'] = pygame.image.fromstring(*state['sprite'], 'RGB')
+        self.sprite = pygame.transform.rotate(state['loot'].sprite['left']
+                                              if isinstance(self.loot.sprite, dict) else state['loot'].sprite,
+                                              randint(0, 360))
         self.__dict__.update(state)
 
 
@@ -65,12 +67,14 @@ class LyingItem(Drop):
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        sprite, background = state.pop('sprite'), state.pop('background')
-        state['sprite'] = (pygame.image.tostring(sprite, 'RGB'), sprite.get_size())
-        state['background'] = (pygame.image.tostring(background, 'RGB'), background.get_size())
+        state.pop('sprite'), state.pop('background')
         return state
 
     def __setstate__(self, state):
-        state['sprite'] = pygame.image.fromstring(*state['sprite'], 'RGB')
-        state['background'] = pygame.image.fromstring(*state['background'], 'RGB')
+        self.sprite = pygame.transform.rotate(state['loot'].sprite['left']
+                                              if isinstance(state['loot'].sprite, dict) else state['loot'].sprite,
+                                              randint(0, 360))
+        self.background = pygame.Surface((state['rect'].width, state['rect'].width))
+        self.background.set_colorkey(BLACK)
+        self.background.set_alpha(128)
         self.__dict__.update(state)
