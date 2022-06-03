@@ -302,31 +302,31 @@ class InventoryInter(Interface):
 
 class MapInter(Interface):
 
-    def __init__(self, rooms: dict, game_manager: GameManager):
+    def __init__(self, game_manager: GameManager):
         super().__init__()
         self.manager = game_manager
-        self.rooms = rooms
 
     def draw_object(self, display):
         display.blit(bloor, (0, 0))
         display.blit(map_image, (40, 40))
+        rooms = self.manager.dungeon
         for i in range(1, dung_width + 1):
             for j in range(1, dung_length + 1):
                 cur_ind = i * dung_length + j
                 room_x = 10 + j * 80
                 room_y = 10 + i * 80
-                if self.rooms.get(cur_ind) is not None and self.rooms[cur_ind].visited:
-                    if self.rooms[cur_ind].type == 'common':
+                if rooms.get(cur_ind) is not None and rooms[cur_ind].visited:
+                    if rooms[cur_ind].type == 'common':
                         pygame.draw.rect(display, (240, 240, 240), (room_x, room_y, 45, 35))
-                    elif self.rooms[cur_ind].type == 'storage':
+                    elif rooms[cur_ind].type == 'storage':
                         pygame.draw.rect(display, '#8d6712', (room_x, room_y, 45, 35))
-                    if 'up' in self.rooms[cur_ind].entrances:
+                    if 'up' in rooms[cur_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (room_x + 12, room_y - 25, 20, 25))
-                    if 'down' in self.rooms[cur_ind].entrances:
+                    if 'down' in rooms[cur_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (room_x + 12, room_y + 35, 20, 20))
-                    if 'right' in self.rooms[cur_ind].entrances:
+                    if 'right' in rooms[cur_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (room_x + 45, room_y + 7, 20, 20))
-                    if 'left' in self.rooms[cur_ind].entrances:
+                    if 'left' in rooms[cur_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (room_x - 15, room_y + 7, 15, 20))
                     if cur_ind == self.manager.curr_room:
                         pygame.draw.rect(display, BLACK, (room_x + 5, room_y + 7, 15, 20))

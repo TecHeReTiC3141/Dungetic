@@ -295,7 +295,7 @@ class Heretic:
         self.weapon = player.weapon
         self.body_armor = player.body_armor
         self.head_armor = player.head_armor
-        self.money = player.money
+        self.actual_money = player.actual_money
         self.experience = player.experience
         self.level = player.level
         self.exp_points = player.exp_points

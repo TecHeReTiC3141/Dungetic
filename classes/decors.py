@@ -2,7 +2,7 @@ import pygame
 from scripts.constants import *
 
 
-class Decor():
+class Decor:
 
     def __init__(self, width, height):
         self.surface = pygame.Surface((width, height))
@@ -61,7 +61,7 @@ class Blood(Particle):
 
     def draw_object(self, display, x=0, y=0):
         self.surface.fill(RED)  # e61624
-        display.blit(self, self.rect)
+        display.blit(self.surface, self.rect)
         self.life_time -= 1
 
     def move(self, tick=0):
@@ -90,8 +90,8 @@ class SplatBlood(Blood):
         self.directions = pygame.math.Vector2(-1, -1)
 
     def draw_object(self, display, x=0, y=0):
-        pygame.draw.ellipse(self, RED, (0, 0, self.rect.width, self.rect.height))
-        display.blit(self, self.rect)
+        pygame.draw.ellipse(self.surface, RED, (0, 0, self.rect.width, self.rect.height))
+        display.blit(self.surface, self.rect)
         self.life_time -= 1
 
     def move(self, tick=0):

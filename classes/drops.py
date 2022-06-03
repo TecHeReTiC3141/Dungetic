@@ -67,7 +67,8 @@ class LyingItem(Drop):
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        state.pop('sprite'), state.pop('background')
+        state.pop('sprite')
+        state.pop('background')
         return state
 
     def __setstate__(self, state):

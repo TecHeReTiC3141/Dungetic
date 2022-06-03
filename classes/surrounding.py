@@ -46,7 +46,7 @@ class Wall:
         self.sprite.set_colorkey('Black')
         pygame.draw.rect(self.sprite, (70, 70, 70), (0, 0, self.width, self.height), border_radius=8)
 
-        self.mask = pygame.mask.from_surface(self.sprite)
+
         self.collised = collised
         self.movable = movable
         super().__init__(*args)
@@ -163,30 +163,35 @@ class Wall:
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        vis_zone, sprite = state.pop('visible_zone'), state.pop('sprite')
-        state['visible_zone'] = (pygame.image.tostring(vis_zone, 'RGB'), vis_zone.get_size())
-        state['sprite'] = (pygame.image.tostring(sprite, 'RGB'), sprite.get_size())
-
+        state.pop('visible_zone')
+        state.pop('sprite')
+        state.pop('mask')
         return state
 
     def __setstate__(self, state):
-        state['visible_zone'] = pygame.image.fromstring(*state['visible_zone'], 'RGB')
-        state['sprite'] = pygame.image.fromstring(*state['sprite'], 'RGB')
+        width, height = state['width'], state['height']
+        self.visible_zone = pygame.Surface((width, height))
+        self.sprite = pygame.Surface((width, height))
+        self.visible_zone.set_colorkey('Black')
+        self.sprite.set_colorkey('Black')
+        self.mask = pygame.mask.from_surface(self.sprite)
         self.__dict__.update(state)
 
 
 class Vase(Wall, Breakable, Container):
 
+    sprite_path = '../images/surroundings/Vase1.png'
+
     def __init__(self, x, y, width, height, collised=False, movable=False, health=120, container=None):
         super().__init__(x, y, width, height, collised, movable, health, container)
 
-        self.sprite = pygame.image.load('../images/surroundings/Vase1.png').convert_alpha()
+        self.sprite = pygame.image.load(self.sprite_path).convert_alpha()
         self.visible_zone = pygame.Surface(self.sprite.get_size())
-
-        self.mask = pygame.mask.from_surface(self.sprite)
-        self.cur_rect.update(*self.cur_rect.topleft, *self.sprite.get_size())
         self.sprite.set_colorkey('#FFFFFF')
         self.visible_zone.set_colorkey('White')
+        self.mask = pygame.mask.from_surface(self.sprite)
+        self.cur_rect.update(*self.cur_rect.topleft, *self.sprite.get_size())
+
 
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill('#FFFFFF')
@@ -194,14 +199,24 @@ class Vase(Wall, Breakable, Container):
         display.blit(self.visible_zone, self.cur_rect)
         return self.visible_zone
 
+    def __setstate__(self, state):
+        self.sprite = pygame.image.load(self.sprite_path).convert_alpha()
+        self.visible_zone = pygame.Surface(self.sprite.get_size())
+        self.sprite.set_colorkey('#FFFFFF')
+        self.visible_zone.set_colorkey('White')
+        self.mask = pygame.mask.from_surface(self.sprite)
+        self.__dict__.update(state)
+
 
 class Crate(Vase):
+
+    sprite_path = '../images/surroundings/crate.png'
 
     def __init__(self, x, y, width, height, collised=False,
                  movable=False, health=120, container=None):
         super().__init__(x, y, width, height, collised,
                          movable, health, container)
-        self.sprite = pygame.transform.scale(pygame.image.load('../images/surroundings/crate.png'), (width, height))
+        self.sprite = pygame.transform.scale(pygame.image.load(self.sprite_path), (width, height))
         self.visible_zone = pygame.Surface(self.sprite.get_size())
         self.visible_zone.set_colorkey('White')
         self.cur_rect.update(*self.cur_rect.topleft, width, height)
@@ -245,6 +260,7 @@ class Room:
         self.entrances = entrances
         self.is_safe = len([i for i in self.entities_list if isinstance(i, Hostile)]) == 0
         self.floor = pygame.transform.scale(stone_floor if floor == 'stone' else wooden_floor, size)
+        self.floor_name = floor
         self.visited = True
         self.type = type
         self.width, self.height = size
@@ -409,6 +425,12 @@ class Room:
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        floor = state.pop('floor')
-        state['floor'] = (pygame.image.tostring(floor, 'RGB'), floor.get_size())
+        state.pop('floor')
+        state['decors'] = []
         return state
+
+    def __setstate__(self, state):
+        self.floor = pygame.transform.scale(stone_floor if state['floor_name'] == 'stone'
+                                            else wooden_floor,
+                                            (state['width'], state['height']))
+        self.__dict__.update(state)

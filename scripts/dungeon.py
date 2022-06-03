@@ -20,7 +20,7 @@ player_manager = PlayerManager(heretic)
 
 console = Console(game_manager, player_manager)
 
-Map = MapInter(polygon, game_manager)
+Map = MapInter(game_manager)
 Inventory = InventoryInter(heretic, game_manager)
 Menu = MainMenu(game_manager, heretic)
 
@@ -130,21 +130,25 @@ while game_cycle:
 
     if heretic.cur_rect.colliderect(left_border):
         heretic.manager.set_room(heretic.manager.curr_room - 1)
+        cur_room = game_manager.dungeon[game_manager.curr_room]
         camera.set_surf(heretic.manager.surf)
-        heretic.cur_rect.left = game_manager.dungeon[game_manager.curr_room].width - 100
+        heretic.cur_rect.left = cur_room.width - 100
 
     elif heretic.cur_rect.colliderect(right_border):
         heretic.manager.set_room(heretic.manager.curr_room + 1)
+        cur_room = game_manager.dungeon[game_manager.curr_room]
         camera.set_surf(heretic.manager.surf)
         heretic.cur_rect.left = 50
 
     elif heretic.cur_rect.colliderect(upper_border):
         heretic.manager.set_room(heretic.manager.curr_room - dung_length)
+        cur_room = game_manager.dungeon[game_manager.curr_room]
         camera.set_surf(heretic.manager.surf)
-        heretic.cur_rect.top = game_manager.dungeon[game_manager.curr_room].height - 125
+        heretic.cur_rect.top = cur_room.height - 125
 
     elif heretic.cur_rect.colliderect(lower_border):
         heretic.manager.set_room(heretic.manager.curr_room + dung_length)
+        cur_room = game_manager.dungeon[game_manager.curr_room]
         camera.set_surf(heretic.manager.surf)
         heretic.cur_rect.top = 25
 
@@ -152,10 +156,3 @@ while game_cycle:
     right_border = pygame.Rect(cur_room.width - 15, 0, 5, cur_room.height)
     upper_border = pygame.Rect(0, 5,  cur_room.width + 5, 5)
     lower_border = pygame.Rect(0, cur_room.height - 15,  cur_room.width, 5)
-
-    if not tick % 600:
-        # pprint(heretic.__getstate__())
-
-        pprint(heretic.weapon.__dict__)
-        heretic.__getstate__()
-
