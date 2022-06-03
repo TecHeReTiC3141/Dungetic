@@ -295,7 +295,8 @@ class Heretic:
         self.weapon = player.weapon
         self.money = player.money
         self.experience = player.experience
-        self.experience = player.experience
+        self.level = player.level
+        self.exp_points = player.exp_points
 
 
     def __getstate__(self):
