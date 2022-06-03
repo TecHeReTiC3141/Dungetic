@@ -293,11 +293,13 @@ class Heretic:
     def set_player(self, player):
         self.inventory = player.inventory
         self.weapon = player.weapon
+        self.body_armor = player.body_armor
+        self.head_armor = player.head_armor
         self.money = player.money
         self.experience = player.experience
         self.level = player.level
         self.exp_points = player.exp_points
-
+        self.skills = player.skills
 
     def __getstate__(self):
         state = self.__dict__.copy()
