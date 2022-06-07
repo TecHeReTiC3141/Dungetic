@@ -42,6 +42,7 @@ class Wall:
         self.outer_phys_rect = pygame.Rect(x - 10, y - 10, width + 20, height + 20)
         self.visible_zone = pygame.Surface((width, height))
         self.sprite = pygame.Surface((width, height))
+        self.mask = pygame.mask.from_surface(self.sprite)
         self.visible_zone.set_colorkey('Black')
         self.sprite.set_colorkey('Black')
         pygame.draw.rect(self.sprite, (70, 70, 70), (0, 0, self.width, self.height), border_radius=8)

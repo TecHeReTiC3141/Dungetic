@@ -2,8 +2,9 @@ from scripts.generation import generate_dungeons
 from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, ConsoleGui
 from scripts.Console import *
 from classes.camera import *
+dung_length, dung_width = randint(5, 10), randint(5, 10)
 
-polygon = generate_dungeons(dung_width, dung_length)
+polygon, dung_width, dung_height = generate_dungeons(dung_width, dung_length)
 curr_room = choice(list(polygon.keys()))
 
 tick = 0
@@ -11,7 +12,7 @@ draw_grid = False
 cur_inter = None
 
 game_manager = GameManager((display_width, display_height),
-                           polygon, curr_room)
+                           polygon, dung_width, dung_height, curr_room)
 heretic = Heretic(100, 100, 75, 100, 100, choice(directions), game_manager)
 
 camera = Camera(game_manager.surf, heretic)

@@ -23,9 +23,6 @@ phys_eps = .15
 
 game_cycle = True
 
-dung_length, dung_width = randint(5, 10), randint(5, 10)
-
-
 display_width, display_height = (1440, 900)
 display = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Dungetic')

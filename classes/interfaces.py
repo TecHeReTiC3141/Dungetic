@@ -310,9 +310,9 @@ class MapInter(Interface):
         display.blit(bloor, (0, 0))
         display.blit(map_image, (40, 40))
         rooms = self.manager.dungeon
-        for i in range(1, dung_width + 1):
-            for j in range(1, dung_length + 1):
-                cur_ind = i * dung_length + j
+        for i in range(1, self.manager.dung_width + 1):
+            for j in range(1, self.manager.dung_length + 1):
+                cur_ind = i * self.manager.dung_length + j
                 room_x = 10 + j * 80
                 room_y = 10 + i * 80
                 if rooms.get(cur_ind) is not None and rooms[cur_ind].visited:

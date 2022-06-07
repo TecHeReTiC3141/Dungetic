@@ -226,6 +226,8 @@ class Saving(GUI):
             # cur_time = strftime( '%m.%d.%y %H-%M-%S %a', gmtime(time()))
             with open(f'../saving/{values["-SAVENAME-"]}.pcl', 'wb') as save:
                 pickle.dump(self.manager.curr_room, save)
+                pickle.dump(self.manager.dung_width, save)
+                pickle.dump(self.manager.dung_length, save)
                 pickle.dump(self.manager.dungeon, save)
                 pickle.dump(self.player, save)
             sg.popup('Successfully saved!')
@@ -262,7 +264,7 @@ class Loading(GUI):
 
     def run(self):
         save_active = -1
-        save_data = []
+
         while True:
             event, values = self.window.read()
 
@@ -276,8 +278,10 @@ class Loading(GUI):
             elif event == 'Load':
                 save_name = self.saves[save_active].name
                 with open(Path('../saving') / save_name, 'rb') as save:
-                    cur_room, dungeon, player = [pickle.load(save) for i in '...']
+                    cur_room, dung_width, dung_length, dungeon, player = [pickle.load(save) for _ in '.....']
                     self.manager.dungeon = dungeon
+                    self.manager.dung_width = dung_width
+                    self.manager.dung_length = dung_length
                     self.manager.set_room(cur_room)
                     self.player.set_player(player)
                 break
