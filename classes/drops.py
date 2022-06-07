@@ -79,3 +79,36 @@ class LyingItem(Drop):
         self.background.set_colorkey(BLACK)
         self.background.set_alpha(128)
         self.__dict__.update(state)
+
+
+class SellingGood(LyingItem):
+
+    def __init__(self, x, y, lootcls: type, price):
+        super().__init__(x, y, lootcls)
+        self.sprite = self.loot.sprite['left'] if isinstance(self.loot.sprite, dict) else self.loot.sprite
+
+        self.background = pygame.transform.scale(pygame.image.load('../images/surroundings/pallet.png'),
+                                                 (self.rect.width, self.rect.height + 30))
+        pygame.draw.rect(self.background, 'white',
+                         (3, self.rect.height, self.rect.width - 6, 26))
+        price_surf = text_font.render(f'{price} $', True, 'black')
+        self.background.blit(price_surf, (self.background.get_width() // 2 -
+                                          price_surf.get_width() // 2,
+                                          self.rect.height + 2))
+        self.loot.autopicked = False
+        self.background.set_colorkey(BLACK)
+        self.price = price
+
+    def draw_object(self, display):
+        display.blit(self.background, self.rect.topleft)
+        if self.active:
+            # self.background.fill(WHITE)
+            display.blit(self.sprite, self.rect.move(0, -20))
+        else:
+            display.blit(self.sprite, self.rect)
+
+    def picked_up(self, entity: Heretic):
+        if self.price <= entity.actual_money and not self.picked:
+            self.loot.picked_up(entity)
+            entity.actual_money -= self.price
+            self.picked = True

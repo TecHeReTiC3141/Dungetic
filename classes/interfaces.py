@@ -320,6 +320,9 @@ class MapInter(Interface):
                         pygame.draw.rect(display, (240, 240, 240), (room_x, room_y, 45, 35))
                     elif rooms[cur_ind].type == 'storage':
                         pygame.draw.rect(display, '#8d6712', (room_x, room_y, 45, 35))
+                    elif rooms[cur_ind].type == 'shop':
+                        pygame.draw.rect(display, '#0d68be', (room_x, room_y, 45, 35))
+
                     if 'up' in rooms[cur_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (room_x + 12, room_y - 25, 20, 25))
                     if 'down' in rooms[cur_ind].entrances:

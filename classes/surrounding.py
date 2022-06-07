@@ -103,6 +103,7 @@ class Wall:
                         else:
                             entity.speed_directions['up'] = max(5 - self.weight, 1)
             else:
+                move = [0, 0]
                 if entity.cur_rect.colliderect(self.cur_rect):
                     if direction == 'hor':
                         # left side
@@ -122,6 +123,7 @@ class Wall:
                         elif entity.cur_rect.top <= self.cur_rect.bottom <= entity.prev_rect.top:
                             entity.cur_rect.top = self.cur_rect.bottom
                             move[1] = -max(5 - self.weight, 1)
+
             # TODO update physics for all entities
             if self.movable:
                 self.prev_rect = self.cur_rect.copy()
@@ -249,11 +251,11 @@ class MyNode:
 
 class Room:
 
-    def __init__(self, obst_list: list[Wall], containers: list[Wall],
+    def __init__(self, obst_list: list[Wall], containers: list[Wall], drops: list[Drop],
                  entities_list: list[NPC], projectiles: list[Projectile], entrances, floor: str, size: tuple,type: str = 'common'):
         self.obst_list = obst_list
         self.containers = containers
-        self.drops = []
+        self.drops = drops
         self.decors = []
         self.entities_list = entities_list
         self.projectiles = projectiles

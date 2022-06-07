@@ -14,7 +14,7 @@ class DungNode:
 
 
 def create_dung_matr(dung_width, dung_length) -> list[list[DungNode]]:
-    room_types = [0, 1, 1, 1, 2]
+    room_types = [0, 1, 1, 1, 1, 2, 2, 3]
     return [[DungNode(-1) for _ in range(dung_length + 2)]] + \
            [[DungNode(-1)] + [DungNode(choice(room_types)) for _ in range(dung_length)
                               ] + [DungNode(-1)] for __ in range(dung_width)] \
@@ -65,7 +65,7 @@ def create_connected_dung(dung_width, dung_length) -> list[list[DungNode]]:
     return dung_map
 
 
-room_types = ['node', 'common', 'storage']
+room_types = ['node', 'common', 'storage', 'shop friendly']
 
 
 def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
@@ -75,9 +75,11 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
     enters = []
     walls = []
     cont = []
+    drops = []
     entities = NPC.produce_NPC(randint(1, 3)) \
                + Hostile.produce_Hostiles(randint(2, 3))
     cur_node = dung_matr[x][y]
+    room_type = room_types[cur_node.type].split()
     if (x - 1, y) in cur_node.neighbours:
         walls.append(Wall(0, 0, width=randint(room_width // 2 - 250, room_width // 2 - 100),
                           height=randint(50, 100)))
@@ -131,11 +133,16 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
                   container=generate_random_loot([Potion, GoldCoin, SilverCoin], wall_x, wall_y, n=randint(1, 3)))
              for _ in range(randint(3, 5))]
 
-    if room_types[cur_node.type] == 'storage':
+    if room_type[0] == 'storage':
         cont += [Crate(wall_x := randrange(100, 905, 5), wall_y := randrange(100, 705, 5),
                        width=randint(45, 80), height=randint(45, 80), movable=True, health=10,
                        container=generate_random_loot([Knife, GoldCoin, SilverCoin, Helmet], wall_x, wall_y,
                                                       n=randint(2, 3)))
+                 for _ in range(randint(3, 5))]
+
+    elif room_type[0] == 'shop':
+        drops += [SellingGood(randrange(100, 905, 5), randrange(100, 705, 5),
+                      choice([Knife, GoldCoin, SilverCoin, Helmet, Potion]), randint(1, 10))
                  for _ in range(randint(3, 5))]
 
     for entity in entities:
@@ -144,8 +151,9 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
             entity.loot.append(LyingItem(0, 0, type(entity.weapon)))
         entity.loot += [LyingItem(0, 0, Experience) for _ in range(randint(2, 3))]
 
-    return Room(walls, cont, entities, [], enters, choice(['stone', 'wooden']),
-                (room_width, room_height), type=room_types[cur_node.type])
+    return Room(walls, cont, drops, entities if 'friendly' not in room_type else [], [],
+                enters, choice(['stone', 'wooden']),
+                (room_width, room_height), type=room_type[0])
 
 
 def generate_dungeons(dung_width, dung_length) -> tuple[dict[int, Room], int, int]:
