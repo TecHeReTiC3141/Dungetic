@@ -56,13 +56,13 @@ class Projectile:
     sprite = pygame.Surface((25, 25))
     eps = 1e-3
     sprite.set_colorkey('black')
-
+    mask = pygame.mask.from_surface(sprite)
 
     def __init__(self, x, y, vector: pygame.math.Vector2, physics=False):
         pygame.draw.circle(self.sprite, '#0000CA',
                            (self.sprite.get_width() // 2, self.sprite.get_height() // 2),
                            self.sprite.get_width() // 2)
-        self.mask = pygame.mask.from_surface(self.sprite)
+
         self.rect = self.sprite.get_rect(topleft=(x, y))
         self.vector = vector
         self.physics = physics

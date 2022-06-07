@@ -2,8 +2,9 @@ from scripts.generation import generate_dungeons
 from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, ConsoleGui
 from scripts.Console import *
 from classes.camera import *
+dung_length, dung_width = randint(5, 10), randint(5, 10)
 
-polygon = generate_dungeons(dung_width, dung_length)
+polygon, dung_width, dung_height = generate_dungeons(dung_width, dung_length)
 curr_room = choice(list(polygon.keys()))
 
 tick = 0
@@ -11,7 +12,7 @@ draw_grid = False
 cur_inter = None
 
 game_manager = GameManager((display_width, display_height),
-                           polygon, curr_room)
+                           polygon, dung_width, dung_height, curr_room)
 heretic = Heretic(100, 100, 75, 100, 100, choice(directions), game_manager)
 
 camera = Camera(game_manager.surf, heretic)
@@ -20,9 +21,9 @@ player_manager = PlayerManager(heretic)
 
 console = Console(game_manager, player_manager)
 
-Map = MapInter(polygon, game_manager)
+Map = MapInter(game_manager)
 Inventory = InventoryInter(heretic, game_manager)
-Menu = MainMenu(game_manager)
+Menu = MainMenu(game_manager, heretic)
 
 print(*[''.join([str(j).rjust(3) for j in list(range(1 + dung_length * i,
                                                      dung_length * i + 1))]) for i in range(1, dung_width + 1)],
@@ -89,7 +90,6 @@ while game_cycle:
             mouse[0] /= game_manager.res[0] / 1440
             mouse[1] /= game_manager.res[1] / 900
             mouse = tuple(mouse)
-            print(mouse)
             if isinstance(cur_inter, InventoryInter):
                 cur_inter.process(event.button, mouse)
             if event.button == 1:
@@ -119,10 +119,10 @@ while game_cycle:
                 logging.info(f'{cur_room.width}, {cur_room.height}, {scrolling[:2]}, {heretic.cur_rect.center}')
             game_manager.display.fill('black')
             game_manager.display.blit(game_manager.surf, (0, 0), scrolling)
+
             game_manager.display.blit(text_font.render(f'{game_manager.curr_room}', True, WHITE), (25, 25))
             game_manager.display.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
             game_manager.display.blit(text_font.render(f'{heretic.experience}', True, 'green'), (25, 85))
-
 
     pygame.display.update()
 
@@ -131,21 +131,25 @@ while game_cycle:
 
     if heretic.cur_rect.colliderect(left_border):
         heretic.manager.set_room(heretic.manager.curr_room - 1)
+        cur_room = game_manager.dungeon[game_manager.curr_room]
         camera.set_surf(heretic.manager.surf)
-        heretic.cur_rect.left = game_manager.dungeon[game_manager.curr_room].width - 100
+        heretic.cur_rect.left = cur_room.width - 100
 
     elif heretic.cur_rect.colliderect(right_border):
         heretic.manager.set_room(heretic.manager.curr_room + 1)
+        cur_room = game_manager.dungeon[game_manager.curr_room]
         camera.set_surf(heretic.manager.surf)
         heretic.cur_rect.left = 50
 
     elif heretic.cur_rect.colliderect(upper_border):
         heretic.manager.set_room(heretic.manager.curr_room - dung_length)
+        cur_room = game_manager.dungeon[game_manager.curr_room]
         camera.set_surf(heretic.manager.surf)
-        heretic.cur_rect.top = game_manager.dungeon[game_manager.curr_room].height - 125
+        heretic.cur_rect.top = cur_room.height - 125
 
     elif heretic.cur_rect.colliderect(lower_border):
         heretic.manager.set_room(heretic.manager.curr_room + dung_length)
+        cur_room = game_manager.dungeon[game_manager.curr_room]
         camera.set_surf(heretic.manager.surf)
         heretic.cur_rect.top = 25
 

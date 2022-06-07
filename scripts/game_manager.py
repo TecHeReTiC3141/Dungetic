@@ -1,6 +1,7 @@
 import pygame
 
-from scripts.constants import display_width, display_height, stone_floor
+from scripts.constants import stone_floor
+
 
 class GameManager:
     possible_states = ['main_menu',
@@ -10,7 +11,7 @@ class GameManager:
                        'inventory_skills',
                        'inventory_stats']
 
-    def __init__(self, res: tuple, dungeon: dict, cur_room,
+    def __init__(self, res: tuple, dungeon: dict, dung_width, dung_height, cur_room,
                  state='main_menu', caption='Dungetic'):
 
         if state not in self.possible_states:
@@ -28,9 +29,10 @@ class GameManager:
 
         self.is_paused = False
         self.dungeon = dungeon
+        self.dung_width, self.dung_length = dung_width, dung_height
         self.curr_room = cur_room
         self.surf = pygame.Surface((self.dungeon[cur_room].width,
-                                                       self.dungeon[cur_room].height))
+                                    self.dungeon[cur_room].height) if self.dungeon else (0, 0))
         self.sound_vol = .5
         self.music_vol = .5
 

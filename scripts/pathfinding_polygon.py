@@ -33,7 +33,7 @@ while game_cycle:
                 heretic.hit(polygon.entities_list, polygon.containers)
 
             elif event.key == pygame.K_r:
-                polygon.projectiles.append(heretic.throw_ball())
+                polygon.projectiles.append(heretic.shoot())
 
             elif event.key == pygame.K_q:
                 show_grid = ~show_grid

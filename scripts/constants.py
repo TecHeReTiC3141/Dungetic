@@ -6,6 +6,10 @@ from collections import *
 import PySimpleGUI as sg
 from scripts.Maths import *
 from scripts.log_sets import logging
+import pickle
+from time import *
+from pathlib import Path
+from pprint import pprint
 
 pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()
@@ -18,9 +22,6 @@ grid_size = 48
 phys_eps = .15
 
 game_cycle = True
-
-dung_length, dung_width = randint(5, 10), randint(5, 10)
-
 
 display_width, display_height = (1440, 900)
 display = pygame.display.set_mode((display_width, display_height))
@@ -53,7 +54,7 @@ bloor = pygame.Surface((display_width, display_height))
 bloor.set_alpha(15)
 current_interface = None
 
-# fonts
+# # # # # # # # fonts # # # # # # #
 text_font = pygame.font.Font(None, 40)
 active_font = pygame.font.Font(None, 50)
 inventory_font = pygame.font.SysFont('Cambria', 75)

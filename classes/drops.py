@@ -23,6 +23,18 @@ class Drop:
             self.loot.picked_up(entity)
         self.picked = True
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        state.pop('sprite')
+
+        return state
+
+    def __setstate__(self, state):
+        self.sprite = pygame.transform.rotate(state['loot'].sprite['left']
+                                              if isinstance(self.loot.sprite, dict) else state['loot'].sprite,
+                                              randint(0, 360))
+        self.__dict__.update(state)
+
 
 class LyingItem(Drop):
 
@@ -52,3 +64,18 @@ class LyingItem(Drop):
                 elif mouse:
                     if self.rect.collidepoint(mouse):
                         self.picked_up(entity)
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        state.pop('sprite')
+        state.pop('background')
+        return state
+
+    def __setstate__(self, state):
+        self.sprite = pygame.transform.rotate(state['loot'].sprite['left']
+                                              if isinstance(state['loot'].sprite, dict) else state['loot'].sprite,
+                                              randint(0, 360))
+        self.background = pygame.Surface((state['rect'].width, state['rect'].width))
+        self.background.set_colorkey(BLACK)
+        self.background.set_alpha(128)
+        self.__dict__.update(state)

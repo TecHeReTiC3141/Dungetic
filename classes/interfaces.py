@@ -41,7 +41,8 @@ class Button(UI):
         pygame.draw.rect(self.image, self.color,
                          (0, 0, self.rect.width, self.rect.height - 5), border_radius=15)
 
-        self.image.blit(self.label, (self.rect.width // 3, self.rect.height // 5))
+        self.image.blit(self.label, (self.rect.width // 2  - self.label.get_width() // 2,
+                                     self.rect.height // 2 - self.label.get_height() // 2))
         display.blit(self.image, self.rect)
 
     def update(self, mouse, ):
@@ -301,31 +302,31 @@ class InventoryInter(Interface):
 
 class MapInter(Interface):
 
-    def __init__(self, rooms: dict, game_manager: GameManager):
+    def __init__(self, game_manager: GameManager):
         super().__init__()
         self.manager = game_manager
-        self.rooms = rooms
 
     def draw_object(self, display):
         display.blit(bloor, (0, 0))
         display.blit(map_image, (40, 40))
-        for i in range(1, dung_width + 1):
-            for j in range(1, dung_length + 1):
-                cur_ind = i * dung_length + j
+        rooms = self.manager.dungeon
+        for i in range(1, self.manager.dung_width + 1):
+            for j in range(1, self.manager.dung_length + 1):
+                cur_ind = i * self.manager.dung_length + j
                 room_x = 10 + j * 80
                 room_y = 10 + i * 80
-                if self.rooms.get(cur_ind) is not None and self.rooms[cur_ind].visited:
-                    if self.rooms[cur_ind].type == 'common':
+                if rooms.get(cur_ind) is not None and rooms[cur_ind].visited:
+                    if rooms[cur_ind].type == 'common':
                         pygame.draw.rect(display, (240, 240, 240), (room_x, room_y, 45, 35))
-                    elif self.rooms[cur_ind].type == 'storage':
+                    elif rooms[cur_ind].type == 'storage':
                         pygame.draw.rect(display, '#8d6712', (room_x, room_y, 45, 35))
-                    if 'up' in self.rooms[cur_ind].entrances:
+                    if 'up' in rooms[cur_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (room_x + 12, room_y - 25, 20, 25))
-                    if 'down' in self.rooms[cur_ind].entrances:
+                    if 'down' in rooms[cur_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (room_x + 12, room_y + 35, 20, 20))
-                    if 'right' in self.rooms[cur_ind].entrances:
+                    if 'right' in rooms[cur_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (room_x + 45, room_y + 7, 20, 20))
-                    if 'left' in self.rooms[cur_ind].entrances:
+                    if 'left' in rooms[cur_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (room_x - 15, room_y + 7, 15, 20))
                     if cur_ind == self.manager.curr_room:
                         pygame.draw.rect(display, BLACK, (room_x + 5, room_y + 7, 15, 20))
@@ -333,16 +334,20 @@ class MapInter(Interface):
 
 class MainMenu(Interface):
 
-    def __init__(self, manager: GameManager):
+    def __init__(self, manager: GameManager, player: Heretic):
         super().__init__()
         self.manager = manager
         play = ChangeState(display_width // 3, display_height // 2, 250, 80, 'Start',
                            GREEN, manager, 'main_game')
-        settings = CreateWindow(display_width // 3, display_height // 2 + 100, 250, 80, 'Settings',
+        save_game = CreateWindow(display_width // 3, display_height // 2 + 100, 120, 80, 'Save',
+                               BLUE, manager, Saving, player=player)
+        load_game = CreateWindow(display_width // 3 + 130, display_height // 2 + 100, 120, 80, 'Load',
+                                 BLUE, manager, Loading, player=player)
+        settings = CreateWindow(display_width // 3, display_height // 2 + 200, 250, 80, 'Settings',
                                BLUE, manager, Settings)
-        ex = SimpleButton(display_width // 3, display_height // 2 + 200, 250, 80, 'Exit',
+        ex = SimpleButton(display_width // 3, display_height // 2 + 300, 250, 80, 'Exit',
                           RED, exit)
-        self.button_list = [play, settings, ex]
+        self.button_list = [play, save_game, load_game, settings, ex]
 
     def draw_object(self, display: pygame.Surface, ):
         self.blit(stone_floor, (0, 0))

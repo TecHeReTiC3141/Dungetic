@@ -3,9 +3,7 @@ from classes.decors import *
 from scripts.game_manager import GameManager
 
 
-
 class Heretic:
-
     sprites = {i: pygame.image.load(f'../images/entities/heretic/heretic_sprite_{i}.png')
                for i in directions}
 
@@ -86,13 +84,13 @@ class Heretic:
                                          * self.weapon.knockback)
                     if self.manager.blood:
                         blood_list.extend([Blood(randint(entity.cur_rect.left, entity.cur_rect.right),
-                                             randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
-                                             randint(10, 15), randint(10, 15), randint(50, 70),
-                                             type=choice(['down', 'up']), speed=5) for i in
-                                       range(self.weapon.damage // 4)])
+                                                 randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
+                                                 randint(10, 15), randint(10, 15), randint(50, 70),
+                                                 type=choice(['down', 'up']), speed=5) for _ in
+                                           range(self.weapon.damage // 4)])
                     if self.manager.show_damage:
                         blood_list.append(DamageInd(randint(entity.cur_rect.left, entity.cur_rect.right),
-                                             randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
+                                                    randint(entity.cur_rect.top, entity.cur_rect.midleft[1]),
                                                     damage, randint(50, 70), text_font))
 
                     entity.cur_rect.move_ip(dist_x, dist_y)
@@ -124,7 +122,7 @@ class Heretic:
             if self.direction == 'left':
                 vector = pygame.math.Vector2(-1, uniform(-.3, .3))
             elif self.direction == 'right':
-                vector = pygame.math.Vector2(1 , + uniform(-.3, .3))
+                vector = pygame.math.Vector2(1, + uniform(-.3, .3))
             elif self.direction == 'up':
                 vector = pygame.math.Vector2(uniform(-.3, .3), -1)
             else:
@@ -139,7 +137,6 @@ class Heretic:
             else (self.cur_rect.centerx, self.cur_rect.centery)
 
     def move(self):  # heretic's moving
-        global c_a_s
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a]:
             self.direction = 'left'
@@ -156,7 +153,6 @@ class Heretic:
         if keys[pygame.K_s]:
             self.direction = 'down'
             self.vector.y = 1
-
 
     def update(self, tick: int, is_safe: bool = None):
 
@@ -188,9 +184,10 @@ class Heretic:
                                         self.width // 5 * 3, self.weapon.hit_range)
         elif isinstance(self.weapon, LongRange):
             if self.direction == 'left':
-                self.attack_rect.update(self.cur_rect.left - self.weapon.sprite[self.direction].get_width() - max(self.attack_time // 4, 0),
-                                        self.cur_rect.top + self.height // 5,
-                                        self.weapon.sprite[self.direction].get_width(), self.height // 5 * 3)
+                self.attack_rect.update(
+                    self.cur_rect.left - self.weapon.sprite[self.direction].get_width() - max(self.attack_time // 4, 0),
+                    self.cur_rect.top + self.height // 5,
+                    self.weapon.sprite[self.direction].get_width(), self.height // 5 * 3)
 
             elif self.direction == 'right':
                 self.attack_rect.update(self.cur_rect.right + max(self.attack_time // 4, 0),
@@ -292,6 +289,31 @@ class Heretic:
                              border_radius=8)
             pygame.draw.rect(display, RED, (x - 10, y - 28,
                                             int(100.0 * float(self.health) / 100.0), 21), border_radius=8)
+
+    def set_player(self, player):
+        self.inventory = player.inventory
+        self.weapon = player.weapon
+        self.body_armor = player.body_armor
+        self.head_armor = player.head_armor
+        self.actual_money = player.actual_money
+        self.experience = player.experience
+        self.level = player.level
+        self.exp_points = player.exp_points
+        self.skills = player.skills
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+
+        state.pop('attack_surf')
+        state.pop('visible_zone')
+        state.pop('manager')
+        pprint(state)
+        return state
+
+    def __setstate__(self, state):
+        state['attack_surf'] = pygame.Surface((50, 50))
+        state['visible_zone'] = pygame.Surface((state['width'], state['height']))
+        self.__dict__.update(state)
 
 
 class PlayerManager(GameManager):
