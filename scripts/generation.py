@@ -65,7 +65,7 @@ def create_connected_dung(dung_width, dung_length) -> list[list[DungNode]]:
     return dung_map
 
 
-room_types = ['node', 'common', 'storage', 'shop friendly']
+room_types = ['node', 'common', 'storage', ' shop nowalls friendly']
 
 
 def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
@@ -76,10 +76,14 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
     walls = []
     cont = []
     drops = []
-    entities = NPC.produce_NPC(randint(1, 3)) \
-               + Hostile.produce_Hostiles(randint(2, 3))
+
     cur_node = dung_matr[x][y]
     room_type = room_types[cur_node.type].split()
+
+    nodes = [[MyNode(j * grid_size, i * grid_size, grid_size, grid_size)
+              for j in range(ceil(room_width / grid_size))]
+             for i in range(ceil(room_height / grid_size))]
+
     if (x - 1, y) in cur_node.neighbours:
         walls.append(Wall(0, 0, width=randint(room_width // 2 - 250, room_width // 2 - 100),
                           height=randint(50, 100)))
@@ -122,29 +126,60 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
         walls.append(
             Wall(wall_x := randint(room_width - 100, room_width - 50), 0, room_width - wall_x,
                  room_height))
-
-    walls += [Wall(randrange(100, room_width - 100, 5), randrange(100, room_height - 100, 5),
+    if 'nowalls' not in room_type:
+        walls += [Wall(randrange(100, room_width - 100, 5), randrange(100, room_height - 100, 5),
                    width=randrange(50, 120, 5),
                    height=randrange(50, 100, 5), movable=False) for
-              _ in range(randint(5, 10))]
+              _ in range(round(randint(5, 8) * (room_height * room_width /
+                                                (display_width * display_height))))]
 
-    cont += [Vase(wall_x := randrange(100, room_width - 100, 5), wall_y := randrange(100, room_height - 100, 5),
-                  width=40, height=45, movable=True, health=10,
-                  container=generate_random_loot([Potion, GoldCoin, SilverCoin], wall_x, wall_y, n=randint(1, 3)))
-             for _ in range(randint(3, 5))]
+        for node_l in range(len(nodes)):
+            for node in nodes[node_l]:
+                node.collide(walls)
+
+    for _ in range(round(randint(2, 4) * (room_height * room_width /
+                                          (display_width * display_height)))):
+        while True:
+            x, y = randrange(100, room_width - 100, 5), randrange(100, room_height - 100, 5)
+            width, height = 40, 45
+            x_n, y_n = (x + width // 2) // grid_size, (y + height) // grid_size
+            if nodes[y_n][x_n].status:
+                cont.append(Vase(x, y, width, height, movable=True, health=10,
+                                 container=generate_random_loot([Potion, GoldCoin, SilverCoin], wall_x, wall_y,
+                                                                n=randint(1, 3))))
+                break
+
+    for node_l in range(len(nodes)):
+        for node in nodes[node_l]:
+            node.collide(walls)
 
     if room_type[0] == 'storage':
-        cont += [Crate(wall_x := randrange(100, 905, 5), wall_y := randrange(100, 705, 5),
-                       width=randint(45, 80), height=randint(45, 80), movable=True, health=10,
-                       container=generate_random_loot([Knife, GoldCoin, SilverCoin, Helmet], wall_x, wall_y,
-                                                      n=randint(2, 3)))
-                 for _ in range(randint(3, 5))]
+        for _ in range(round(randint(2, 4) * (room_height * room_width /
+                                              (display_width * display_height)))):
+            while True:
+                x, y = randrange(100, room_width - 100, 5), randrange(100, room_height - 100, 5)
+                width, height = randint(45, 80), randint(45, 80)
+                x_n, y_n = (x + width // 2) // grid_size, (y + height) // grid_size
+                if nodes[y_n][x_n].status:
+                    cont.append(Crate(x, y, width, height, movable=True, health=10,
+                                      container=generate_random_loot([Knife, GoldCoin, SilverCoin, Helmet], wall_x,
+                                                                     wall_y,
+                                                                     n=randint(2, 3))))
+                    break
+
+        for node_l in range(len(nodes)):
+            for node in nodes[node_l]:
+                node.collide(walls)
 
     elif room_type[0] == 'shop':
-        drops += [SellingGood(randrange(100, 905, 5), randrange(100, 705, 5),
-                      choice([Knife, GoldCoin, SilverCoin, Helmet, Potion]), randint(1, 10))
-                 for _ in range(randint(3, 5))]
+        n_goods = randint(3, 5)
+        for x in range(room_width // 3, room_width * 2 // 3 + 1,
+                       room_width // 3 // n_goods):
+            drops.append(SellingGood(x, display_height * 2 // 3,
+                              choice([Knife, GoldCoin, SilverCoin, Helmet, Potion]), randint(1, 10)))
 
+    entities = NPC.produce_NPC(randint(2, 4), nodes, room_width, room_height) \
+               + Hostile.produce_Hostiles(randint(2, 4), nodes, room_width, room_height)
     for entity in entities:
         entity.loot = generate_random_loot([SilverCoin, GoldCoin, Potion], 0, 0, n=randint(1, 2))
         if not isinstance(entity.weapon, Fist):
@@ -152,7 +187,7 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
         entity.loot += [LyingItem(0, 0, Experience) for _ in range(randint(2, 3))]
 
     return Room(walls, cont, drops, entities if 'friendly' not in room_type else [], [],
-                enters, choice(['stone', 'wooden']),
+                enters, nodes, choice(['stone', 'wooden']),
                 (room_width, room_height), type=room_type[0])
 
 

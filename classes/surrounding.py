@@ -195,7 +195,6 @@ class Vase(Wall, Breakable, Container):
         self.mask = pygame.mask.from_surface(self.sprite)
         self.cur_rect.update(*self.cur_rect.topleft, *self.sprite.get_size())
 
-
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill('#FFFFFF')
         self.visible_zone.blit(self.sprite, (0, 0))
@@ -252,7 +251,8 @@ class MyNode:
 class Room:
 
     def __init__(self, obst_list: list[Wall], containers: list[Wall], drops: list[Drop],
-                 entities_list: list[NPC], projectiles: list[Projectile], entrances, floor: str, size: tuple,type: str = 'common'):
+                 entities_list: list[NPC], projectiles: list[Projectile], entrances, nodes: list[list[MyNode]],
+                 floor: str, size: tuple,type: str = 'common'):
         self.obst_list = obst_list
         self.containers = containers
         self.drops = drops
@@ -268,17 +268,13 @@ class Room:
         self.type = type
         self.width, self.height = size
 
-        self.nodes = [
-            [MyNode(j * grid_size, i * grid_size, grid_size, grid_size) for j in range(ceil(self.width / grid_size))]
-            for i in range(ceil(self.height / grid_size))]
+        self.nodes = nodes
         for node_l in range(len(self.nodes)):
             for node in self.nodes[node_l]:
                 node.collide(self.obst_list + self.containers)
         'grid for pathfinding'
         self.grid = Grid(matrix=[[self.nodes[i][j].status for j in range(ceil(self.width / grid_size))]
                                  for i in range(ceil(self.height / grid_size))])
-
-        # TODO make Room object serializable !!!
 
     def draw_object(self, surface: pygame.Surface, tick: int, show_grid: bool):
         surface.blit(self.floor, (0, 0))

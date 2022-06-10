@@ -123,6 +123,7 @@ while game_cycle:
             game_manager.display.blit(text_font.render(f'{game_manager.curr_room}', True, WHITE), (25, 25))
             game_manager.display.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
             game_manager.display.blit(text_font.render(f'{heretic.experience}', True, 'green'), (25, 85))
+            game_manager.display.blit(text_font.render(f'{round(clock.get_fps())}', True, 'red'), (25, 115))
 
     pygame.display.update()
 

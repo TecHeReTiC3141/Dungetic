@@ -86,9 +86,6 @@ class CreateWindow(ChangeState):
             self.wind(self.manager, **self.kwargs)
 
 
-# TODO create a separate class for buttons which create gui
-
-
 class InterContainer(Button):
 
     def __init__(self, x, y, width, height, ind=-1, active=True):
@@ -292,8 +289,6 @@ class InventoryInter(Interface):
 
         for button in self.button_list:
             button.update(mouse)
-
-        # TODO add functionality of buttons in the inventory
 
     def close(self):
         self.entity.inventory = list(filter(lambda i: i is not None,

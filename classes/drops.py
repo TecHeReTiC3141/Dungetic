@@ -35,6 +35,9 @@ class Drop:
                                               randint(0, 360))
         self.__dict__.update(state)
 
+    def collide(self, entities: list[Heretic], mouse: tuple = None):
+        pass
+
 
 class LyingItem(Drop):
 
@@ -86,7 +89,7 @@ class SellingGood(LyingItem):
     def __init__(self, x, y, lootcls: type, price):
         super().__init__(x, y, lootcls)
         self.sprite = self.loot.sprite['left'] if isinstance(self.loot.sprite, dict) else self.loot.sprite
-
+        self.rect = self.sprite.get_rect(topleft=(x, y))
         self.background = pygame.transform.scale(pygame.image.load('../images/surroundings/pallet.png'),
                                                  (self.rect.width, self.rect.height + 30))
         pygame.draw.rect(self.background, 'white',
