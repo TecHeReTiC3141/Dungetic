@@ -2,7 +2,7 @@ from scripts.generation import generate_dungeons
 from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, ConsoleGui
 from scripts.Console import *
 from classes.camera import *
-dung_length, dung_width = randint(5, 10), randint(5, 10)
+dung_length, dung_width = randint(4, 6), randint(4, 6)
 
 polygon, dung_width, dung_height = generate_dungeons(dung_width, dung_length)
 curr_room = choice(list(polygon.keys()))

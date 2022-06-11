@@ -7,7 +7,6 @@ class Heretic:
     sprites = {i: pygame.image.load(f'../images/entities/heretic/heretic_sprite_{i}.png')
                for i in directions}
 
-    # TODO try to transform entities into pygame.sprites
     def __init__(self, x, y, width, height, health, direction, manager: GameManager=None,
                  speed=6, target=None, weapon=Fist(), location=None, size=1.):
         self.width = width

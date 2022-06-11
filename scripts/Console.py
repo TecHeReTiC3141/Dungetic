@@ -25,7 +25,7 @@ class Console:
     def tp(self, *args):
         assert len(args) == 1, 'Only one arg for room number is required'
         room_ind = int(args[0])
-        assert 0 < room_ind <= self.game_manager.dung_length * self.game_manager.dung_width, \
+        assert room_ind in self.game_manager.dungeon, \
             'This number is greater than number of rooms'
         self.game_manager.curr_room = room_ind
         print(self.game_manager.curr_room)

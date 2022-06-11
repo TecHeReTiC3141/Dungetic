@@ -15,6 +15,14 @@ class DungNode:
 
 def create_dung_matr(dung_width, dung_length) -> list[list[DungNode]]:
     room_types = [0, 1, 1, 1, 1, 2, 2, 3]
+
+    '''
+    0 - none; 
+    1 - common; 
+    2 - storage (with crates);
+    3 - shop;
+    4 - boss room
+    '''
     return [[DungNode(-1) for _ in range(dung_length + 2)]] + \
            [[DungNode(-1)] + [DungNode(choice(room_types)) for _ in range(dung_length)
                               ] + [DungNode(-1)] for __ in range(dung_width)] \
@@ -62,10 +70,12 @@ def create_connected_dung(dung_width, dung_length) -> list[list[DungNode]]:
         if cur_comp > 2:
             connected_dung = False
     print(gens)
+    b_r, b_c = randint(0, dung_width - 1), randint(0, dung_length - 1)
+    dung_map[b_r][b_c].type = 4
     return dung_map
 
 
-room_types = ['node', 'common', 'storage', ' shop nowalls friendly']
+room_types = ['node', 'common', 'storage', ' shop nowalls friendly', 'boss']
 
 
 def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
