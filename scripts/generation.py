@@ -86,7 +86,7 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
     walls = []
     cont = []
     drops = []
-
+    entities = []
     cur_node = dung_matr[x][y]
     room_type = room_types[cur_node.type].split()
 
@@ -180,23 +180,24 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
         for node_l in range(len(nodes)):
             for node in nodes[node_l]:
                 node.collide(walls)
+    if 'friendly' not in room_type:
+        entities = NPC.produce_NPC(randint(2, 4), nodes, room_width, room_height) \
+                   + Hostile.produce_Hostiles(randint(2, 4), nodes, room_width, room_height)
+        for entity in entities:
+            entity.loot = generate_random_loot([SilverCoin, GoldCoin, Potion], 0, 0, n=randint(1, 2))
+            if not isinstance(entity.weapon, Fist):
+                entity.loot.append(LyingItem(0, 0, type(entity.weapon)))
+            entity.loot += [LyingItem(0, 0, Experience) for _ in range(randint(2, 3))]
 
-    elif room_type[0] == 'shop':
+    if room_type[0] == 'shop':
         n_goods = randint(3, 5)
         for x in range(room_width // 3, room_width * 2 // 3 + 1,
                        room_width // 3 // n_goods):
             drops.append(SellingGood(x, display_height * 2 // 3,
                               choice([Knife, GoldCoin, SilverCoin, Helmet, Potion]), randint(1, 10)))
+        entities.append(Trader(room_width // 2, display_height // 2, 90, 108, 100, 'left', speed=0, loot=[]))
 
-    entities = NPC.produce_NPC(randint(2, 4), nodes, room_width, room_height) \
-               + Hostile.produce_Hostiles(randint(2, 4), nodes, room_width, room_height)
-    for entity in entities:
-        entity.loot = generate_random_loot([SilverCoin, GoldCoin, Potion], 0, 0, n=randint(1, 2))
-        if not isinstance(entity.weapon, Fist):
-            entity.loot.append(LyingItem(0, 0, type(entity.weapon)))
-        entity.loot += [LyingItem(0, 0, Experience) for _ in range(randint(2, 3))]
-
-    return Room(walls, cont, drops, entities if 'friendly' not in room_type else [], [],
+    return Room(walls, cont, drops, entities, [],
                 enters, nodes, choice(['stone', 'wooden']),
                 (room_width, room_height), type=room_type[0])
 

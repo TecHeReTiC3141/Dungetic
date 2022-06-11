@@ -258,6 +258,7 @@ class Room:
         self.drops = drops
         self.decors = []
         self.entities_list = entities_list
+
         self.projectiles = projectiles
 
         self.entrances = entrances
@@ -363,6 +364,8 @@ class Room:
                 entity.path = deque([(x * grid_size + grid_size // 2,
                                       y * grid_size + grid_size // 2) for x, y in entity.path])
                 self.grid.cleanup()
+            elif isinstance(entity, Trader):
+                entity.target = target
 
     def life(self, tick: int):
         for entity in self.entities_list:

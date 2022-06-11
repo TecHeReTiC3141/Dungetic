@@ -94,6 +94,31 @@ class NPC(Heretic):
         return entities
 
 
+class Trader(NPC):
+    sprites = {i: pygame.image.load(f'../images/entities/trader/trader_sprite_{i}.png').convert_alpha()
+               for i in ['left', 'right']}
+
+    def __init__(self, x, y, width, height, health, direction, speed,
+                 target=None, weapon=Fist(), loot=None, location=None, size=1.):
+        super().__init__(x, y, width, height, health, direction,
+                         speed, target, weapon, loot, location, size)
+
+        for sprite in self.sprites:
+            self.sprites[sprite].set_colorkey('black')
+        self.path = deque()
+        self.loot = [] if loot is None else loot
+
+    def exist(self):
+        self.track_player()
+
+    def track_player(self):
+        if not isinstance(self.target, Heretic):
+            return
+        if self.target.cur_rect.centerx < self.cur_rect.centerx:
+            self.direction = 'left'
+        else:
+            self.direction = 'right'
+
 
 class Hostile(NPC):
     sprites = {i: pygame.image.load(f'../images/entities/goblins/goblin_sprite_{i}.png')

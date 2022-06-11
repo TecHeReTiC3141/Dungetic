@@ -22,6 +22,7 @@ class Console:
         elif name == 'clear_room':
             self.clear_room(*args)
 
+    # TODO fix problems with grid after teleport
     def tp(self, *args):
         assert len(args) == 1, 'Only one arg for room number is required'
         room_ind = int(args[0])
