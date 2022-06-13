@@ -102,9 +102,8 @@ class Trader(NPC):
                  target=None, weapon=Fist(), loot=None, location=None, size=1.):
         super().__init__(x, y, width, height, health, direction,
                          speed, target, weapon, loot, location, size)
-
-        for sprite in self.sprites:
-            self.sprites[sprite].set_colorkey('black')
+        self.visible_zone.fill('yellow')
+        self.visible_zone.set_colorkey('yellow')
         self.path = deque()
         self.loot = [] if loot is None else loot
 

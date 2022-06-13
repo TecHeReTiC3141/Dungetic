@@ -9,6 +9,7 @@ class Heretic:
 
     def __init__(self, x, y, width, height, health, direction, manager: GameManager=None,
                  speed=6, target=None, weapon=Fist(), location=None, size=1.):
+        self.x, self.y = x, y
         self.width = width
         self.height = height
 
@@ -25,7 +26,7 @@ class Heretic:
 
         self.light_zone = []
         self.visible_zone = pygame.Surface((self.width, self.height))
-        self.cur_rect = pygame.Rect(x, y, self.width, int(self.height))
+        self.cur_rect = pygame.Rect(x, y + height // 4, width, int(height * .75))
         self.prev_rect = self.cur_rect.copy()
         self.active_zone = pygame.Rect(x - self.width // 10, y + self.height // 10,
                                        self.width * 1.2, int(self.height * .8))
@@ -35,7 +36,7 @@ class Heretic:
 
         self.weapon = weapon
         self.attack_rect = pygame.Rect(self.cur_rect.left - self.weapon.hit_range,
-                                       self.cur_rect.top + self.height // 5,
+                                       self.cur_rect.top,
                                        self.weapon.hit_range, self.height // 5 * 3)
         self.attack_surf = pygame.Surface((50, 50))
         self.attack_surf.set_colorkey(BLACK)
@@ -166,12 +167,12 @@ class Heretic:
         if isinstance(self.weapon, Melee):
             if self.direction == 'left':
                 self.attack_rect.update(self.cur_rect.left - self.weapon.hit_range - max(self.attack_time // 4, 0),
-                                        self.cur_rect.top + self.height // 5,
+                                        self.cur_rect.top,
                                         self.weapon.hit_range, self.height // 5 * 3)
 
             elif self.direction == 'right':
                 self.attack_rect.update(self.cur_rect.right + max(self.attack_time // 4, 0),
-                                        self.cur_rect.top + self.height // 5,
+                                        self.cur_rect.top,
                                         self.weapon.hit_range, self.height // 5 * 3)
             elif self.direction == 'up':
                 self.attack_rect.update(self.cur_rect.left + self.width // 5,
@@ -234,8 +235,8 @@ class Heretic:
 
     def draw_object(self, display: pygame.Surface, x=None, y=None, in_game=True):
         if x is None and y is None:
-            x, y = self.cur_rect.topleft
-        self.visible_zone.fill((0, 0, 0))
+            x, y = self.cur_rect.left, self.cur_rect.top - self.height // 4
+        self.visible_zone.fill('yellow')
         # if self.backpack and self.directions == 'right':
         #     self.backpack.draw_on_self(self.cur_rect.left + 25, self.cur_rect.top + 45)
         # elif self.backpack and self.directions == 'up':
