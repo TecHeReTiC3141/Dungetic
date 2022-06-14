@@ -233,6 +233,7 @@ class Hostile(NPC):
                 x_n, y_n = (x + 38 // 2) // grid_size, (y + 50) // grid_size
                 if nodes[y_n][x_n].status:
                     entities.append(Hostile(x, y, 75, 100, 100,
-                                        choice(directions), speed=randint(3, 4), loot=loot))
+                                        choice(directions), speed=randint(3, 4), loot=loot,
+                                            weapon=choice([Fist(), Fist(), Knife()])))
                     break
         return entities

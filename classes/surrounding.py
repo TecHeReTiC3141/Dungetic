@@ -470,7 +470,7 @@ class BossRoom(Room):
 
     def physics(self, heretic: Heretic):
         super().physics(heretic)
-        if self.is_safe and isinstance(self.trapdoor, TrapDoor):
+        if self.is_safe and self.trapdoor.collide(heretic):
             return True
 
     def draw_object(self, surface: pygame.Surface, tick: int, show_grid: bool):
@@ -508,4 +508,3 @@ class BossRoom(Room):
                 elif isinstance(decor, Particle) and decor.type != 'background':
                     decor.draw_object(surface)
                     decor.move(tick)
-

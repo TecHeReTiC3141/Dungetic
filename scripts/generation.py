@@ -182,6 +182,7 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
         for node_l in range(len(nodes)):
             for node in nodes[node_l]:
                 node.collide(walls)
+
     if 'friendly' not in room_type:
         entities = NPC.produce_NPC(randint(2, 4), nodes, room_width, room_height) \
                    + Hostile.produce_Hostiles(randint(2, 4), nodes, room_width, room_height)
