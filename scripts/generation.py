@@ -204,7 +204,7 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
                 (room_width, room_height), type=room_type[0])
 
 
-def generate_dungeons(dung_width, dung_length) -> tuple[dict[int, Room], int, int]:
+def generate_dungeons(dung_width, dung_length) -> tuple[dict[int, Room], int, int, int]:
     dung_matr = create_connected_dung(dung_width, dung_length)
     for i in dung_matr:
         print(*[str((j.type, j.comp)).ljust(5) for j in i])
@@ -214,4 +214,5 @@ def generate_dungeons(dung_width, dung_length) -> tuple[dict[int, Room], int, in
             cur_ind = i * dung_length + j
             if dung_matr[i][j].type > 0:
                 rooms[cur_ind] = generate_room(i, j, dung_matr)
-    return rooms, dung_width, dung_length
+    cur_room = choice(list(rooms.keys()))
+    return rooms, cur_room, dung_width, dung_length

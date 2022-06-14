@@ -1,11 +1,10 @@
-from scripts.generation import generate_dungeons
+from scripts.generation import generate_dungeons, Room, BossRoom
 from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, ConsoleGui
 from scripts.Console import *
 from classes.camera import *
 dung_length, dung_width = randint(4, 6), randint(4, 6)
 
-polygon, dung_width, dung_height = generate_dungeons(dung_width, dung_length)
-curr_room = choice(list(polygon.keys()))
+polygon, curr_room, dung_width, dung_height = generate_dungeons(dung_width, dung_length)
 
 tick = 0
 draw_grid = False
@@ -112,8 +111,18 @@ while game_cycle:
             heretic.move()
             heretic.update(tick, cur_room.is_safe)
             cur_room.life(tick)
-            cur_room.physics(heretic)
-
+############################################################################
+            if cur_room.physics(heretic):
+                display.blit(stone_floor, (0, 0))
+                display.blit(label := inventory_font.render('Go to the next level of dungeon...', True, BLACK),
+                             (display_width - label.get_width() // 2, display_height - label.get_height() // 2))
+                #  generating new level
+                polygon, curr_room, dung_width, dung_height = generate_dungeons(dung_width, dung_length)
+                game_manager.dungeon = polygon
+                game_manager.dung_width = dung_width
+                game_manager.dung_length = dung_length
+                game_manager.set_room(curr_room)
+############################################################################
             scrolling = camera.scroll()
             if not tick % 15:
                 logging.info(f'{cur_room.width}, {cur_room.height}, {scrolling[:2]}, {heretic.cur_rect.center}')

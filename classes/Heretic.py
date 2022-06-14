@@ -237,21 +237,7 @@ class Heretic:
         if x is None and y is None:
             x, y = self.cur_rect.left, self.cur_rect.top - self.height // 4
         self.visible_zone.fill('yellow')
-        # if self.backpack and self.directions == 'right':
-        #     self.backpack.draw_on_self(self.cur_rect.left + 25, self.cur_rect.top + 45)
-        # elif self.backpack and self.directions == 'up':
-        #     self.backpack.draw_on_self(self.cur_rect.left - 5, self.cur_rect.top + 45)
-        # if self.weapon != 'none' and self.directions == 'right':
-        #     self.weapon.draw_object(self.cur_rect.left + 65 - ((self.half_attack_time -
-        #                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0),
-        #                                self.cur_rect.top + 30)
-        # elif self.weapon != 'none' and self.directions == 'up':
-        #     self.weapon.draw_object(self.cur_rect.left - 15, self.cur_rect.top + 30 + ((self.half_attack_time -
-        #                                                                   self.attack_time) // 2 if self.attack_time > self.half_attack_time else 0))
-        # if self.direction in self.weapon.sprite:
-        #     if self.direction == 'left':
-        #         display.blit(self.weapon, (self.cur_rect.left - 5, self.))
-        # pygame.draw.rect(display, RED, self.attack_rect)
+
         self.visible_zone.blit(self.sprites[self.direction], (0, 0))
         display.blit(self.visible_zone, (x, y))
         if self.direction in self.weapon.sprite:
