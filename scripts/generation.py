@@ -199,7 +199,7 @@ def generate_room(x, y, dung_matr: list[list[DungNode]]) -> Room:
                               choice([Knife, GoldCoin, SilverCoin, Helmet, Potion]), randint(1, 10)))
         entities.append(Trader(room_width // 2, display_height // 2, 90, 108, 100, 'left', speed=0, loot=[]))
 
-    return Room(walls, cont, drops, entities, [],
+    return (Room if room_type[0] != 'boss' else BossRoom)(walls, cont, drops, entities, [],
                 enters, nodes, choice(['stone', 'wooden']),
                 (room_width, room_height), type=room_type[0])
 
