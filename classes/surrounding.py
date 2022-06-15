@@ -103,6 +103,7 @@ class Wall:
                         else:
                             entity.speed_directions['up'] = max(5 - self.weight, 1)
             else:
+                move = [0, 0]
                 if entity.cur_rect.colliderect(self.cur_rect):
                     if direction == 'hor':
                         # left side
@@ -122,6 +123,7 @@ class Wall:
                         elif entity.cur_rect.top <= self.cur_rect.bottom <= entity.prev_rect.top:
                             entity.cur_rect.top = self.cur_rect.bottom
                             move[1] = -max(5 - self.weight, 1)
+
             # TODO update physics for all entities
             if self.movable:
                 self.prev_rect = self.cur_rect.copy()
@@ -193,7 +195,6 @@ class Vase(Wall, Breakable, Container):
         self.mask = pygame.mask.from_surface(self.sprite)
         self.cur_rect.update(*self.cur_rect.topleft, *self.sprite.get_size())
 
-
     def draw_object(self, display: pygame.Surface):
         self.visible_zone.fill('#FFFFFF')
         self.visible_zone.blit(self.sprite, (0, 0))
@@ -223,6 +224,28 @@ class Crate(Vase):
         self.cur_rect.update(*self.cur_rect.topleft, width, height)
 
 
+class TrapDoor:
+
+    def __init__(self, x, y, width=60, height=60):
+        self.x, self.y = x, y
+        self.width, self.height = width, height
+        self.active = False
+        self.active_zone = pygame.Rect(x - width // 2, y - height // 2,
+                                       width * 3 // 2, height)
+        self.rect = pygame.Rect(x, y, width, height // 2)
+
+    def collide(self, player: Heretic):
+        if self.rect.colliderect(player.cur_rect):
+            return True
+        elif self.active_zone.colliderect(player.cur_rect):
+            self.active = True
+        else:
+            self.active = False
+
+    def draw_object(self, display: pygame.Surface):
+        pygame.draw.rect(display, 'black' if not self.active else 'blue', self.rect)
+
+
 class MyNode:
 
     def __init__(self, x, y, width, height):
@@ -249,13 +272,15 @@ class MyNode:
 
 class Room:
 
-    def __init__(self, obst_list: list[Wall], containers: list[Wall],
-                 entities_list: list[NPC], projectiles: list[Projectile], entrances, floor: str, size: tuple,type: str = 'common'):
+    def __init__(self, obst_list: list[Wall], containers: list[Wall], drops: list[Drop],
+                 entities_list: list[NPC], projectiles: list[Projectile], entrances, nodes: list[list[MyNode]],
+                 floor: str, size: tuple,type: str = 'common'):
         self.obst_list = obst_list
         self.containers = containers
-        self.drops = []
+        self.drops = drops
         self.decors = []
         self.entities_list = entities_list
+
         self.projectiles = projectiles
 
         self.entrances = entrances
@@ -266,17 +291,13 @@ class Room:
         self.type = type
         self.width, self.height = size
 
-        self.nodes = [
-            [MyNode(j * grid_size, i * grid_size, grid_size, grid_size) for j in range(ceil(self.width / grid_size))]
-            for i in range(ceil(self.height / grid_size))]
+        self.nodes = nodes
         for node_l in range(len(self.nodes)):
             for node in self.nodes[node_l]:
                 node.collide(self.obst_list + self.containers)
         'grid for pathfinding'
         self.grid = Grid(matrix=[[self.nodes[i][j].status for j in range(ceil(self.width / grid_size))]
                                  for i in range(ceil(self.height / grid_size))])
-
-        # TODO make Room object serializable !!!
 
     def draw_object(self, surface: pygame.Surface, tick: int, show_grid: bool):
         surface.blit(self.floor, (0, 0))
@@ -365,6 +386,8 @@ class Room:
                 entity.path = deque([(x * grid_size + grid_size // 2,
                                       y * grid_size + grid_size // 2) for x, y in entity.path])
                 self.grid.cleanup()
+            elif isinstance(entity, Trader):
+                entity.target = target
 
     def life(self, tick: int):
         for entity in self.entities_list:
@@ -435,3 +458,53 @@ class Room:
                                             else wooden_floor,
                                             (state['width'], state['height']))
         self.__dict__.update(state)
+
+
+class BossRoom(Room):
+
+    def clear(self):
+        super().clear()
+        if self.is_safe and \
+                not hasattr(self, 'trapdoor'):
+            self.trapdoor = TrapDoor(display_width // 2 - 30, display_height // 3)
+
+    def physics(self, heretic: Heretic):
+        super().physics(heretic)
+        if self.is_safe and self.trapdoor.collide(heretic):
+            return True
+
+    def draw_object(self, surface: pygame.Surface, tick: int, show_grid: bool):
+        surface.blit(self.floor, (0, 0))
+        if hasattr(self, 'trapdoor') and isinstance(self.trapdoor, TrapDoor):
+            self.trapdoor.draw_object(surface)
+        if show_grid:
+            self.draw_grid(surface)
+            for entity in self.entities_list:
+                if len(entity.path) > 1:
+                    pygame.draw.lines(surface, BLACK, False, entity.path, width=10)
+
+        for wall in self.obst_list + self.containers + self.drops:
+            wall.draw_object(surface)
+
+        for decor in self.decors:
+            if isinstance(decor, Decor):
+                if isinstance(decor, Particle) and decor.type == 'background':
+                    decor.draw_object(surface)
+                    decor.move(tick)
+
+        for entity in self.entities_list:
+            entity.draw_object(surface)
+
+        if self.projectiles.count(None):
+            logging.warning(f'{self.projectiles}')
+
+        for proj in self.projectiles:
+            proj.draw_object(surface)
+
+        for decor in self.decors:
+            if isinstance(decor, Decor):
+                if isinstance(decor, Banner):
+                    decor.draw_object(surface)
+                elif isinstance(decor, Particle) and decor.type != 'background':
+                    decor.draw_object(surface)
+                    decor.move(tick)

@@ -1,11 +1,10 @@
-from scripts.generation import generate_dungeons
+from scripts.generation import generate_dungeons, Room, BossRoom
 from classes.interfaces import Interface, MapInter, MainMenu, InventoryInter, ConsoleGui
 from scripts.Console import *
 from classes.camera import *
-dung_length, dung_width = randint(5, 10), randint(5, 10)
+dung_length, dung_width = randint(4, 6), randint(4, 6)
 
-polygon, dung_width, dung_height = generate_dungeons(dung_width, dung_length)
-curr_room = choice(list(polygon.keys()))
+polygon, curr_room, dung_width, dung_height = generate_dungeons(dung_width, dung_length)
 
 tick = 0
 draw_grid = False
@@ -112,8 +111,19 @@ while game_cycle:
             heretic.move()
             heretic.update(tick, cur_room.is_safe)
             cur_room.life(tick)
-            cur_room.physics(heretic)
-
+            transition = cur_room.physics(heretic)
+############################################################################
+            if isinstance(cur_room, BossRoom) and transition:
+                display.blit(stone_floor, (0, 0))
+                display.blit(label := inventory_font.render('Go to the next level of dungeon...', True, BLACK),
+                             (display_width - label.get_width() // 2, display_height - label.get_height() // 2))
+                #  generating new level
+                polygon, curr_room, dung_width, dung_height = generate_dungeons(dung_width, dung_length)
+                game_manager.dungeon = polygon
+                game_manager.dung_width = dung_width
+                game_manager.dung_length = dung_length
+                game_manager.set_room(curr_room)
+############################################################################
             scrolling = camera.scroll()
             if not tick % 15:
                 logging.info(f'{cur_room.width}, {cur_room.height}, {scrolling[:2]}, {heretic.cur_rect.center}')
@@ -123,35 +133,42 @@ while game_cycle:
             game_manager.display.blit(text_font.render(f'{game_manager.curr_room}', True, WHITE), (25, 25))
             game_manager.display.blit(text_font.render(f'{heretic.money}', True, '#f8b800'), (25, 55))
             game_manager.display.blit(text_font.render(f'{heretic.experience}', True, 'green'), (25, 85))
+            game_manager.display.blit(text_font.render(f'{round(clock.get_fps())}', True, 'red'), (25, 115))
 
     pygame.display.update()
 
     clock.tick(60)
     tick += 1
+    try:
+        if heretic.cur_rect.colliderect(left_border):
+            heretic.manager.set_room(heretic.manager.curr_room - 1)
+            cur_room = game_manager.dungeon[game_manager.curr_room]
+            camera.set_surf(heretic.manager.surf)
+            heretic.cur_rect.left = cur_room.width - 100
 
-    if heretic.cur_rect.colliderect(left_border):
-        heretic.manager.set_room(heretic.manager.curr_room - 1)
-        cur_room = game_manager.dungeon[game_manager.curr_room]
-        camera.set_surf(heretic.manager.surf)
-        heretic.cur_rect.left = cur_room.width - 100
+        elif heretic.cur_rect.colliderect(right_border):
+            heretic.manager.set_room(heretic.manager.curr_room + 1)
+            cur_room = game_manager.dungeon[game_manager.curr_room]
+            camera.set_surf(heretic.manager.surf)
+            heretic.cur_rect.left = 50
 
-    elif heretic.cur_rect.colliderect(right_border):
-        heretic.manager.set_room(heretic.manager.curr_room + 1)
-        cur_room = game_manager.dungeon[game_manager.curr_room]
-        camera.set_surf(heretic.manager.surf)
-        heretic.cur_rect.left = 50
+        elif heretic.cur_rect.colliderect(upper_border):
+            heretic.manager.set_room(heretic.manager.curr_room - dung_length)
+            cur_room = game_manager.dungeon[game_manager.curr_room]
+            camera.set_surf(heretic.manager.surf)
+            heretic.cur_rect.top = cur_room.height - 125
 
-    elif heretic.cur_rect.colliderect(upper_border):
-        heretic.manager.set_room(heretic.manager.curr_room - dung_length)
-        cur_room = game_manager.dungeon[game_manager.curr_room]
-        camera.set_surf(heretic.manager.surf)
-        heretic.cur_rect.top = cur_room.height - 125
+        elif heretic.cur_rect.colliderect(lower_border):
+            heretic.manager.set_room(heretic.manager.curr_room + dung_length)
+            cur_room = game_manager.dungeon[game_manager.curr_room]
+            camera.set_surf(heretic.manager.surf)
+            heretic.cur_rect.top = 25
 
-    elif heretic.cur_rect.colliderect(lower_border):
-        heretic.manager.set_room(heretic.manager.curr_room + dung_length)
+    except Exception as e:
+        sg.popup("'Please don't leave my dungeon")
+        rand_room = choice(list(game_manager.dungeon.keys()))
+        heretic.manager.set_room(rand_room)
         cur_room = game_manager.dungeon[game_manager.curr_room]
-        camera.set_surf(heretic.manager.surf)
-        heretic.cur_rect.top = 25
 
     left_border = pygame.Rect(5, 0, 5, cur_room.height)
     right_border = pygame.Rect(cur_room.width - 15, 0, 5, cur_room.height)

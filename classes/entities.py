@@ -81,9 +81,42 @@ class NPC(Heretic):
         self.passive_exist()
 
     @staticmethod
-    def produce_NPC(n, loot: list = None):
-        return [NPC(randint(300, 800), randint(200, 600), 75, 100, 100,
-                    choice(directions), speed=randint(3, 4), loot=loot) for i in range(n)]
+    def produce_NPC(n, nodes: list[list], room_width, room_height, loot: list=None,) -> list[Heretic]:
+        entities = []
+        for _ in range(n):
+            while True:
+                x, y = randint(200, room_width - 200), randint(200, room_height - 200)
+                x_n, y_n = (x + 38 // 2) // grid_size, (y + 50) // grid_size
+                if nodes[y_n][x_n].status:
+                    entities.append(NPC(x, y, 75, 100, 100,
+                    choice(directions), speed=randint(3, 4), loot=loot))
+                    break
+        return entities
+
+
+class Trader(NPC):
+    sprites = {i: pygame.image.load(f'../images/entities/trader/trader_sprite_{i}.png').convert_alpha()
+               for i in ['left', 'right']}
+
+    def __init__(self, x, y, width, height, health, direction, speed,
+                 target=None, weapon=Fist(), loot=None, location=None, size=1.):
+        super().__init__(x, y, width, height, health, direction,
+                         speed, target, weapon, loot, location, size)
+        self.visible_zone.fill('yellow')
+        self.visible_zone.set_colorkey('yellow')
+        self.path = deque()
+        self.loot = [] if loot is None else loot
+
+    def exist(self):
+        self.track_player()
+
+    def track_player(self):
+        if not isinstance(self.target, Heretic):
+            return
+        if self.target.cur_rect.centerx < self.cur_rect.centerx:
+            self.direction = 'left'
+        else:
+            self.direction = 'right'
 
 
 class Hostile(NPC):
@@ -107,11 +140,11 @@ class Hostile(NPC):
             if (next_point - self.cur_point).length() != 0:
                 self.dirs = (next_point - self.cur_point).normalize() * self.speed
 
-            if self.dirs.x > 0:
+            if self.dirs.x > .2:
                 self.direction = 'right'
-            elif self.dirs.x < 0:
+            elif self.dirs.x < -.2:
                 self.direction = 'left'
-            if self.dirs.y < 0:
+            if self.dirs.y < -.2:
                 self.direction = 'up'
             elif self.dirs.y > .2:
                 self.direction = 'down'
@@ -192,7 +225,15 @@ class Hostile(NPC):
         super().draw_object(display)
 
     @staticmethod
-    def produce_Hostiles(n, loot: list = None):
-        return [Hostile(randint(300, 800), randint(200, 600), 75, 100, 15,
-                        choice(directions), speed=randint(3, 4), loot=loot,
-                        weapon=choice([Knife(), Fist(), Fist()])) for i in range(n)]
+    def produce_Hostiles(n, nodes: list[list], room_width, room_height, loot: list = None,):
+        entities = []
+        for _ in range(n):
+            while True:
+                x, y = randint(200, room_width - 200), randint(200, room_height - 200)
+                x_n, y_n = (x + 38 // 2) // grid_size, (y + 50) // grid_size
+                if nodes[y_n][x_n].status:
+                    entities.append(Hostile(x, y, 75, 100, 100,
+                                        choice(directions), speed=randint(3, 4), loot=loot,
+                                            weapon=choice([Fist(), Fist(), Knife()])))
+                    break
+        return entities

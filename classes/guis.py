@@ -286,7 +286,7 @@ class Loading(GUI):
                     self.player.set_player(player)
                 break
         self.window.close()
-# TODO fix saving and loading (in the afternoon) !!
+
 # TODO think about progressbars of serialization and deseriali
 
 
