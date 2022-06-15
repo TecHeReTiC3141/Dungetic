@@ -38,7 +38,7 @@ def find_neigh(matr: list[list[DungNode]]) -> list[list[DungNode]]:
             if matr[i][j].type > 0:
                 for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                     create_entr = randint(0, 2)
-                    if not create_entr and matr[i + dx][j + dy].type > 0:
+                    if create_entr and matr[i + dx][j + dy].type > 0:
                         matr[i + dx][j + dy].neighbours.add((i, j))
                         matr[i][j].neighbours.add((i + dx, j + dy))
 

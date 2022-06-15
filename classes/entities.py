@@ -140,11 +140,11 @@ class Hostile(NPC):
             if (next_point - self.cur_point).length() != 0:
                 self.dirs = (next_point - self.cur_point).normalize() * self.speed
 
-            if self.dirs.x > 0:
+            if self.dirs.x > .2:
                 self.direction = 'right'
-            elif self.dirs.x < 0:
+            elif self.dirs.x < -.2:
                 self.direction = 'left'
-            if self.dirs.y < 0:
+            if self.dirs.y < -.2:
                 self.direction = 'up'
             elif self.dirs.y > .2:
                 self.direction = 'down'
