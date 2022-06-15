@@ -307,7 +307,7 @@ class MapInter(Interface):
         rooms = self.manager.dungeon
         for i in range(1, self.manager.dung_width + 1):
             for j in range(1, self.manager.dung_length + 1):
-                cur_ind = i * self.manager.dung_length + j
+                cur_ind = (i - 1) * self.manager.dung_length + j
                 room_x = 10 + j * 80
                 room_y = 10 + i * 80
                 if rooms.get(cur_ind) is not None and rooms[cur_ind].visited:
@@ -319,6 +319,7 @@ class MapInter(Interface):
                         pygame.draw.rect(display, '#0d68be', (room_x, room_y, 45, 35))
                     elif rooms[cur_ind].type == 'boss':
                         pygame.draw.rect(display, '#bb0000', (room_x, room_y, 45, 35))
+                    display.blit(text_font.render(f'{cur_ind}', True, 'black'), (room_x + 5, room_y + 5))
 
                     if 'up' in rooms[cur_ind].entrances:
                         pygame.draw.rect(display, (200, 200, 200), (room_x + 12, room_y - 25, 20, 25))
