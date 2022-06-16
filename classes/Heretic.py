@@ -74,6 +74,8 @@ class Heretic:
         blood_list = []
         if self.attack_time <= 0:
             for entity in entities:
+                if entity.friendly:
+                    continue
                 if entity.cur_rect.colliderect(self.attack_rect):
                     damage = randint(self.weapon.damage - 2, self.weapon.damage + 2) * \
                              self.skills['damage'][1]

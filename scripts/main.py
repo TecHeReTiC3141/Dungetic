@@ -18,7 +18,7 @@ camera = Camera(game_manager.surf, heretic)
 
 player_manager = PlayerManager(heretic)
 
-console = Console(game_manager, player_manager)
+console = Console(camera, game_manager, player_manager)
 
 Map = MapInter(game_manager)
 Inventory = InventoryInter(heretic, game_manager)
@@ -28,7 +28,7 @@ print(*[''.join([str(j).rjust(3) for j in list(range(1 + dung_length * i,
                                                      dung_length * i + 1))]) for i in range(1, dung_width + 1)],
       sep='\n')
 
-scrolling = ()
+scrolling = (0, 0)
 
 wipe = pygame.USEREVENT + 1
 show_paths = pygame.USEREVENT + 2
@@ -124,10 +124,9 @@ while game_cycle:
                 game_manager.dung_length = dung_length
                 game_manager.set_room(curr_room)
 ############################################################################
-            scrolling = camera.scroll()
-            if not tick % 15:
-                logging.info(f'{cur_room.width}, {cur_room.height}, {scrolling[:2]}, {heretic.cur_rect.center}')
             game_manager.display.fill('black')
+
+            scrolling = camera.scroll()
             game_manager.display.blit(game_manager.surf, (0, 0), scrolling)
 
             game_manager.display.blit(text_font.render(f'{game_manager.curr_room}', True, WHITE), (25, 25))

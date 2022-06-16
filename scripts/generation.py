@@ -1,4 +1,4 @@
-from classes.surrounding import *
+from classes.rooms import *
 
 
 def generate_random_loot(classes: list[type], x, y, n=1):
@@ -27,7 +27,7 @@ def create_dung_matr(dung_width, dung_length) -> list[list[DungNode]]:
            [[DungNode(-1)] + [DungNode(choice(room_types)) for _ in range(dung_length)
                               ] + [DungNode(-1)] for __ in range(dung_width)] \
            + [[DungNode(-1) for _ in range(dung_length + 2)]]
-    b_r, b_c = randint(1, dung_width - 1), randint(0, dung_length - 1)
+    b_r, b_c = randint(1, dung_width - 1), randint(1, dung_length - 1)
     dung[b_r][b_c].type = 4
     return dung
 
@@ -212,7 +212,7 @@ def generate_dungeons(dung_width, dung_length) -> tuple[dict[int, Room], int, in
     rooms = {}
     for i in range(1, dung_width + 1):
         for j in range(1, dung_length + 1):
-            cur_ind = i * dung_length + j
+            cur_ind = (i - 1) * dung_length + j
             if dung_matr[i][j].type > 0:
                 rooms[cur_ind] = generate_room(i, j, dung_matr)
     cur_room = choice(list(rooms.keys()))

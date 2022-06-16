@@ -1,3 +1,5 @@
+from classes.surrounding import *
+
 class Room:
 
     def __init__(self, obst_list: list[Wall], containers: list[Wall], drops: list[Drop],
@@ -132,7 +134,7 @@ class Room:
                 if cont.health <= 0:
                     loot = cont.get_broken()
                     for loo in loot:
-                        if isinstance(cont, Container):
+                        if isinstance(cont, Container) and hasattr(cont, 'cur_rect'):
                             loo.rect.left = randint(cont.cur_rect.left, cont.cur_rect.centerx)
                             loo.rect.top = randint(cont.cur_rect.top, cont.cur_rect.centery)
                             self.drops.append(loo)
