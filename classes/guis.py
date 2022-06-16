@@ -21,7 +21,7 @@ class GUI:
 
 
 class Settings(GUI):
-
+    # TODO add gamma to display settings
     def __init__(self, manager: GameManager):
         self.manager = manager
         self.manager.is_paused = True
