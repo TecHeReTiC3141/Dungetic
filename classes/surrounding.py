@@ -226,7 +226,7 @@ class Crate(Vase):
 
 class TrapDoor:
 
-    def __init__(self, x, y, width=60, height=60):
+    def __init__(self, x, y, width=200, height=200):
         self.x, self.y = x, y
         self.width, self.height = width, height
         self.active = False
@@ -241,6 +241,7 @@ class TrapDoor:
             self.active = True
         else:
             self.active = False
+        return False
 
     def draw_object(self, display: pygame.Surface):
         pygame.draw.rect(display, 'black' if not self.active else 'blue', self.rect)

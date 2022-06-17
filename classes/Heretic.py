@@ -70,7 +70,7 @@ class Heretic:
 
         self.manager = manager
 
-    def hit(self, entities: list = None, conts: list = None) -> list:
+    def hit(self, entities: list['Heretic'] = None, conts: list = None) -> list:
         blood_list = []
         if self.attack_time <= 0:
             for entity in entities:

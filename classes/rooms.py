@@ -2,6 +2,7 @@ from classes.surrounding import *
 
 class Room:
 
+    # TODO set type annotations everywhere it's necessary
     def __init__(self, obst_list: list[Wall], containers: list[Wall], drops: list[Drop],
                  entities_list: list[NPC], projectiles: list[Projectile], entrances, nodes: list[list[MyNode]],
                  floor: str, size: tuple,type: str = 'common'):
@@ -196,16 +197,16 @@ class BossRoom(Room):
         super().clear()
         if self.is_safe and \
                 not hasattr(self, 'trapdoor'):
-            self.trapdoor = TrapDoor(display_width // 2 - 30, display_height // 3)
+            self.trapdoor: TrapDoor = TrapDoor(display_width // 2 - 30, display_height // 3)
 
     def physics(self, heretic: Heretic):
         super().physics(heretic)
-        if self.is_safe and isinstance(self.trapdoor, TrapDoor):
+        if self.is_safe and self.trapdoor.collide(heretic):
             return True
 
     def draw_object(self, surface: pygame.Surface, tick: int, show_grid: bool):
         surface.blit(self.floor, (0, 0))
-        if hasattr(self, 'trapdoor') and isinstance(self.trapdoor, TrapDoor):
+        if hasattr(self, 'trapdoor'):
             self.trapdoor.draw_object(surface)
         if show_grid:
             self.draw_grid(surface)

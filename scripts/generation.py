@@ -209,7 +209,7 @@ def generate_dungeons(dung_width, dung_length) -> tuple[dict[int, Room], int, in
     dung_matr = create_connected_dung(dung_width, dung_length)
     for i in dung_matr:
         print(*[str((j.type, j.comp)).ljust(5) for j in i])
-    rooms = {}
+    rooms: dict[int, Room] = {}
     for i in range(1, dung_width + 1):
         for j in range(1, dung_length + 1):
             cur_ind = (i - 1) * dung_length + j

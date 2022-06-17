@@ -39,6 +39,7 @@ clock = pygame.time.Clock()
 logging.info('The game cycle has begun')
 
 while game_cycle:
+
     cur_room = game_manager.dungeon[game_manager.curr_room]
     for event in pygame.event.get():
         if event.type == wipe:
@@ -124,6 +125,7 @@ while game_cycle:
                 game_manager.dung_width = dung_width
                 game_manager.dung_length = dung_length
                 game_manager.set_room(curr_room)
+                camera.set_surf(game_manager.surf)
             ############################################################################
             game_manager.display.fill('black')
 
