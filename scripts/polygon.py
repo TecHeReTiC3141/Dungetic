@@ -1,8 +1,13 @@
-import PySimpleGUI as sg
-import time
+from scripts.generation import *
 
-mylist = [1,2,3,4,5,6,7,8]
+dung_length, dung_width = randint(3, 7), randint(3, 7)
+print(dung_width, dung_length)
 
-for i, item in enumerate(mylist):
-    sg.one_line_progress_meter('This is my progress meter!', i+1, len(mylist), '-key-')
-    time.sleep(1)
+dung_map = create_connected_dung(dung_width, dung_length)
+
+for i in dung_map:
+    print(*[str((j.type, j.comp)).ljust(5) for j in i])
+
+for i in range(1, dung_width + 1):
+    for j in range(1, dung_length + 1):
+        print(i, j, dung_map[i][j].type, dung_map[i][j].neighbours)

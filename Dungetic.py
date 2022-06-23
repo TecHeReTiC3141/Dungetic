@@ -2,8 +2,8 @@ from classes.Heretic import Heretic
 from classes.entities import produce_NPC
 from classes.interfaces import MapInter, InventoryInter
 from classes.surrounding import Wall, Vase, Room
-from scripts.constants_and_sources import *
-from scripts.algorithms_of_generation import generate_room, generate_dungeons
+from scripts.constants import *
+from scripts.generation import generate_room, generate_dungeons
 
 print(*[''.join([str(i).rjust(3) for i in list(range(1 + dung_length * i, dung_length * (i + 1) + 1))]) for i in
         range(dung_width)], sep='\n')

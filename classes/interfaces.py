@@ -41,7 +41,8 @@ class Button(UI):
         pygame.draw.rect(self.image, self.color,
                          (0, 0, self.rect.width, self.rect.height - 5), border_radius=15)
 
-        self.image.blit(self.label, (self.rect.width // 3, self.rect.height // 5))
+        self.image.blit(self.label, (self.rect.width // 2  - self.label.get_width() // 2,
+                                     self.rect.height // 2 - self.label.get_height() // 2))
         display.blit(self.image, self.rect)
 
     def update(self, mouse, ):
@@ -83,9 +84,6 @@ class CreateWindow(ChangeState):
     def update(self, mouse: tuple):
         if self.rect.collidepoint(mouse):
             self.wind(self.manager, **self.kwargs)
-
-
-# TODO create a separate class for buttons which create gui
 
 
 class InterContainer(Button):
@@ -245,6 +243,7 @@ class InventoryInter(Interface):
                                              True, BLACK), (890, 470 + line * 50))
 
         display.blit(self, (0, 0))
+        pygame.draw.rect(display, (161, 96, 54), (0, display_height - 100, display_width, 800))
 
     def open(self):
         self.selected_item = None
@@ -291,8 +290,6 @@ class InventoryInter(Interface):
         for button in self.button_list:
             button.update(mouse)
 
-        # TODO add functionality of buttons in the inventory
-
     def close(self):
         self.entity.inventory = list(filter(lambda i: i is not None,
                                             self.entity.inventory))
@@ -300,48 +297,58 @@ class InventoryInter(Interface):
 
 class MapInter(Interface):
 
-    def __init__(self, rooms: dict, game_manager: GameManager):
+    def __init__(self, game_manager: GameManager):
         super().__init__()
         self.manager = game_manager
-        self.rooms = rooms
 
     def draw_object(self, display):
         display.blit(bloor, (0, 0))
-        display.blit(map_image, (40, 50))
-        for j in range(90, 90 + dung_width * 80, 80):
-            for i in range(90, 90 + dung_length * 80, 80):
-                r_ind = (i - 90) // 80 + (j - 90) // 80 * dung_length + 1
-                if rooms.get(r_ind) is not None and rooms[r_ind].visited:
-                    if rooms[r_ind].type == 'common':
-                        pygame.draw.rect(display, (240, 240, 240), (i, j, 45, 35))
-                    elif rooms[r_ind].type == 'storage':
-                        pygame.draw.rect(display, '#8d6712', (i, j, 45, 35))
-                    if 'up' in rooms[r_ind].entrances:
-                        pygame.draw.rect(display, (200, 200, 200), (i + 12, j - 25, 20, 25))
-                    if 'down' in rooms[r_ind].entrances:
-                        pygame.draw.rect(display, (200, 200, 200), (i + 12, j + 35, 20, 20))
-                    if 'right' in rooms[r_ind].entrances:
-                        pygame.draw.rect(display, (200, 200, 200), (i + 45, j + 7, 20, 20))
-                    if 'left' in rooms[r_ind].entrances:
-                        pygame.draw.rect(display, (200, 200, 200), (i - 15, j + 7, 15, 20))
-                    if r_ind == self.manager.curr_room:
-                        pygame.draw.rect(display, BLACK, (i + 5, j + 7, 15, 20))
-                else:
-                    pygame.draw.rect(display, (10, 10, 10), (i, j, 45, 35))
+        display.blit(map_image, (40, 40))
+        rooms = self.manager.dungeon
+        for i in range(1, self.manager.dung_width + 1):
+            for j in range(1, self.manager.dung_length + 1):
+                cur_ind = (i - 1) * self.manager.dung_length + j
+                room_x = 10 + j * 80
+                room_y = 10 + i * 80
+                if rooms.get(cur_ind) is not None and rooms[cur_ind].visited:
+                    if rooms[cur_ind].type == 'common':
+                        pygame.draw.rect(display, (240, 240, 240), (room_x, room_y, 45, 35))
+                    elif rooms[cur_ind].type == 'storage':
+                        pygame.draw.rect(display, '#8d6712', (room_x, room_y, 45, 35))
+                    elif rooms[cur_ind].type == 'shop':
+                        pygame.draw.rect(display, '#0d68be', (room_x, room_y, 45, 35))
+                    elif rooms[cur_ind].type == 'boss':
+                        pygame.draw.rect(display, '#bb0000', (room_x, room_y, 45, 35))
+                    display.blit(text_font.render(f'{cur_ind}', True, 'black'), (room_x + 5, room_y + 5))
+
+                    if 'up' in rooms[cur_ind].entrances:
+                        pygame.draw.rect(display, (200, 200, 200), (room_x + 12, room_y - 25, 20, 25))
+                    if 'down' in rooms[cur_ind].entrances:
+                        pygame.draw.rect(display, (200, 200, 200), (room_x + 12, room_y + 35, 20, 20))
+                    if 'right' in rooms[cur_ind].entrances:
+                        pygame.draw.rect(display, (200, 200, 200), (room_x + 45, room_y + 7, 20, 20))
+                    if 'left' in rooms[cur_ind].entrances:
+                        pygame.draw.rect(display, (200, 200, 200), (room_x - 15, room_y + 7, 15, 20))
+                    if cur_ind == self.manager.curr_room:
+                        pygame.draw.rect(display, BLACK, (room_x + 5, room_y + 7, 15, 20))
 
 
 class MainMenu(Interface):
 
-    def __init__(self, manager: GameManager):
+    def __init__(self, manager: GameManager, player: Heretic):
         super().__init__()
         self.manager = manager
         play = ChangeState(display_width // 3, display_height // 2, 250, 80, 'Start',
                            GREEN, manager, 'main_game')
-        settings = CreateWindow(display_width // 3, display_height // 2 + 100, 250, 80, 'Settings',
+        save_game = CreateWindow(display_width // 3, display_height // 2 + 100, 120, 80, 'Save',
+                               BLUE, manager, Saving, player=player)
+        load_game = CreateWindow(display_width // 3 + 130, display_height // 2 + 100, 120, 80, 'Load',
+                                 BLUE, manager, Loading, player=player)
+        settings = CreateWindow(display_width // 3, display_height // 2 + 200, 250, 80, 'Settings',
                                BLUE, manager, Settings)
-        ex = SimpleButton(display_width // 3, display_height // 2 + 200, 250, 80, 'Exit',
+        ex = SimpleButton(display_width // 3, display_height // 2 + 300, 250, 80, 'Exit',
                           RED, exit)
-        self.button_list = [play, settings, ex]
+        self.button_list = [play, save_game, load_game, settings, ex]
 
     def draw_object(self, display: pygame.Surface, ):
         self.blit(stone_floor, (0, 0))

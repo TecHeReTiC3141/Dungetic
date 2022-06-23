@@ -1,15 +1,15 @@
 from classes.entities import *
-from scripts.constants_and_sources import dung_length, dung_width
-
+from classes.camera import Camera
 
 class Console:
     commands = ['tp',
                 'add_item',
                 'regen', 'clear_room']
 
-    def __init__(self, manager: GameManager, player_manager: PlayerManager):
+    def __init__(self, camera: Camera, manager: GameManager, player_manager: PlayerManager):
         self.game_manager = manager
         self.player_manager = player_manager
+        self.camera = camera
 
     def parse_command(self, command: str):
         name, *args = command.split()
@@ -24,12 +24,14 @@ class Console:
         elif name == 'clear_room':
             self.clear_room(*args)
 
+    # TODO fix problems with grid after teleport
     def tp(self, *args):
         assert len(args) == 1, 'Only one arg for room number is required'
         room_ind = int(args[0])
-        assert 0 < room_ind <= dung_length * dung_width, \
+        assert room_ind in self.game_manager.dungeon, \
             'This number is greater than number of rooms'
-        self.game_manager.curr_room = room_ind
+        self.game_manager.set_room(room_ind)
+        self.camera.set_surf(self.game_manager.surf)
         print(self.game_manager.curr_room)
 
     def add_item(self, *args):
