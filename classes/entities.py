@@ -9,6 +9,7 @@ class NPC(Heretic):
                  target=None, weapon=Fist(), loot=None, location=None, size=1.):
         super().__init__(x, y, width, height, health, direction, None,
                          speed, target, weapon, location, size)
+        self.friendly = False
         self.path = deque()
         self.loot = [] if loot is None else loot
 
@@ -102,6 +103,7 @@ class Trader(NPC):
                  target=None, weapon=Fist(), loot=None, location=None, size=1.):
         super().__init__(x, y, width, height, health, direction,
                          speed, target, weapon, loot, location, size)
+        self.friendly = True
         self.visible_zone.fill('yellow')
         self.visible_zone.set_colorkey('yellow')
         self.path = deque()

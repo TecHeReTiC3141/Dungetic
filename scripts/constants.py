@@ -51,7 +51,9 @@ stone_floor = pygame.transform.scale(pygame.image.load('../images/surroundings/s
 wooden_floor = pygame.transform.scale(pygame.image.load('../images/surroundings/wooden_floor.jpg'), (display_width, display_height))
 
 bloor = pygame.Surface((display_width, display_height))
+screen_blur = pygame.Surface((display_width, display_height))
 bloor.set_alpha(15)
+screen_blur.set_alpha(35)
 current_interface = None
 
 # # # # # # # # fonts # # # # # # #

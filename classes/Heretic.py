@@ -70,10 +70,12 @@ class Heretic:
 
         self.manager = manager
 
-    def hit(self, entities: list = None, conts: list = None) -> list:
+    def hit(self, entities: list['Heretic'] = None, conts: list = None) -> list:
         blood_list = []
         if self.attack_time <= 0:
             for entity in entities:
+                if entity.friendly:
+                    continue
                 if entity.cur_rect.colliderect(self.attack_rect):
                     damage = randint(self.weapon.damage - 2, self.weapon.damage + 2) * \
                              self.skills['damage'][1]
